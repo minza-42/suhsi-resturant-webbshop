@@ -18,28 +18,38 @@ export function renderCheckoutCart() {
   // Map through cart items to create HTML
   const cartHtml = cart
     .map((item) => {
-      total += item.price;
+      const itemQuantity = item.quantity || 1;
+      total += item.price * itemQuantity;
       return `
-      <div class="cart-item" style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem; border-bottom:1px solid #eee; padding-bottom:0.5rem;">
-        <img src="${item.image}" alt="${
-        item.name
-      }" width="48" height="48" style="border-radius:8px; object-fit:cover;">
-        <div style="flex:1;">
-          <strong>${item.name}</strong><br>
-          <span style="font-size:0.85em; opacity: 0.8;">${
-            item.category || ""
-          }</span>
-        </div>
-        <span>${item.price} kr</span>
-      </div>`;
+    <div class="cart-item" style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem; border-bottom:1px solid #eee; padding-bottom:0.5rem;">
+      <img src="${item.image}" alt="${item.name}" width="48" height="48" style="border-radius:8px; object-fit:cover;">
+      <div style="flex:1;">
+        <strong>${item.name}</strong><br>
+        <span style="font-size:0.85em; opacity: 0.8;">${item.category || ""}</span><br>
+        <span style="font-size:0.95em; color:#888;">Quantity: ${itemQuantity}</span>
+      </div>
+      <span>${item.price * itemQuantity} kr</span>
+    </div>`;
     })
     .join("");
+
+  // --- Monday Discount Logic ---
+  let discount = 0;
+  let discountedTotal = total;
+  const now = new Date();
+  if (now.getDay() === 1 && now.getHours() < 10) {
+    discount = Math.round(total * 0.1);
+    discountedTotal = total - discount;
+  }
 
   // Inject items and final total
   container.innerHTML =
     cartHtml +
-    `<div style="text-align:right; font-weight:bold; margin-top:1rem; font-size:1.1rem;">
-      Total: ${total} kr
+    (discount > 0
+      ? `<div id="checkout-discount-row" style="color:#1abc9c;font-weight:bold;margin-top:1rem;text-align:right;">Monday morning discount: -${discount} kr</div>`
+      : "") +
+    `<div style="text-align:right; font-weight:bold; margin-top:0.5rem; font-size:1.1rem;">
+      Total: ${discountedTotal} kr
     </div>`;
 }
 
@@ -123,6 +133,11 @@ export function initCheckoutOverlay() {
   renderCheckoutCart();
   updatePaymentFields();
 
+  // Listen for cart clear event from main overlay
+  window.addEventListener("cart:cleared", () => {
+    renderCheckoutCart();
+  });
+
   // Payment method toggle
   paymentRadios.forEach((radio) => {
     radio.addEventListener("change", updatePaymentFields);
@@ -157,6 +172,8 @@ export function initCheckoutOverlay() {
     setTimeout(() => {
       localStorage.removeItem("cart");
       renderCheckoutCart();
+      // Notify main cart UI to update
+      window.dispatchEvent(new CustomEvent("cart:cleared"));
       document
         .querySelectorAll(".error-message")
         .forEach((el) => (el.textContent = ""));

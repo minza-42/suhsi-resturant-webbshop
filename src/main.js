@@ -156,7 +156,7 @@ function updateDisplay() {
     .filter(
       (item) =>
         selectedCategory === "all" ||
-        item.category.toLowerCase() === selectedCategory.toLowerCase()
+        item.category.toLowerCase() === selectedCategory.toLowerCase(),
     )
     .sort((a, b) => {
       if (selectedSort === "price-low") return a.price - b.price;
@@ -228,37 +228,77 @@ function updateCartUI() {
   if (cart.length === 0) {
     container.innerHTML =
       "<p style='text-align:center; padding: 20px;'>Your cart is empty</p>";
-  } else {
-    cart.forEach((item, index) => {
-      const itemQuantity = item.quantity || 1;
-      total += item.price * itemQuantity;
-
-      const cartItem = document.createElement("div");
-      cartItem.className = "cart-item";
-      cartItem.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" class="cart-item-img">
-        <div class="cart-item-info" style="flex:1;">
-          <h4>${item.name}</h4>
-          <p>${item.price} kr</p>
-          <div class="quantity-controls" style="display:flex; align-items:center; gap:10px; margin-top:5px;">
-            <button class="qty-btn" onclick="changeQuantity(${index}, -1)">-</button>
-            <span>${itemQuantity}</span>
-            <button class="qty-btn" onclick="changeQuantity(${index}, 1)">+</button>
-          </div>
-        </div>
-        <button class="remove-item" onclick="removeFromCart(${index})">&times;</button>
-      `;
-      container.appendChild(cartItem);
-    });
+    if (headerTotal) headerTotal.textContent = 0;
+    if (cartTotalPrice) cartTotalPrice.textContent = 0;
+    // Remove any discount summary if present
+    const discountRow = document.getElementById("cart-discount-row");
+    if (discountRow) discountRow.remove();
+    return;
   }
 
-  if (headerTotal) headerTotal.textContent = total;
-  if (cartTotalPrice) cartTotalPrice.textContent = total;
+  cart.forEach((item, index) => {
+    const itemQuantity = item.quantity || 1;
+    total += item.price * itemQuantity;
+
+    const cartItem = document.createElement("div");
+    cartItem.className = "cart-item";
+    cartItem.innerHTML = `
+      <img src="${item.image}" alt="${item.name}" class="cart-item-img">
+      <div class="cart-item-info" style="flex:1;">
+        <h4>${item.name}</h4>
+        <p>${item.price} kr</p>
+        <div class="quantity-controls" style="display:flex; align-items:center; gap:10px; margin-top:5px;">
+          <button class="qty-btn" onclick="changeQuantity(${index}, -1)">-</button>
+          <span>${itemQuantity}</span>
+          <button class="qty-btn" onclick="changeQuantity(${index}, 1)">+</button>
+        </div>
+      </div>
+      <button class="remove-item" onclick="removeFromCart(${index})">&times;</button>
+    `;
+    container.appendChild(cartItem);
+  });
+
+  // --- Monday Discount Logic ---
+  let discount = 0;
+  let discountedTotal = total;
+  const now = new Date();
+  // Monday = 1 (getDay()), and before 10:00
+  if (now.getDay() === 1 && now.getHours() < 10) {
+    discount = Math.round(total * 0.1);
+    discountedTotal = total - discount;
+  }
+
+  // Update totals in UI
+  if (headerTotal) headerTotal.textContent = discountedTotal;
+  if (cartTotalPrice) cartTotalPrice.textContent = discountedTotal;
+
+  // Show discount row if discount is active
+  let discountRow = document.getElementById("cart-discount-row");
+  if (discount > 0) {
+    if (!discountRow) {
+      discountRow = document.createElement("div");
+      discountRow.id = "cart-discount-row";
+      discountRow.style =
+        "color:#1abc9c;font-weight:bold;margin-top:0.5rem;text-align:right;";
+      cartTotalPrice?.parentElement?.parentElement?.insertBefore(
+        discountRow,
+        cartTotalPrice.parentElement.nextSibling,
+      );
+    }
+    discountRow.innerHTML = `Monday morning discount: -${discount} kr`;
+  } else if (discountRow) {
+    discountRow.remove();
+  }
 }
 
 // --- INITIALIZATION & EVENT LISTENERS ---
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Listen for cart clear event from checkout overlay
+  window.addEventListener("cart:cleared", () => {
+    cart = [];
+    updateCartUI();
+  });
   updateDisplay();
   updateCartUI();
 
@@ -279,6 +319,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (confirm("Are you sure you want to clear your cart?")) {
       cart = [];
       saveAndUpdateCart();
+      // Notify other overlays (like checkout) to update
+      window.dispatchEvent(new CustomEvent("cart:cleared"));
     }
   });
 
@@ -288,6 +330,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const overlay = document.getElementById("checkout-overlay");
       if (overlay) {
         overlay.style.display = "flex";
+        // Always re-render cart summary when opening checkout
+        import("./checkout.js").then((mod) => {
+          mod.renderCheckoutCart();
+        });
         // (Re-)initialize checkout overlay logic and cart
         initCheckoutOverlay();
       }
