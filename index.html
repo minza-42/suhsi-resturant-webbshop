@@ -1,24 +1,57 @@
-<!doctype html>
-<html lang="sv">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍩</text></svg>">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FED25D | Inlämningsuppgift 1</title>
-  </head>
-  <body>
-    <header>
-      header
-    </header>
+<!DOCTYPE html>
+<html lang="en">
 
-    <main>
-      <h1>Webshop</h1>
-      <button id="clickMe">Klicka på mig</button>
-    </main>
-    
-    <footer>
-      footer
-    </footer>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/base.css  ">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <button id="backToTop" title="Go to top">↑</button>
+  <script type="module" src="src/main.js"></script>
+  <title>Minza's Sushi House | Premium Sushi</title>
+</head>
+
+<body>
+  <header>
+    <nav>
+      <h1>Minza's Sushi House</h1>
+      <div id="cart-indicator">
+        🛒 <span id="header-total">0</span> kr
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="shop-container">
+      <section id="controls">
+        <div class="control-group">
+          <label for="category-filter">Category:</label>
+          <select id="category-filter">
+            <option value="all">All Items</option>
+            <option value="Nigiri">Nigiri</option>
+            <option value="Maki">Maki</option>
+            <option value="Sashimi">Sashimi</option>
+            <option value="Ramen">Ramen</option>
+            <option value="Dumplings">Dumplings</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="sort-order">Sort by:</label>
+          <select id="sort-order">
+            <option value="name">Name (A-Z)</option>
+            <option value="price-low">Price (Low-High)</option>
+            <option value="price-high">Price (High-Low)</option>
+            <option value="rating">Highest Rating</option>
+          </select>
+        </div>
+      </section>
+      <section id="products">
+        <h2>Our Menu</h2>
+        <div id="product-grid" class="product-grid"></div>
+      </section>
+    </div>
+  </main>
+</body>
+
 </html>

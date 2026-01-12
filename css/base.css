@@ -1,0 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Potta+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Zen+Antique&display=swap");
+
+:root {
+  /* Light Mode (Default) */
+  --primary-color: #d35400;
+  --secondary-color: #2c3e50;
+  --bg-color: #f9f9f9;
+  --card-bg: #ffffff;
+  --text-main: #333;
+  --text-light: #ffffff;
+  --radius: 12px;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Override */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-main: #f1f1f1;
+    --secondary-color: #000000;
+    --shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Zen Antique", serif;
+  h1 {
+    font-family: "Potta One", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 50px;
+    text-align: center;
+  }
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.6;
+  transition: background-color 0.3s, color 0.3s;
+}
