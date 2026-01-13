@@ -38,7 +38,7 @@ const products = [
     id: "tuna-nigiri",
     name: "Tuna Nigiri",
     price: 159,
-    rating: 4.2,
+    rating: 4.4,
     category: "Nigiri",
     image: "img/tuna-nigiri.jpg",
   },
