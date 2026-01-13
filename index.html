@@ -4,17 +4,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/main.css" />
-  <button id="backToTop" title="Go to top">↑</button>
-  <script type="module" src="src/main.js"></script>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/cart.css" />
+  <link rel="stylesheet" href="css/forms.css" />
   <title>Minza's Sushi House | Premium Sushi</title>
 </head>
 
 <body>
+  <button id="backToTop" title="Go to top">↑</button>
+
   <header>
     <nav>
       <h1>Minza's Sushi House</h1>
-      <div id="cart-indicator">
+      <div id="cart-indicator" style="cursor: pointer;">
         🛒 <span id="header-total">0</span> kr
       </div>
     </nav>
@@ -34,6 +38,7 @@
             <option value="Dumplings">Dumplings</option>
           </select>
         </div>
+
         <div class="control-group">
           <label for="sort-order">Sort by:</label>
           <select id="sort-order">
@@ -44,12 +49,32 @@
           </select>
         </div>
       </section>
+
       <section id="products">
         <h2>Our Menu</h2>
         <div id="product-grid" class="product-grid"></div>
       </section>
     </div>
   </main>
+
+  <div id="cart-overlay" class="cart-overlay"></div>
+  <section id="cart-drawer" class="cart-drawer">
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <button id="close-cart">×</button>
+    </div>
+    <div id="cart-items-container">
+    </div>
+    <div class="cart-footer">
+      <div class="total-row">
+        <span>Total:</span>
+        <span><span id="cart-total-price">0</span> kr</span>
+      </div>
+      <button id="checkout-btn" class="order-btn">Checkout</button>
+    </div>
+  </section>
+
+  <script type="module" src="src/main.js"></script>
 </body>
 
 </html>

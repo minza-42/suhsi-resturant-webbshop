@@ -1,0 +1,35 @@
+/* --- Forms & Error Messages --- */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  transition: border-color 0.2s;
+}
+
+input:focus,
+select:focus {
+  border-color: #d35400;
+  outline: none;
+}
+
+.error-message {
+  color: #c00;
+  font-size: 0.95em;
+  margin-top: 0.1em;
+  font-weight: 500;
+  display: block;
+}
+
+.order-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

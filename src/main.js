@@ -1,3 +1,12 @@
+// --- CHECKOUT BUTTON REDIRECT ---
+document.addEventListener("DOMContentLoaded", () => {
+  const checkoutBtn = document.getElementById("checkout-btn");
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener("click", () => {
+      window.location.href = "checkout.html";
+    });
+  }
+});
 /**
  * @typedef {Object} Product
  * @property {string} id
@@ -122,14 +131,27 @@ const categoryFilter = document.getElementById("category-filter");
 const sortOrder = document.getElementById("sort-order");
 const backToTopBtn = document.getElementById("backToTop");
 
-// Global State
+// --- CART SELECTORS ---
+const cartIndicator = document.getElementById("cart-indicator");
+const cartDrawer = document.getElementById("cart-drawer");
+const cartOverlay = document.getElementById("cart-overlay");
+const closeCartBtn = document.getElementById("close-cart");
+const cartItemsContainer = document.getElementById("cart-items-container");
+const cartTotalPrice = document.getElementById("cart-total-price");
+const headerTotal = document.getElementById("header-total");
+
+// --- GLOBAL STATE ---
 let cart = [];
+// Load cart from localStorage if available
+try {
+  const savedCart = localStorage.getItem("cart");
+  if (savedCart) cart = JSON.parse(savedCart);
+} catch (e) {}
+
+// --- PRODUCT RENDERING ---
 
 /**
- * Creates an HTML string for a single product.
- * Separating the HTML generation makes the code easier to maintain.
- * @param {Product} product
- * @returns {string}
+ * Creates HTML for a product card
  */
 function createProductHTML({ id, name, price, rating, category, image }) {
   return `
@@ -147,26 +169,22 @@ function createProductHTML({ id, name, price, rating, category, image }) {
 }
 
 /**
- * Renders the product cards to the grid.
- * @param {Product[]} items
+ * Renders products to the DOM
  */
 function renderProducts(items) {
   if (!productGrid) return;
-
-  // Using .map().join('') is often more performant than multiple appendChild calls
   productGrid.innerHTML = items
     .map((product) => createProductHTML(product))
     .join("");
 }
 
 /**
- * Combined Logic for Filtering and Sorting.
+ * Filters and sorts products based on user selection
  */
 function updateDisplay() {
   const selectedCategory = categoryFilter?.value;
   const selectedSort = sortOrder?.value;
 
-  // Chain filter and sort for cleaner logic
   const filteredItems = products
     .filter(
       (item) => selectedCategory === "all" || item.category === selectedCategory
@@ -189,9 +207,71 @@ function updateDisplay() {
   renderProducts(filteredItems);
 }
 
-// --- EVENT DELEGATION ---
-// Instead of re-attaching listeners every time we render,
-// we listen on the parent (productGrid).
+// --- CART LOGIC ---
+
+/**
+ * Opens or closes the cart drawer
+ */
+function toggleCart() {
+  cartDrawer?.classList.toggle("active");
+  cartOverlay?.classList.toggle("active");
+}
+
+/**
+ * Adds an item to the global cart array
+ */
+function addToCart(productId) {
+  const product = products.find((p) => p.id === productId);
+  if (product) {
+    cart.push({ ...product, cartItemId: Date.now() });
+    updateCartUI();
+  }
+}
+
+/**
+ * Updates all UI elements related to the cart
+ */
+function updateCartUI() {
+  // 1. Calculate and update totals
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  if (headerTotal) headerTotal.innerText = total;
+  if (cartTotalPrice) cartTotalPrice.innerText = total;
+
+  // Save cart to localStorage
+  try {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  } catch (e) {}
+
+  // 2. Render items inside the drawer
+  if (cartItemsContainer) {
+    if (cart.length === 0) {
+      cartItemsContainer.innerHTML = "<p>Your cart is empty</p>";
+    } else {
+      cartItemsContainer.innerHTML = cart
+        .map(
+          (item) => `
+          <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}" class="cart-item-img" width="48" height="48" loading="lazy" />
+            <div>
+              <strong>${item.name}</strong>
+              <p>${item.category}</p>
+            </div>
+            <span>${item.price} kr</span>
+          </div>
+        `
+        )
+        .join("");
+    }
+  }
+}
+
+// --- EVENT LISTENERS ---
+
+// Sort and Filter Change
+sortOrder?.addEventListener("change", updateDisplay);
+categoryFilter?.addEventListener("change", updateDisplay);
+
+// Add to Cart (using Event Delegation on the grid)
 productGrid?.addEventListener("click", (e) => {
   if (e.target.classList.contains("order-btn")) {
     const productId = e.target.getAttribute("data-id");
@@ -199,7 +279,12 @@ productGrid?.addEventListener("click", (e) => {
   }
 });
 
-// --- UI HELPERS ---
+// Cart Drawer Toggles
+cartIndicator?.addEventListener("click", toggleCart);
+closeCartBtn?.addEventListener("click", toggleCart);
+cartOverlay?.addEventListener("click", toggleCart);
+
+// Back to Top Scroll Logic
 const handleScroll = () => {
   const isPastThreshold = window.scrollY > 300;
   if (backToTopBtn) {
@@ -207,26 +292,17 @@ const handleScroll = () => {
   }
 };
 
-// --- LISTENERS ---
-sortOrder?.addEventListener("change", updateDisplay);
-categoryFilter?.addEventListener("change", updateDisplay);
 window.addEventListener("scroll", handleScroll);
-
 backToTopBtn?.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-/**
- * Adds a product to the cart state.
- * @param {string} productId
- */
-function addToCart(productId) {
-  const product = products.find((p) => p.id === productId);
-  if (product) {
-    cart.push({ ...product, addedAt: Date.now() });
-    console.log(`Added ${product.name} to cart. Total items: ${cart.length}`);
-  }
-}
+// --- INITIALIZATION ---
 
-// Initial render
+// Initial product render
 updateDisplay();
+
+// Extra dynamic content (optional)
+const dynamicContainer = document.createElement("div");
+dynamicContainer.className = "dynamic-box";
+document.body.appendChild(dynamicContainer);
