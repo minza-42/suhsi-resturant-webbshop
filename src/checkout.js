@@ -1,3 +1,11 @@
+// --- CSS IMPORTS ---
+import "../css/base.css";
+import "../css/layout.css";
+import "../css/components.css";
+import "../css/forms.css";
+import "../css/checkout.css";
+import "../css/main.css";
+
 // --- All checkout logic in one DOMContentLoaded ---
 document.addEventListener("DOMContentLoaded", function () {
   // --- Theme toggle logic ---

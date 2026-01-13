@@ -4,11 +4,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/cart.css" />
-  <link rel="stylesheet" href="css/forms.css" />
   <title>Minza's Sushi House | Premium Sushi</title>
 </head>
 
@@ -30,16 +25,16 @@
 
   <main>
     <div class="shop-container">
-      <section id="controls">
+      <aside id="controls">
         <div class="control-group">
           <label for="category-filter">Category:</label>
           <select id="category-filter">
             <option value="all">All Items</option>
-            <option value="Nigiri">Nigiri</option>
-            <option value="Maki">Maki</option>
-            <option value="Sashimi">Sashimi</option>
-            <option value="Ramen">Ramen</option>
-            <option value="Dumplings">Dumplings</option>
+            <option value="nigiri">Nigiri§</option>
+            <option value="maki">Maki</option>
+            <option value="sashimi">Sashimi</option>
+            <option value="ramen">Ramen</option>
+            <option value="dumplings">Dumplings</option>
           </select>
         </div>
 
@@ -52,7 +47,7 @@
             <option value="rating">Highest Rating</option>
           </select>
         </div>
-      </section>
+      </aside>
 
       <section id="products">
         <h2>Our Menu</h2>
@@ -80,7 +75,35 @@
     </div>
   </section>
 
-  <script type="module" src="src/main.js"></script>
+  <script type="module" src="/src/main.js"></script>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-left">
+        <h3>Follow Us</h3>
+        <a href="https://facebook.com/yourpage" target="_blank" rel="noopener noreferrer">
+          <img src="img/facebook.svg" alt="Facebook" width="24" height="24">
+        </a>
+        <a href="https://instagram.com/yourpage" target="_blank" rel="noopener noreferrer">
+          <img src="img/instagram.svg" alt="Instagram" width="24" height="24">
+        </a>
+      </div>
+
+      <div class="footer-center">
+        <h3>Opening Hours</h3>
+        <p>Lunch: <br>11:00 - 14:00</p>
+        <p>Mon-Fri: <br>11:00 - 20:00</p>
+        <p>Sat-Sun: <br>12:00 - 22:00</p>
+      </div>
+
+      <div class="footer-right">
+        <h3>Contact Us</h3>
+        <p>📞 123-456-789</p>
+        <p>info@minzasushihouse.com</p>
+      </div>
+    </div>
+  </footer>
+
 </body>
 
 </html>
