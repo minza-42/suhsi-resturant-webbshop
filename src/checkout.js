@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Accepts 12 or 10 digits, with or without dash
     const cleaned = ssn.replace(/[^0-9]/g, "");
     if (!/^\d{10,12}$/.test(cleaned)) return false;
-    // Luhn check (mod 10)
     let sum = 0,
       alt = false;
     for (let i = cleaned.length - 2; i >= 0; i--) {
@@ -137,6 +136,10 @@ document.addEventListener("DOMContentLoaded", function () {
       form.reset();
       updatePaymentFields();
       validateForm();
+      // Clear cart from localStorage
+      localStorage.removeItem("cart");
+      // Also update cart display if present
+      if (typeof renderCheckoutCart === "function") renderCheckoutCart();
     }
   });
   resetBtn.addEventListener("click", function () {
@@ -147,7 +150,9 @@ document.addEventListener("DOMContentLoaded", function () {
         .forEach((e) => (e.textContent = ""));
       updatePaymentFields();
       validateForm();
+      // Clear cart from localStorage
+      localStorage.removeItem("cart");
+      if (typeof renderCheckoutCart === "function") renderCheckoutCart();
     }, 0);
-    // TODO: Reset cart if needed (if cart is stored in localStorage, clear it here)
   });
 });

@@ -1,3 +1,14 @@
+// Clear cart button logic
+document.addEventListener("DOMContentLoaded", () => {
+  const clearCartBtn = document.getElementById("clear-cart-btn");
+  if (clearCartBtn) {
+    clearCartBtn.addEventListener("click", () => {
+      cart = [];
+      localStorage.removeItem("cart");
+      updateCartUI();
+    });
+  }
+});
 // --- CHECKOUT BUTTON REDIRECT ---
 document.addEventListener("DOMContentLoaded", () => {
   const checkoutBtn = document.getElementById("checkout-btn");
