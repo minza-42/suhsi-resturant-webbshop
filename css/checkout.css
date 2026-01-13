@@ -1,10 +1,16 @@
 /* checkout.css - Styles specific to the checkout page */
 
 main {
-  background: #333;
+  background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   padding: 2.5rem 2rem 2rem 2rem;
+  color: #222;
+}
+
+.dark-mode main {
+  background: #333;
+  color: #f1f1f1;
 }
 
 form#checkout-form {
