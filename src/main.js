@@ -1,6 +1,14 @@
 /**
- * PRODUCT DATA
+ * @typedef {Object} Product
+ * @property {string} id
+ * @property {string} name
+ * @property {number} price
+ * @property {number} rating
+ * @property {string} category
+ * @property {string} image
  */
+
+/** @type {Product[]} */
 const products = [
   {
     id: "salmon-nigiri",
@@ -114,122 +122,111 @@ const categoryFilter = document.getElementById("category-filter");
 const sortOrder = document.getElementById("sort-order");
 const backToTopBtn = document.getElementById("backToTop");
 
-// Global Cart State
+// Global State
 let cart = [];
 
 /**
- * Renders the product cards to the grid.
- * Creates HTML elements dynamically and attaches event listeners.
+ * Creates an HTML string for a single product.
+ * Separating the HTML generation makes the code easier to maintain.
+ * @param {Product} product
+ * @returns {string}
  */
-function renderProducts(items) {
-  // Clear the grid before rendering new items
-  productGrid.innerHTML = "";
-
-  items.forEach((product) => {
-    const article = document.createElement("article");
-    article.className = "product-card";
-
-    article.innerHTML = `
-      <img src="${product.image}" alt="${product.name}">
+function createProductHTML({ id, name, price, rating, category, image }) {
+  return `
+    <article class="product-card">
+      <img src="${image}" alt="${name}" loading="lazy">
       <div class="product-info">
-        <h3>${product.name}</h3>
-        <p class="category-tag">${product.category}</p>
-        <p class="rating">Rating: ${product.rating} ⭐</p>
-        <p class="price"><strong>${product.price} kr</strong></p>
+        <h3>${name}</h3>
+        <p class="category-tag">${category}</p>
+        <p class="rating">Rating: ${rating} ⭐</p>
+        <p class="price"><strong>${price} kr</strong></p>
       </div>
-      <button class="order-btn" data-id="${product.id}">Add to Cart</button>
-    `;
-
-    // Append the created article to the product grid
-    productGrid.appendChild(article);
-  });
-
-  // Re-attach listeners to the newly created "Add to Cart" buttons
-  attachCartListeners();
+      <button class="order-btn" data-id="${id}">Add to Cart</button>
+    </article>
+  `;
 }
 
 /**
- * Handles the logic for the "Add to Cart" buttons.
+ * Renders the product cards to the grid.
+ * @param {Product[]} items
  */
-function attachCartListeners() {
-  document.querySelectorAll(".order-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const productId = e.target.getAttribute("data-id");
-      addToCart(productId);
-    });
-  });
+function renderProducts(items) {
+  if (!productGrid) return;
+
+  // Using .map().join('') is often more performant than multiple appendChild calls
+  productGrid.innerHTML = items
+    .map((product) => createProductHTML(product))
+    .join("");
 }
 
 /**
  * Combined Logic for Filtering and Sorting.
- * Triggered whenever a filter or sort option changes.
  */
 function updateDisplay() {
-  let filteredItems = [...products];
+  const selectedCategory = categoryFilter?.value;
+  const selectedSort = sortOrder?.value;
 
-  // 1. Filter by Category
-  const category = categoryFilter.value;
-  if (category !== "all") {
-    filteredItems = filteredItems.filter((item) => item.category === category);
-  }
+  // Chain filter and sort for cleaner logic
+  const filteredItems = products
+    .filter(
+      (item) => selectedCategory === "all" || item.category === selectedCategory
+    )
+    .sort((a, b) => {
+      switch (selectedSort) {
+        case "price-low":
+          return a.price - b.price;
+        case "price-high":
+          return b.price - a.price;
+        case "rating":
+          return b.rating - a.rating;
+        case "name":
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
 
-  // 2. Sort Items
-  const sortType = sortOrder.value;
-
-  if (sortType === "price-low") {
-    filteredItems.sort((a, b) => a.price - b.price);
-  } else if (sortType === "price-high") {
-    filteredItems.sort((a, b) => b.price - a.price);
-  } else if (sortType === "rating") {
-    filteredItems.sort((a, b) => b.rating - a.rating);
-  } else if (sortType === "name") {
-    filteredItems.sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  // Update the UI
   renderProducts(filteredItems);
 }
 
-// --- EVENT LISTENERS ---
+// --- EVENT DELEGATION ---
+// Instead of re-attaching listeners every time we render,
+// we listen on the parent (productGrid).
+productGrid?.addEventListener("click", (e) => {
+  if (e.target.classList.contains("order-btn")) {
+    const productId = e.target.getAttribute("data-id");
+    addToCart(productId);
+  }
+});
 
-// Listen for changes in sorting and filtering
-sortOrder.addEventListener("change", updateDisplay);
-categoryFilter.addEventListener("change", updateDisplay);
-
-// Show/Hide "Back to Top" button on scroll
-window.onscroll = function () {
-  scrollFunction();
+// --- UI HELPERS ---
+const handleScroll = () => {
+  const isPastThreshold = window.scrollY > 300;
+  if (backToTopBtn) {
+    backToTopBtn.style.display = isPastThreshold ? "block" : "none";
+  }
 };
 
-function scrollFunction() {
-  // Show button after scrolling down 300px
-  if (
-    document.body.scrollTop > 300 ||
-    document.documentElement.scrollTop > 300
-  ) {
-    if (backToTopBtn) backToTopBtn.style.display = "block";
-  } else {
-    if (backToTopBtn) backToTopBtn.style.display = "none";
+// --- LISTENERS ---
+sortOrder?.addEventListener("change", updateDisplay);
+categoryFilter?.addEventListener("change", updateDisplay);
+window.addEventListener("scroll", handleScroll);
+
+backToTopBtn?.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+/**
+ * Adds a product to the cart state.
+ * @param {string} productId
+ */
+function addToCart(productId) {
+  const product = products.find((p) => p.id === productId);
+  if (product) {
+    cart.push({ ...product, addedAt: Date.now() });
+    console.log(`Added ${product.name} to cart. Total items: ${cart.length}`);
   }
 }
 
-// Smooth scroll to top when button is clicked
-if (backToTopBtn) {
-  backToTopBtn.addEventListener("click", function () {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  });
-}
-
-/**
- * Placeholder for adding items to cart
- */
-function addToCart(productId) {
-  console.log(`Product ${productId} added to cart.`);
-  // You can add your logic here to push to the 'cart' array
-}
-
-// Initial render to populate the page on load
+// Initial render
 updateDisplay();
