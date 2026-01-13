@@ -1,6 +1,5 @@
 /**
  * PRODUCT DATA
- * Exported to keep the file structure clean and modular.
  */
 const products = [
   {
