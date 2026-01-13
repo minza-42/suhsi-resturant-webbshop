@@ -16,7 +16,7 @@ const products = [
     price: 149,
     rating: 4.5,
     category: "Nigiri",
-    image: "img/salmon-nigiri.png",
+    image: "img/salmon-nigiri.jpg",
   },
   {
     id: "avocado-nigiri",
@@ -24,7 +24,7 @@ const products = [
     price: 129,
     rating: 4.3,
     category: "Nigiri",
-    image: "img/avocado-nigiri.png",
+    image: "img/avocado-nigiri.jpg",
   },
   {
     id: "shrimp-nigiri",
@@ -32,7 +32,7 @@ const products = [
     price: 139,
     rating: 3.8,
     category: "Nigiri",
-    image: "img/shrimp-nigiri.png",
+    image: "img/shrimp-nigiri.jpg",
   },
   {
     id: "tuna-nigiri",
@@ -40,7 +40,7 @@ const products = [
     price: 159,
     rating: 4.2,
     category: "Nigiri",
-    image: "img/tuna-nigiri.png",
+    image: "img/tuna-nigiri.jpg",
   },
   {
     id: "california-roll",
@@ -48,7 +48,7 @@ const products = [
     price: 129,
     rating: 4.0,
     category: "Maki",
-    image: "img/california-maki.png",
+    image: "img/california-maki.jpg",
   },
   {
     id: "spicy-tuna-roll",
@@ -56,7 +56,7 @@ const products = [
     price: 139,
     rating: 4.8,
     category: "Maki",
-    image: "img/spicy-tuna.png",
+    image: "img/spicy-tuna.jpg",
   },
   {
     id: "dragon-roll",
@@ -64,7 +64,7 @@ const products = [
     price: 169,
     rating: 5.0,
     category: "Maki",
-    image: "img/dragon-roll.png",
+    image: "img/dragon-roll.jpg",
   },
   {
     id: "tempura-roll",
@@ -72,7 +72,7 @@ const products = [
     price: 139,
     rating: 4.6,
     category: "Maki",
-    image: "img/tempura-roll.png",
+    image: "img/tempura-roll.jpg",
   },
   {
     id: "salmon-sashimi",
@@ -80,7 +80,7 @@ const products = [
     price: 195,
     rating: 4.9,
     category: "Sashimi",
-    image: "img/salmon-sashimi.png",
+    image: "img/salmon-sashimi.jpg",
   },
   {
     id: "mixed-sashimi",
@@ -88,7 +88,7 @@ const products = [
     price: 279,
     rating: 4.7,
     category: "Sashimi",
-    image: "img/sashimi-mix.png",
+    image: "img/sashimi-mix.jpg",
   },
   {
     id: "ramen-pork-broth",
@@ -96,7 +96,7 @@ const products = [
     price: 169,
     rating: 4.7,
     category: "Ramen",
-    image: "img/ramen-pork-broth.png",
+    image: "img/ramen-pork-broth.jpg",
   },
   {
     id: "dumpling-xiao-long-bao",
@@ -104,7 +104,7 @@ const products = [
     price: 159,
     rating: 4.7,
     category: "Dumplings",
-    image: "img/dumpling-xiao-long-bao.png",
+    image: "img/dumpling-xiao-long-bao.jpg",
   },
   {
     id: "dumpling-gyoza",
@@ -112,7 +112,7 @@ const products = [
     price: 149,
     rating: 4.7,
     category: "Dumplings",
-    image: "img/dumpling-gyoza.png",
+    image: "img/dumpling-gyoza.jpg",
   },
 ];
 
