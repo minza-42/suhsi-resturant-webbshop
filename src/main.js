@@ -1,3 +1,40 @@
+// Dark/Light mode toggle
+document.addEventListener("DOMContentLoaded", () => {
+  const themeToggle = document.getElementById("theme-toggle");
+  if (themeToggle) {
+    // Set initial theme from localStorage or system
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    let theme =
+      localStorage.getItem("theme") || (prefersDark ? "dark" : "light");
+    setTheme(theme);
+    themeToggle.innerHTML =
+      theme === "dark"
+        ? '<img src="img/light_mode.svg" alt="Light mode" width="24" height="24" style="vertical-align:middle;">'
+        : '<img src="img/dark_mode.svg" alt="Dark mode" width="24" height="24" style="vertical-align:middle;">';
+
+    themeToggle.addEventListener("click", () => {
+      theme = document.documentElement.classList.contains("dark-mode")
+        ? "light"
+        : "dark";
+      setTheme(theme);
+      localStorage.setItem("theme", theme);
+      themeToggle.innerHTML =
+        theme === "dark"
+          ? '<img src="img/light_mode.svg" alt="Light mode" width="24" height="24" style="vertical-align:middle;">'
+          : '<img src="img/dark_mode.svg" alt="Dark mode" width="24" height="24" style="vertical-align:middle;">';
+    });
+  }
+});
+
+function setTheme(theme) {
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark-mode");
+  } else {
+    document.documentElement.classList.remove("dark-mode");
+  }
+}
 // Clear cart button logic
 document.addEventListener("DOMContentLoaded", () => {
   const clearCartBtn = document.getElementById("clear-cart-btn");

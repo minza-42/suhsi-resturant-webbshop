@@ -14,8 +14,16 @@
 </head>
 
 <body>
-    <main style="max-width: 500px; margin: 4rem auto;">
-        <h1>Checkout</h1>
+    <header>
+        <nav style="display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:2rem;">
+            <button id="theme-toggle" aria-label="Toggle dark/light mode"
+                style="background:none;border:none;padding:0;cursor:pointer;">
+                <img src="img/dark_mode.svg" alt="Dark mode" width="24" height="24" style="vertical-align:middle;">
+            </button>
+            <h1 style="margin:0;">Checkout</h1>
+        </nav>
+    </header>
+    <main style="max-width: 500px; margin: 0 auto;">
         <section id="checkout-cart" style="margin-bottom:2rem;">
             <h2>Your Cart</h2>
             <div id="checkout-cart-items">
@@ -113,32 +121,6 @@
         <a href="index.html" class="order-btn" style="margin-top:2rem;display:inline-block;">Back to store</a>
     </main>
     <script src="src/checkout.js"></script>
-    </main>
-    <script>
-        // Render cart from localStorage on checkout page
-        function renderCheckoutCart() {
-            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            const container = document.getElementById("checkout-cart-items");
-            if (!container) return;
-            if (!cart.length) {
-                container.innerHTML = '<p>Your cart is empty.</p>';
-                return;
-            }
-            let total = 0;
-            container.innerHTML = cart.map(item => {
-                total += item.price;
-                return `<div class='cart-item' style='display:flex;align-items:center;gap:1rem;margin-bottom:1rem;'>
-            <img src='${item.image}' alt='${item.name}' class='cart-item-img' width='48' height='48' loading='lazy' style='border-radius:8px;object-fit:cover;'>
-            <div style='flex:1;'>
-                <strong>${item.name}</strong><br>
-                <span style='font-size:0.95em;color:#666;'>${item.category}</span>
-            </div>
-            <span>${item.price} kr</span>
-        </div>`;
-            }).join("") + `<div style='text-align:right;font-weight:bold;margin-top:1rem;'>Total: ${total} kr</div>`;
-        }
-        renderCheckoutCart();
-    </script>
 </body>
 
 </html>

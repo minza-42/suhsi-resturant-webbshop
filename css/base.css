@@ -12,14 +12,13 @@
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-color: #121212;
-    --card-bg: #1e1e1e;
-    --text-main: #f1f1f1;
-    --secondary-color: #000000;
-    --shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  }
+/* Custom dark mode override */
+.dark-mode {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --text-main: #f1f1f1;
+  --secondary-color: #000000;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 * {

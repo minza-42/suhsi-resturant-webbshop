@@ -27,18 +27,56 @@ header nav #cart-indicator {
 }
 
 .shop-container {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 30px;
-  max-width: 1200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
+  gap: 40px;
+}
+
+#controls {
+  min-width: 220px;
+  max-width: 260px;
+  flex: 0 0 240px;
+  margin-right: 0;
+  margin-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+#products {
+  flex: 1 1 700px;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#products h2 {
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 @media (max-width: 900px) {
   .shop-container {
-    display: flex;
     flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  #controls {
+    flex: unset;
+    max-width: 100%;
+    min-width: unset;
+    margin-bottom: 1.5rem;
+  }
+  #products {
+    max-width: 100%;
+    flex: unset;
   }
 }
 
@@ -48,8 +86,15 @@ header nav #cart-indicator {
 
 #product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, minmax(250px, 1fr));
   gap: 20px;
+  width: 100%;
+}
+
+@media (max-width: 700px) {
+  #product-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 #controls {
