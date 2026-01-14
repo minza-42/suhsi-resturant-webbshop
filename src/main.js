@@ -1,23 +1,6 @@
-// --- CSS IMPORTS ---
-import "../css/base.css";
-import "../css/layout.css";
-import "../css/components.css";
-import "../css/forms.css";
-import "../css/cart.css";
-import "../css/main.css";
+/* src/main.js */
 
 // --- PRODUCT DATA ---
-/**
- * @typedef {Object} Product
- * @property {string} id
- * @property {string} name
- * @property {number} price
- * @property {number} rating
- * @property {string} category
- * @property {string} image
- */
-
-/** @type {Product[]} */
 const products = [
   {
     id: "salmon-nigiri",
@@ -136,23 +119,14 @@ const cartIndicator = document.getElementById("cart-indicator");
 const cartDrawer = document.getElementById("cart-drawer");
 const cartOverlay = document.getElementById("cart-overlay");
 const closeCartBtn = document.getElementById("close-cart");
-const cartItemsContainer = document.getElementById("cart-items-container");
-const cartTotalPrice = document.getElementById("cart-total-price");
-const headerTotal = document.getElementById("header-total");
+const clearCartBtn = document.getElementById("clear-cart-btn");
+const checkoutBtn = document.getElementById("checkout-btn");
 
 // --- GLOBAL STATE ---
-let cart = [];
-// Load cart from localStorage if available
-try {
-  const savedCart = localStorage.getItem("cart");
-  if (savedCart) cart = JSON.parse(savedCart);
-} catch (e) {}
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 // --- PRODUCT RENDERING ---
 
-/**
- * Creates HTML for a product card
- */
 function createProductHTML({ id, name, price, rating, category, image }) {
   return `
     <article class="product-card">
@@ -168,40 +142,27 @@ function createProductHTML({ id, name, price, rating, category, image }) {
   `;
 }
 
-/**
- * Renders products to the DOM
- */
 function renderProducts(items) {
   if (!productGrid) return;
-  productGrid.innerHTML = items
-    .map((product) => createProductHTML(product))
-    .join("");
+  productGrid.innerHTML = items.map(createProductHTML).join("");
 }
 
-/**
- * Filters and sorts products based on user selection
- */
 function updateDisplay() {
-  const selectedCategory = categoryFilter?.value;
-  const selectedSort = sortOrder?.value;
+  const selectedCategory = categoryFilter?.value || "all";
+  const selectedSort = sortOrder?.value || "default";
 
   const filteredItems = products
     .filter(
-      (item) => selectedCategory === "all" || item.category === selectedCategory
+      (item) =>
+        selectedCategory === "all" ||
+        item.category.toLowerCase() === selectedCategory.toLowerCase()
     )
     .sort((a, b) => {
-      switch (selectedSort) {
-        case "price-low":
-          return a.price - b.price;
-        case "price-high":
-          return b.price - a.price;
-        case "rating":
-          return b.rating - a.rating;
-        case "name":
-          return a.name.localeCompare(b.name);
-        default:
-          return 0;
-      }
+      if (selectedSort === "price-low") return a.price - b.price;
+      if (selectedSort === "price-high") return b.price - a.price;
+      if (selectedSort === "rating") return b.rating - a.rating;
+      if (selectedSort === "name") return a.name.localeCompare(b.name);
+      return 0;
     });
 
   renderProducts(filteredItems);
@@ -209,158 +170,132 @@ function updateDisplay() {
 
 // --- CART LOGIC ---
 
-/**
- * Opens or closes the cart drawer
- */
 function toggleCart() {
   cartDrawer?.classList.toggle("active");
   cartOverlay?.classList.toggle("active");
 }
 
-/**
- * Adds an item to the global cart array
- */
 function addToCart(productId) {
   const product = products.find((p) => p.id === productId);
-  if (product) {
-    cart.push({ ...product, cartItemId: Date.now() });
-    updateCartUI();
+  if (!product) return;
+
+  const existingItem = cart.find((item) => item.id === productId);
+
+  if (existingItem) {
+    existingItem.quantity = (existingItem.quantity || 1) + 1;
+  } else {
+    cart.push({ ...product, quantity: 1 });
   }
+
+  saveAndUpdateCart();
 }
 
-/**
- * Updates all UI elements related to the cart
- */
-function updateCartUI() {
-  // 1. Calculate and update totals
-  const total = cart.reduce((sum, item) => sum + item.price, 0);
-  if (headerTotal) headerTotal.innerText = total;
-  if (cartTotalPrice) cartTotalPrice.innerText = total;
+// Globally accessible quantity changer
+window.changeQuantity = function (index, delta) {
+  if (!cart[index]) return;
 
-  // Save cart to localStorage
-  try {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  } catch (e) {}
+  cart[index].quantity = (cart[index].quantity || 1) + delta;
 
-  // 2. Render items inside the drawer
-  if (cartItemsContainer) {
-    if (cart.length === 0) {
-      cartItemsContainer.innerHTML = "<p>Your cart is empty</p>";
-    } else {
-      cartItemsContainer.innerHTML = cart
-        .map(
-          (item) => `
-          <div class="cart-item">
-            <img src="${item.image}" alt="${item.name}" class="cart-item-img" width="48" height="48" loading="lazy" />
-            <div>
-              <strong>${item.name}</strong>
-              <p>${item.category}</p>
-            </div>
-            <span>${item.price} kr</span>
-          </div>
-        `
-        )
-        .join("");
-    }
-  }
-}
-
-// --- EVENT LISTENERS ---
-
-// Sort and Filter Change
-sortOrder?.addEventListener("change", updateDisplay);
-categoryFilter?.addEventListener("change", updateDisplay);
-
-// Add to Cart (using Event Delegation on the grid)
-productGrid?.addEventListener("click", (e) => {
-  if (e.target.classList.contains("order-btn")) {
-    const productId = e.target.getAttribute("data-id");
-    addToCart(productId);
-  }
-});
-
-// Cart Drawer Toggles
-cartIndicator?.addEventListener("click", toggleCart);
-closeCartBtn?.addEventListener("click", toggleCart);
-cartOverlay?.addEventListener("click", toggleCart);
-
-// Back to Top Scroll Logic
-const handleScroll = () => {
-  const isPastThreshold = window.scrollY > 300;
-  if (backToTopBtn) {
-    backToTopBtn.style.display = isPastThreshold ? "block" : "none";
+  if (cart[index].quantity <= 0) {
+    removeFromCart(index);
+  } else {
+    saveAndUpdateCart();
   }
 };
 
-window.addEventListener("scroll", handleScroll);
-backToTopBtn?.addEventListener("click", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
+// Globally accessible remove function
+window.removeFromCart = function (index) {
+  cart.splice(index, 1);
+  saveAndUpdateCart();
+};
 
-// --- INITIALIZATION ---
-
-// Initial product render
-updateDisplay();
-
-// Extra dynamic content (optional)
-const dynamicContainer = document.createElement("div");
-dynamicContainer.className = "dynamic-box";
-document.body.appendChild(dynamicContainer);
-
-// Dark/Light mode toggle
-document.addEventListener("DOMContentLoaded", () => {
-  const themeToggle = document.getElementById("theme-toggle");
-  if (themeToggle) {
-    // Set initial theme from localStorage or system
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    let theme =
-      localStorage.getItem("theme") || (prefersDark ? "dark" : "light");
-    setTheme(theme);
-    themeToggle.innerHTML =
-      theme === "dark"
-        ? '<img src="img/light_mode.svg" alt="Light mode" width="24" height="24" style="vertical-align:middle;">'
-        : '<img src="img/dark_mode.svg" alt="Dark mode" width="24" height="24" style="vertical-align:middle;">';
-
-    themeToggle.addEventListener("click", () => {
-      theme = document.documentElement.classList.contains("dark-mode")
-        ? "light"
-        : "dark";
-      setTheme(theme);
-      localStorage.setItem("theme", theme);
-      themeToggle.innerHTML =
-        theme === "dark"
-          ? '<img src="img/light_mode.svg" alt="Light mode" width="24" height="24" style="vertical-align:middle;">'
-          : '<img src="img/dark_mode.svg" alt="Dark mode" width="24" height="24" style="vertical-align:middle;">';
-    });
-  }
-});
-
-function setTheme(theme) {
-  if (theme === "dark") {
-    document.documentElement.classList.add("dark-mode");
-  } else {
-    document.documentElement.classList.remove("dark-mode");
-  }
+function saveAndUpdateCart() {
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartUI();
 }
-// Clear cart button logic
+
+function updateCartUI() {
+  const container = document.getElementById("cart-items-container");
+  const headerTotal = document.getElementById("header-total");
+  const cartTotalPrice = document.getElementById("cart-total-price");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+  let total = 0;
+
+  if (cart.length === 0) {
+    container.innerHTML =
+      "<p style='text-align:center; padding: 20px;'>Your cart is empty</p>";
+  } else {
+    cart.forEach((item, index) => {
+      const itemQuantity = item.quantity || 1;
+      total += item.price * itemQuantity;
+
+      const cartItem = document.createElement("div");
+      cartItem.className = "cart-item";
+      cartItem.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" class="cart-item-img">
+        <div class="cart-item-info" style="flex:1;">
+          <h4>${item.name}</h4>
+          <p>${item.price} kr</p>
+          <div class="quantity-controls" style="display:flex; align-items:center; gap:10px; margin-top:5px;">
+            <button class="qty-btn" onclick="changeQuantity(${index}, -1)">-</button>
+            <span>${itemQuantity}</span>
+            <button class="qty-btn" onclick="changeQuantity(${index}, 1)">+</button>
+          </div>
+        </div>
+        <button class="remove-item" onclick="removeFromCart(${index})">&times;</button>
+      `;
+      container.appendChild(cartItem);
+    });
+  }
+
+  if (headerTotal) headerTotal.textContent = total;
+  if (cartTotalPrice) cartTotalPrice.textContent = total;
+}
+
+// --- INITIALIZATION & EVENT LISTENERS ---
+
 document.addEventListener("DOMContentLoaded", () => {
-  const clearCartBtn = document.getElementById("clear-cart-btn");
-  if (clearCartBtn) {
-    clearCartBtn.addEventListener("click", () => {
+  updateDisplay();
+  updateCartUI();
+
+  sortOrder?.addEventListener("change", updateDisplay);
+  categoryFilter?.addEventListener("change", updateDisplay);
+
+  productGrid?.addEventListener("click", (e) => {
+    if (e.target.classList.contains("order-btn")) {
+      addToCart(e.target.getAttribute("data-id"));
+    }
+  });
+
+  cartIndicator?.addEventListener("click", toggleCart);
+  closeCartBtn?.addEventListener("click", toggleCart);
+  cartOverlay?.addEventListener("click", toggleCart);
+
+  clearCartBtn?.addEventListener("click", () => {
+    if (confirm("Are you sure you want to clear your cart?")) {
       cart = [];
-      localStorage.removeItem("cart");
-      updateCartUI();
-    });
-  }
-});
-// --- CHECKOUT BUTTON REDIRECT ---
-document.addEventListener("DOMContentLoaded", () => {
-  const checkoutBtn = document.getElementById("checkout-btn");
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener("click", () => {
+      saveAndUpdateCart();
+    }
+  });
+
+  checkoutBtn?.addEventListener("click", () => {
+    if (cart.length > 0) {
       window.location.href = "checkout.html";
-    });
-  }
+    } else {
+      alert("Your cart is empty!");
+    }
+  });
+
+  window.addEventListener("scroll", () => {
+    if (backToTopBtn) {
+      backToTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
+    }
+  });
+
+  backToTopBtn?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 });

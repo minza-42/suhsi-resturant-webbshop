@@ -1,27 +1,103 @@
-/* checkout.css - Styles specific to the checkout page */
-.back-to-store {
-  display: block;
-  margin: 2rem auto 0 auto;
-  text-align: center;
+/* Checkout.css - Styles specific to the checkout page */
+@import "components.css";
+
+/* Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Potta+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Zen+Antique&display=swap");
+
+:root {
+  --primary-color: #d35400;
+  --secondary-color: #110b11;
+  --bg-color: #d35400;
+  --card-bg: #1e1e1e;
+  --text-main: #f1f1f1;
+  --text-light: #ffffff;
+  --radius: 12px;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  --border-color: #444;
 }
 
-main {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-  padding: 2.5rem 2rem 2rem 2rem;
-  color: #222;
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.dark-mode main {
-  background: #333;
-  color: #f1f1f1;
+body {
+  font-family: "Zen Antique", serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.6;
+  padding-bottom: 60px;
 }
 
+/* Dark/Light Mode support */
+:root:not(.dark-mode) {
+  --bg-color: #faf9f6;
+  --card-bg: #ffffff;
+  --text-main: #222;
+  --border-color: #ccc;
+}
+
+/* Header & Navigation */
+header {
+  padding: 20px;
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+
+header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+header h1 {
+  font-family: "Potta One", system-ui;
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+/* --- Checkout Cart Display --- */
+#checkout-cart {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+#checkout-cart h2 {
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.cart-item {
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 0;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+/* --- Checkout Form --- */
 form#checkout-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  margin-top: 2rem;
 }
 
 .form-row {
@@ -29,49 +105,113 @@ form#checkout-form {
   gap: 1rem;
 }
 
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
 .form-group label {
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-  display: block;
-}
-
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="tel"] {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus {
-  border-color: #d35400;
-  outline: none;
-}
-
-.error-message {
-  color: #c00;
-  font-size: 0.95em;
-  margin-top: 0.1em;
   font-weight: 500;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* Input Fields */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"] {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: transparent;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+}
+
+input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(211, 84, 0, 0.2);
+}
+
+/* --- Buttons --- */
+.order-btn {
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block; /* Ensures padding and width apply correctly */
+}
+
+#submit-btn {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+#submit-btn:hover:not(:disabled) {
+  background-color: #e67e22;
+  transform: translateY(-2px);
+}
+
+#reset-btn {
+  background-color: #222;
+  color: #bbb;
+  border: 1px solid var(--border-color);
+}
+
+/* Updated Back to Store Button */
+.back-to-store {
   display: block;
+  margin-top: 2rem;
+  background-color: #000000; /* Pure black background */
+  color: var(--primary-color); /* Orange text */
+  border: 2px solid var(--primary-color); /* Orange border */
+  transition: all 0.3s ease;
 }
 
-.order-btn[disabled] {
-  opacity: 0.6;
-  cursor: not-allowed;
+.back-to-store:hover {
+  background-color: var(--primary-color); /* Flips to orange on hover */
+  color: #000000; /* Flips to black text on hover */
+  transform: translateY(-2px);
 }
 
+/* Adjustment for Light Mode - so it doesn't stay black in light mode */
+:root:not(.dark-mode) .back-to-store {
+  background-color: #ffffff;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+
+/* --- Error Messaging --- */
+.error-message {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+  font-weight: 500;
+  min-height: 1.2rem;
+}
+
+/* Responsive adjustments */
 @media (max-width: 600px) {
   main {
-    padding: 1rem 0.5rem;
+    padding: 1rem;
   }
+
   .form-row {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1.2rem;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
   }
 }

@@ -5,19 +5,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Minza's Sushi House | Premium Sushi</title>
+  <link id="main-css" rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
-  <button id="backToTop" title="Go to top">↑</button>
-
   <header>
-    <nav>
-      <button id="theme-toggle" aria-label="Toggle dark/light mode"
-        style="margin-right:1rem;background:none;border:none;padding:0;cursor:pointer;">
-        <img src="img/dark_mode.svg" alt="Dark mode" width="24" height="24" style="vertical-align:middle;">
-      </button>
+    <nav class="header-container">
+      <div class="header-left">
+        <button id="theme-toggle" aria-label="Toggle dark/light mode">
+          <img id="theme-icon" src="img/light_mode.svg" alt="Theme Icon" width="24" height="24">
+        </button>
+      </div>
+
       <h1>Minza's Sushi House</h1>
-      <div id="cart-indicator" style="cursor: pointer;">
+
+      <div id="cart-indicator" class="header-cart">
         🛒 <span id="header-total">0</span> kr
       </div>
     </nav>
@@ -26,11 +28,18 @@
   <main>
     <div class="shop-container">
       <aside id="controls">
+        <section class="hero">
+          <div class="hero-content">
+            <h2>Opening Hours</h2>
+            <p>Mon - Fri: 11:00 - 20:00</p>
+            <p>Sat - Sun: 12:00 - 22:00</p>
+          </div>
+        </section>
         <div class="control-group">
           <label for="category-filter">Category:</label>
           <select id="category-filter">
             <option value="all">All Items</option>
-            <option value="nigiri">Nigiri§</option>
+            <option value="nigiri">Nigiri</option>
             <option value="maki">Maki</option>
             <option value="sashimi">Sashimi</option>
             <option value="ramen">Ramen</option>
@@ -62,8 +71,7 @@
       <h2>Your Cart</h2>
       <button id="close-cart">×</button>
     </div>
-    <div id="cart-items-container">
-    </div>
+    <div id="cart-items-container"></div>
     <div class="cart-footer">
       <div class="total-row">
         <span>Total:</span>
@@ -75,35 +83,29 @@
     </div>
   </section>
 
-  <script type="module" src="/src/main.js"></script>
-
   <footer>
     <div class="footer-content">
       <div class="footer-left">
         <h3>Follow Us</h3>
-        <a href="https://facebook.com/yourpage" target="_blank" rel="noopener noreferrer">
-          <img src="img/facebook.svg" alt="Facebook" width="24" height="24">
-        </a>
-        <a href="https://instagram.com/yourpage" target="_blank" rel="noopener noreferrer">
-          <img src="img/instagram.svg" alt="Instagram" width="24" height="24">
-        </a>
+        <img src="img/facebook.svg" alt="Facebook">
+        <img src="img/instagram.svg" alt="Instagram">
       </div>
 
       <div class="footer-center">
-        <h3>Opening Hours</h3>
-        <p>Lunch: <br>11:00 - 14:00</p>
-        <p>Mon-Fri: <br>11:00 - 20:00</p>
-        <p>Sat-Sun: <br>12:00 - 22:00</p>
+        <h3>Minza's Sushi House</h3>
+        <p>Premium Sushi & Ramen</p>
+        <p>© 2024 Minza's Sushi</p>
       </div>
 
       <div class="footer-right">
-        <h3>Contact Us</h3>
-        <p>📞 123-456-789</p>
-        <p>info@minzasushihouse.com</p>
+        <h3>Contact</h3>
+        <p><a href="mailto:info@minzasushi.se" class="footer-mail-link">info@minzasushi.se</a></p>
+        <p> 08-123 456 78</p>
       </div>
     </div>
   </footer>
-
+  <script type="module" src="src/main.js"></script>
+  <script type="module" src="src/theme.js"></script>
 </body>
 
 </html>

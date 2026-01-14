@@ -1,233 +1,55 @@
-// --- CSS IMPORTS ---
-import "../css/base.css";
-import "../css/layout.css";
-import "../css/components.css";
-import "../css/forms.css";
-import "../css/checkout.css";
-import "../css/main.css";
+/* src/checkout.js */
 
-// --- All checkout logic in one DOMContentLoaded ---
-document.addEventListener("DOMContentLoaded", function () {
-  // --- Theme toggle logic ---
-  const themeToggle = document.getElementById("theme-toggle");
-  if (themeToggle) {
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    let theme =
-      localStorage.getItem("theme") || (prefersDark ? "dark" : "light");
-    setTheme(theme);
-    themeToggle.innerHTML =
-      theme === "dark"
-        ? '<img src="img/light_mode.svg" alt="Light mode" width="24" height="24" style="vertical-align:middle;">'
-        : '<img src="img/dark_mode.svg" alt="Dark mode" width="24" height="24" style="vertical-align:middle;">';
-    themeToggle.addEventListener("click", () => {
-      theme = document.documentElement.classList.contains("dark-mode")
-        ? "light"
-        : "dark";
-      setTheme(theme);
-      localStorage.setItem("theme", theme);
-      themeToggle.innerHTML =
-        theme === "dark"
-          ? '<img src="img/light_mode.svg" alt="Light mode" width="24" height="24" style="vertical-align:middle;">'
-          : '<img src="img/dark_mode.svg" alt="Dark mode" width="24" height="24" style="vertical-align:middle;">';
-    });
-  }
-  function setTheme(theme) {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark-mode");
-    } else {
-      document.documentElement.classList.remove("dark-mode");
-    }
+// Run when the module loads
+// No DOMContentLoaded wrapper needed for type="module"
+
+// --- 1. CART RENDERING LOGIC ---
+function renderCheckoutCart() {
+  // Retrieve cart from localStorage
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const container = document.getElementById("checkout-cart-items");
+  const submitBtn = document.getElementById("submit-btn");
+
+  if (!container) return;
+
+  // Display message if cart is empty
+  if (cart.length === 0) {
+    container.innerHTML = "<p>Your cart is empty.</p>";
+    if (submitBtn) submitBtn.disabled = true;
+    return;
   }
 
-  // --- Cart rendering logic ---
-  function renderCheckoutCart() {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const container = document.getElementById("checkout-cart-items");
-    if (!container) return;
-    if (!cart.length) {
-      container.innerHTML = "<p>Your cart is empty.</p>";
-      return;
-    }
-    let total = 0;
-    container.innerHTML =
-      cart
-        .map((item) => {
-          total += item.price;
-          return `<div class='cart-item' style='display:flex;align-items:center;gap:1rem;margin-bottom:1rem;'>
-        <img src='${item.image}' alt='${item.name}' class='cart-item-img' width='48' height='48' loading='lazy' style='border-radius:8px;object-fit:cover;background:#f3f3f3;'>
-        <div style='flex:1;'>
+  let total = 0;
+  // Map through cart items to create HTML
+  const cartHtml = cart
+    .map((item) => {
+      total += item.price;
+      return `
+      <div class="cart-item" style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem; border-bottom:1px solid #eee; padding-bottom:0.5rem;">
+        <img src="${item.image}" alt="${
+        item.name
+      }" width="48" height="48" style="border-radius:8px; object-fit:cover;">
+        <div style="flex:1;">
           <strong>${item.name}</strong><br>
-          <span style='font-size:0.95em;color:var(--text-main);'>${item.category}</span>
+          <span style="font-size:0.85em; opacity: 0.8;">${
+            item.category || ""
+          }</span>
         </div>
         <span>${item.price} kr</span>
       </div>`;
-        })
-        .join("") +
-      `<div style='text-align:right;font-weight:bold;margin-top:1rem;'>Total: ${total} kr</div>`;
-  }
-  window.renderCheckoutCart = renderCheckoutCart;
-  renderCheckoutCart();
+    })
+    .join("");
 
-  // --- Checkout form logic ---
-  const form = document.getElementById("checkout-form");
-  const submitBtn = document.getElementById("submit-btn");
-  const resetBtn = document.getElementById("reset-btn");
-  const paymentRadios = document.getElementsByName("payment");
-  const cardFields = document.getElementById("card-fields");
-  const invoiceFields = document.getElementById("invoice-fields");
-  const ssnInput = document.getElementById("ssn");
-  const gdprCheckbox = document.getElementById("gdpr");
+  // Inject items and final total
+  container.innerHTML =
+    cartHtml +
+    `
+    <div style="text-align:right; font-weight:bold; margin-top:1rem; font-size:1.1rem;">
+      Total: ${total} kr
+    </div>`;
+}
 
-  // Helper: Show error
-  function showError(id, message) {
-    const el = document.getElementById("error-" + id);
-    if (el) {
-      el.textContent = message;
-      el.style.display = message ? "block" : "none";
-    }
-    const input = document.getElementById(id);
-    if (input) {
-      input.setAttribute("aria-invalid", message ? "true" : "false");
-      input.style.borderColor = message ? "#c00" : "";
-    }
-  }
-
-  // Helper: Validate Swedish SSN
-  function validateSwedishSSN(ssn) {
-    // Accepts 12 or 10 digits, with or without dash
-    const cleaned = ssn.replace(/[^0-9]/g, "");
-    if (!/^\d{10,12}$/.test(cleaned)) return false;
-    let sum = 0,
-      alt = false;
-    for (let i = cleaned.length - 2; i >= 0; i--) {
-      let n = parseInt(cleaned[i], 10);
-      if (alt) {
-        n *= 2;
-        if (n > 9) n -= 9;
-      }
-      sum += n;
-      alt = !alt;
-    }
-    return sum % 10 === parseInt(cleaned[cleaned.length - 1], 10);
-  }
-
-  // Payment method toggle
-  function updatePaymentFields() {
-    const payment = Array.from(paymentRadios).find((r) => r.checked)?.value;
-    if (payment === "invoice") {
-      invoiceFields.style.display = "block";
-      cardFields.style.display = "none";
-      ssnInput.setAttribute("required", "required");
-    } else {
-      invoiceFields.style.display = "none";
-      cardFields.style.display = "block";
-      ssnInput.removeAttribute("required");
-      showError("ssn", "");
-    }
-  }
-  paymentRadios.forEach((r) =>
-    r.addEventListener("change", updatePaymentFields)
-  );
-  updatePaymentFields();
-
-  // Validation
-  function validateForm() {
-    let valid = true;
-    // Required text fields
-    [
-      "firstName",
-      "lastName",
-      "address",
-      "zip",
-      "city",
-      "phone",
-      "email",
-    ].forEach((id) => {
-      const input = document.getElementById(id);
-      if (!input.value.trim()) {
-        showError(id, "Required field");
-        valid = false;
-      } else {
-        showError(id, "");
-      }
-    });
-    // Zip
-    const zip = document.getElementById("zip").value.trim();
-    if (zip && !/^\d{5}$/.test(zip)) {
-      showError("zip", "Enter five digits");
-      valid = false;
-    }
-    // Phone
-    const phone = document.getElementById("phone").value.trim();
-    if (phone && !/^\+?\d{7,15}$/.test(phone)) {
-      showError("phone", "Enter a valid mobile number");
-      valid = false;
-    }
-    // Email
-    const email = document.getElementById("email").value.trim();
-    if (email && !/^\S+@\S+\.\S+$/.test(email)) {
-      showError("email", "Enter a valid email address");
-      valid = false;
-    }
-    // GDPR
-    if (!gdprCheckbox.checked) {
-      showError("gdpr", "You must agree to the processing of personal data");
-      valid = false;
-    } else {
-      showError("gdpr", "");
-    }
-    // Payment
-    const payment = Array.from(paymentRadios).find((r) => r.checked)?.value;
-    if (payment === "invoice") {
-      const ssn = ssnInput.value.trim();
-      if (!ssn) {
-        showError("ssn", "Required field");
-        valid = false;
-      } else if (!validateSwedishSSN(ssn)) {
-        showError("ssn", "Invalid personal identity number");
-        valid = false;
-      } else {
-        showError("ssn", "");
-      }
-    }
-    // Enable/disable submit
-    submitBtn.disabled = !valid;
-    return valid;
-  }
-
-  form.addEventListener("input", validateForm);
-  form.addEventListener("change", validateForm);
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    if (validateForm()) {
-      alert("Thank you for your order!");
-      form.reset();
-      updatePaymentFields();
-      validateForm();
-      // Clear cart from localStorage
-      localStorage.removeItem("cart");
-      // Also update cart display if present
-      if (typeof window.renderCheckoutCart === "function")
-        window.renderCheckoutCart();
-    }
-  });
-  resetBtn.addEventListener("click", function () {
-    setTimeout(() => {
-      // Reset errors and payment fields
-      document
-        .querySelectorAll(".error-message")
-        .forEach((e) => (e.textContent = ""));
-      updatePaymentFields();
-      validateForm();
-      // Clear cart from localStorage
-      localStorage.removeItem("cart");
-      if (typeof window.renderCheckoutCart === "function")
-        window.renderCheckoutCart();
-    }, 0);
-  });
-});
+// --- 2. FORM & VALIDATION LOGIC ---
 const form = document.getElementById("checkout-form");
 const submitBtn = document.getElementById("submit-btn");
 const resetBtn = document.getElementById("reset-btn");
@@ -237,142 +59,92 @@ const invoiceFields = document.getElementById("invoice-fields");
 const ssnInput = document.getElementById("ssn");
 const gdprCheckbox = document.getElementById("gdpr");
 
-// Helper: Show error
-function showError(id, message) {
-  const el = document.getElementById("error-" + id);
-  if (el) {
-    el.textContent = message;
-    el.style.display = message ? "block" : "none";
-  }
-  const input = document.getElementById(id);
-  if (input) {
-    input.setAttribute("aria-invalid", message ? "true" : "false");
-    input.style.borderColor = message ? "#c00" : "";
-  }
-}
-
-// Helper: Validate Swedish SSN
-function validateSwedishSSN(ssn) {
-  // Accepts 12 or 10 digits, with or without dash
-  const cleaned = ssn.replace(/[^0-9]/g, "");
-  if (!/^\d{10,12}$/.test(cleaned)) return false;
-  let sum = 0,
-    alt = false;
-  for (let i = cleaned.length - 2; i >= 0; i--) {
-    let n = parseInt(cleaned[i], 10);
-    if (alt) {
-      n *= 2;
-      if (n > 9) n -= 9;
-    }
-    sum += n;
-    alt = !alt;
-  }
-  return sum % 10 === parseInt(cleaned[cleaned.length - 1], 10);
-}
-
-// Payment method toggle
+// Toggle fields based on payment choice
 function updatePaymentFields() {
   const payment = Array.from(paymentRadios).find((r) => r.checked)?.value;
   if (payment === "invoice") {
     invoiceFields.style.display = "block";
     cardFields.style.display = "none";
-    ssnInput.setAttribute("required", "required");
   } else {
     invoiceFields.style.display = "none";
     cardFields.style.display = "block";
-    ssnInput.removeAttribute("required");
-    showError("ssn", "");
   }
+  validateForm();
 }
-paymentRadios.forEach((r) => r.addEventListener("change", updatePaymentFields));
-updatePaymentFields();
 
-// Validation
+// Validate all inputs
 function validateForm() {
-  let valid = true;
-  // Required text fields
-  ["firstName", "lastName", "address", "zip", "city", "phone", "email"].forEach(
-    (id) => {
-      const input = document.getElementById(id);
-      if (!input.value.trim()) {
-        showError(id, "Required field");
-        valid = false;
-      } else {
-        showError(id, "");
-      }
-    }
-  );
-  // Zip
-  const zip = document.getElementById("zip").value.trim();
-  if (zip && !/^\d{5}$/.test(zip)) {
-    showError("zip", "Enter five digits");
-    valid = false;
-  }
-  // Phone
-  const phone = document.getElementById("phone").value.trim();
-  if (phone && !/^\+?\d{7,15}$/.test(phone)) {
-    showError("phone", "Enter a valid mobile number");
-    valid = false;
-  }
-  // Email
-  const email = document.getElementById("email").value.trim();
-  if (email && !/^\S+@\S+\.\S+$/.test(email)) {
-    showError("email", "Enter a valid email address");
-    valid = false;
-  }
-  // GDPR
-  if (!gdprCheckbox.checked) {
-    showError("gdpr", "You must agree to the processing of personal data");
-    valid = false;
-  } else {
-    showError("gdpr", "");
-  }
-  // Payment
+  let isValid = true;
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  // Invalid if cart is empty
+  if (cart.length === 0) isValid = false;
+
+  // Check required fields
+  const requiredIds = [
+    "firstName",
+    "lastName",
+    "address",
+    "zip",
+    "city",
+    "phone",
+    "email",
+  ];
+  requiredIds.forEach((id) => {
+    const input = document.getElementById(id);
+    if (!input || !input.value.trim()) isValid = false;
+  });
+
+  // GDPR check
+  if (!gdprCheckbox.checked) isValid = false;
+
+  // SSN check for invoice
   const payment = Array.from(paymentRadios).find((r) => r.checked)?.value;
   if (payment === "invoice") {
-    const ssn = ssnInput.value.trim();
-    if (!ssn) {
-      showError("ssn", "Required field");
-      valid = false;
-    } else if (!validateSwedishSSN(ssn)) {
-      showError("ssn", "Invalid personal identity number");
-      valid = false;
-    } else {
-      showError("ssn", "");
-    }
+    const ssnValue = ssnInput.value.replace(/\D/g, "");
+    if (ssnValue.length < 10) isValid = false;
   }
-  // Enable/disable submit
-  submitBtn.disabled = !valid;
-  return valid;
+
+  submitBtn.disabled = !isValid;
+  return isValid;
 }
 
+// --- 3. INITIALIZATION ---
+renderCheckoutCart();
+updatePaymentFields();
+
+// --- 4. EVENT LISTENERS ---
+
+// Re-validate on any input
 form.addEventListener("input", validateForm);
-form.addEventListener("change", validateForm);
-form.addEventListener("submit", function (e) {
+
+// Payment method toggle
+paymentRadios.forEach((radio) => {
+  radio.addEventListener("change", updatePaymentFields);
+});
+
+// Submit order
+form.addEventListener("submit", (e) => {
   e.preventDefault();
   if (validateForm()) {
     alert("Thank you for your order!");
-    form.reset();
-    updatePaymentFields();
-    validateForm();
-    // Clear cart from localStorage
     localStorage.removeItem("cart");
-    // Also update cart display if present
-    if (typeof window.renderCheckoutCart === "function")
-      window.renderCheckoutCart();
+    window.location.href = "index.html";
   }
 });
-resetBtn.addEventListener("click", function () {
+
+// Clear Order (The Fix)
+resetBtn.addEventListener("click", () => {
+  // Timeout ensures the browser's native reset finishes first
   setTimeout(() => {
-    // Reset errors and payment fields
+    localStorage.removeItem("cart"); // Clear storage
+    renderCheckoutCart(); // Update UI
+    validateForm(); // Disable submit button
+
+    // Clear visual errors
     document
       .querySelectorAll(".error-message")
-      .forEach((e) => (e.textContent = ""));
-    updatePaymentFields();
-    validateForm();
-    // Clear cart from localStorage
-    localStorage.removeItem("cart");
-    if (typeof window.renderCheckoutCart === "function")
-      window.renderCheckoutCart();
+      .forEach((el) => (el.textContent = ""));
+    console.log("Order and cart cleared.");
   }, 0);
 });

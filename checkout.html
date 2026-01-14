@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout - Sushi Shop</title>
+    <link id="main-css" rel="stylesheet" href="css/checkout.css">
 </head>
 
 <body>
@@ -108,14 +109,13 @@
             </div>
             <div style="display:flex; gap:1rem; margin-top:2rem;">
                 <button type="submit" id="submit-btn" class="order-btn" disabled>Submit order</button>
-                <button type="reset" id="reset-btn" class="order-btn" style="background:#ccc;color:#222;">Clear
-                    order</button>
+                <button type="reset" id="reset-btn" class="order-btn">Clear order</button>
             </div>
         </form>
         <a href="index.html" class="order-btn back-to-store">Back to store</a>
     </main>
-    <script src="src/checkout.js"></script>
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="src/theme.js"></script>
+    <script type="module" src="src/checkout.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,52 @@
+/**
+ * theme.js - Shared theme logic for all pages
+ */
+
+export function initTheme() {
+  const themeToggle = document.getElementById("theme-toggle");
+  if (!themeToggle) return;
+
+  // 1. Determine initial theme: Check localStorage, otherwise default to "dark"
+  let currentTheme = localStorage.getItem("theme") || "dark";
+
+  // 2. Apply the initial theme immediately on load
+  applyTheme(currentTheme);
+  updateToggleButton(themeToggle, currentTheme);
+
+  // 3. Listen for clicks to switch themes
+  themeToggle.addEventListener("click", () => {
+    // If the document currently has "dark-mode", switch to "light", otherwise "dark"
+    currentTheme = document.documentElement.classList.contains("dark-mode")
+      ? "light"
+      : "dark";
+
+    applyTheme(currentTheme);
+    localStorage.setItem("theme", currentTheme);
+    updateToggleButton(themeToggle, currentTheme);
+  });
+}
+
+/**
+ * Adds or removes the CSS class based on the selected theme
+ */
+function applyTheme(theme) {
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark-mode");
+  } else {
+    document.documentElement.classList.remove("dark-mode");
+  }
+}
+
+/**
+ * Updates the button icon to show what the user can switch TO
+ */
+function updateToggleButton(btn, theme) {
+  // If current theme is dark, show the Light Mode icon (sun) to allow switching
+  btn.innerHTML =
+    theme === "dark"
+      ? '<img src="img/light_mode.svg" alt="Light mode" width="24" height="24" style="vertical-align:middle;">'
+      : '<img src="img/dark_mode.svg" alt="Dark mode" width="24" height="24" style="vertical-align:middle;">';
+}
+
+// Initialize when the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", initTheme);

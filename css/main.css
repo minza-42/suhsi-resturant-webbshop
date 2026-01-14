@@ -1,34 +1,50 @@
-/* importing other CSS files for modularity */
-@import "base.css";
+/* --- Main.css --- */
+
+/* Importing other CSS files for modularity */
 @import "layout.css";
 @import "components.css";
 @import "forms.css";
 @import "cart.css";
-@import "checkout.css";
 
-/* Main.css */
-.cart-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+/* Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Potta+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Zen+Antique&display=swap");
+
+/* --- Root Variables --- */
+/* DEFAULT: Dark Theme colors */
+:root {
+  --primary-color: #d35400;
+  --secondary-color: #121212;
+  --bg-color: #2b2626;
+  --card-bg: #1e1e1e;
+  --text-main: #f1f1f1;
+  --text-light: #d35400;
+  --radius: 12px;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-.cart-item-img {
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  background: #fff;
+/* LIGHT THEME: Triggered when .dark-mode class is REMOVED from <html> */
+html:not(.dark-mode) {
+  --bg-color: #faf9f6;
+  --text-main: #d35400;
+  --card-bg: #ebeae7;
+  --secondary-color: #121212;
+  --text-light: #d35400;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Global Styles --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
   font-family: "Zen Antique", serif;
   background-color: var(--bg-color);
-  color: #faf9f6;
-  line-height: 1.6;
-  transition: background-color 0.3s, color 0.3s;
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body h1 {
@@ -39,76 +55,14 @@ body h1 {
   text-align: center;
 }
 
-#backToTop {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 99;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: none;
-}
-
-.cart-overlay.active {
-  display: block;
-}
-
-.cart-drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 100%;
-  max-width: 400px;
-  height: 100vh;
-  background: var(--card-bg);
-  z-index: 2001;
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 0.3s ease-in-out;
-}
-
-.cart-drawer.active {
-  transform: translateX(0);
-}
-
-.cart-drawer .cart-header {
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.cart-drawer .cart-header #close-cart {
-  background: none;
-  border: none;
-  color: var(--text-main);
-  font-size: 2rem;
-  cursor: pointer;
-}
-
-.cart-drawer #cart-items-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.cart-drawer .cart-footer {
-  padding: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* --- Footer --- */
+/* --- Footer Section --- */
 footer {
   text-align: center;
-  padding: 20px;
+  padding: 40px 20px;
   background: var(--secondary-color);
   color: var(--text-light);
-  margin-top: 1rem;
+  margin-top: 3rem;
+  border-top: 1px solid var(--primary-color);
 }
 
 .footer-content {
@@ -116,43 +70,32 @@ footer {
   grid-template-columns: 1fr 1fr 1fr;
   max-width: 1200px;
   margin: 0 auto;
-  gap: 20px;
+  gap: 30px;
 }
 
 .footer-content h3 {
   color: #d35400;
+  margin-bottom: 10px;
 }
 
 .footer-content p {
   color: #faf9f6;
+  margin-top: 5px;
 }
 
 .footer-left {
   text-align: left;
 }
-.footer-left p {
-  margin-top: 5px;
-}
 
 .footer-center {
   text-align: center;
-}
-.footer-center p {
-  margin-top: 5px;
 }
 
 .footer-right {
   text-align: right;
 }
-.footer-right p {
-  margin-top: 5px;
-}
 
-.footer-left img:hover {
-  transform: scale(1.2); /* Zooma in */
-  opacity: 0.7;
-}
-
+/* Social Media Icons */
 .footer-left img {
   width: 30px;
   height: 30px;
@@ -162,17 +105,32 @@ footer {
   margin-top: 10px;
 }
 
-/* Animation rotation */
+/* Icon Hover Effects */
 .footer-left img:hover {
-  transform: rotate(10deg);
+  transform: rotate(10deg) scale(1.2);
+  opacity: 0.7;
 }
 
+/* Footer Mail Link Styles */
+.footer-mail-link {
+  color: #faf9f6;
+  text-decoration: underline;
+}
+
+.footer-mail-link:hover {
+  color: #d35400;
+  text-decoration: underline;
+}
+
+/* --- Responsive Design --- */
 @media (max-width: 768px) {
   .footer-content {
     grid-template-columns: 1fr;
+    gap: 40px;
   }
 
   .footer-left,
+  .footer-center,
   .footer-right {
     text-align: center;
   }
