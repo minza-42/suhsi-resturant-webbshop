@@ -1,24 +1,24 @@
-/* --- Main.css --- */
+/* --- main.css --- */
 
-/* Importing other CSS files for modularity */
+/* 1. Global Imports - Only here! */
+@import url("https://fonts.googleapis.com/css2?family=Potta+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Zen+Antique&display=swap");
+
+/* 2. Modular Imports */
 @import "layout.css";
 @import "components.css";
 @import "forms.css";
 @import "cart.css";
 
-/* Google Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Potta+One&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Zen+Antique&display=swap");
-
-/* --- Root Variables --- */
-/* DEFAULT: Dark Theme colors */
+/* 3. Global Variables (Dark theme is default) */
 :root {
   --primary-color: #d35400;
   --secondary-color: #121212;
   --bg-color: #2b2626;
   --card-bg: #1e1e1e;
-  --text-main: #f1f1f1;
+  --text-main: #f4f9f6;
   --text-light: #d35400;
+  --border-color: #444;
   --radius: 12px;
   --shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
@@ -40,11 +40,12 @@ html:not(.dark-mode) {
   padding: 0;
 }
 
+/* Base Body Styles */
 body {
   font-family: "Zen Antique", serif;
   background-color: var(--bg-color);
   color: var(--text-main);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  line-height: 1.6;
 }
 
 body h1 {

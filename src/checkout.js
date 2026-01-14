@@ -1,8 +1,3 @@
-/* src/checkout.js */
-
-// Run when the module loads
-// No DOMContentLoaded wrapper needed for type="module"
-
 // --- 1. CART RENDERING LOGIC ---
 function renderCheckoutCart() {
   // Retrieve cart from localStorage
@@ -15,7 +10,7 @@ function renderCheckoutCart() {
   // Display message if cart is empty
   if (cart.length === 0) {
     container.innerHTML = "<p>Your cart is empty.</p>";
-    if (submitBtn) submitBtn.disabled = true;
+    if (submitBtn) submitBtn.style.opacity = "0.5";
     return;
   }
 
@@ -43,8 +38,7 @@ function renderCheckoutCart() {
   // Inject items and final total
   container.innerHTML =
     cartHtml +
-    `
-    <div style="text-align:right; font-weight:bold; margin-top:1rem; font-size:1.1rem;">
+    `<div style="text-align:right; font-weight:bold; margin-top:1rem; font-size:1.1rem;">
       Total: ${total} kr
     </div>`;
 }
@@ -65,48 +59,53 @@ function updatePaymentFields() {
   if (payment === "invoice") {
     invoiceFields.style.display = "block";
     cardFields.style.display = "none";
+    ssnInput.required = true; // SSN is required for invoice
   } else {
     invoiceFields.style.display = "none";
     cardFields.style.display = "block";
+    ssnInput.required = false;
   }
-  validateForm();
 }
 
-// Validate all inputs
-function validateForm() {
-  let isValid = true;
-  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-  // Invalid if cart is empty
-  if (cart.length === 0) isValid = false;
-
-  // Check required fields
-  const requiredIds = [
+/**
+ * Updates the custom error messages below each input field
+ * Uses English text regardless of browser language
+ */
+function updateErrorMessages() {
+  const inputs = [
     "firstName",
     "lastName",
+    "email",
     "address",
     "zip",
     "city",
     "phone",
-    "email",
+    "gdpr",
+    "ssn",
   ];
-  requiredIds.forEach((id) => {
+
+  inputs.forEach((id) => {
     const input = document.getElementById(id);
-    if (!input || !input.value.trim()) isValid = false;
+    const errorSpan = document.getElementById(`error-${id}`);
+
+    if (input && errorSpan) {
+      if (!input.checkValidity()) {
+        // Validation logic for different error types
+        if (input.validity.valueMissing) {
+          errorSpan.textContent = "This field is required.";
+        } else if (input.validity.typeMismatch) {
+          errorSpan.textContent =
+            "Please enter a valid email address (e.g., name@example.com).";
+        } else if (input.validity.patternMismatch) {
+          // Uses the 'title' attribute from HTML as the error message
+          errorSpan.textContent = input.title || "Invalid format.";
+        }
+      } else {
+        // Clear message if field is valid
+        errorSpan.textContent = "";
+      }
+    }
   });
-
-  // GDPR check
-  if (!gdprCheckbox.checked) isValid = false;
-
-  // SSN check for invoice
-  const payment = Array.from(paymentRadios).find((r) => r.checked)?.value;
-  if (payment === "invoice") {
-    const ssnValue = ssnInput.value.replace(/\D/g, "");
-    if (ssnValue.length < 10) isValid = false;
-  }
-
-  submitBtn.disabled = !isValid;
-  return isValid;
 }
 
 // --- 3. INITIALIZATION ---
@@ -115,36 +114,47 @@ updatePaymentFields();
 
 // --- 4. EVENT LISTENERS ---
 
-// Re-validate on any input
-form.addEventListener("input", validateForm);
-
 // Payment method toggle
 paymentRadios.forEach((radio) => {
   radio.addEventListener("change", updatePaymentFields);
 });
 
-// Submit order
+// Update error messages in real-time as user types
+form.addEventListener("input", updateErrorMessages);
+
+// Handle form submission
 form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (validateForm()) {
-    alert("Thank you for your order!");
-    localStorage.removeItem("cart");
-    window.location.href = "index.html";
+  // Check if browser validation (like @ in email) passes
+  if (!form.checkValidity()) {
+    e.preventDefault(); // Stop submission
+    updateErrorMessages(); // Show our English error texts
+    return;
   }
+
+  // Check if cart is empty
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  if (cart.length === 0) {
+    e.preventDefault();
+    alert("Your cart is empty. Please add products before checking out.");
+    return;
+  }
+
+  // Successful order
+  e.preventDefault();
+  alert("Thank you for your order! Your sushi is on its way.");
+  localStorage.removeItem("cart");
+  window.location.href = "index.html";
 });
 
-// Clear Order (The Fix)
+// Clear Order Button
 resetBtn.addEventListener("click", () => {
   // Timeout ensures the browser's native reset finishes first
   setTimeout(() => {
-    localStorage.removeItem("cart"); // Clear storage
-    renderCheckoutCart(); // Update UI
-    validateForm(); // Disable submit button
-
-    // Clear visual errors
+    localStorage.removeItem("cart");
+    renderCheckoutCart();
+    // Clear all visual error messages
     document
       .querySelectorAll(".error-message")
       .forEach((el) => (el.textContent = ""));
-    console.log("Order and cart cleared.");
   }, 0);
 });

@@ -1,6 +1,6 @@
 /* --- Shopping Cart --- */
 .cart-item {
-  display: flex; /* Citering: Baserat på struktur för cart-item i källan */
+  display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
@@ -23,7 +23,6 @@
   position: fixed;
   top: 0;
   right: 0;
-  /* Responsiv bredd: 100% på små mobiler, max 400px på datorer */
   width: 100%;
   max-width: 400px;
   height: 100vh;
@@ -79,7 +78,7 @@
   box-shadow: var(--shadow);
   overflow: hidden;
   transition: transform 0.2s ease;
-  height: 100%; /* Säkerställer att alla kort är lika höga i ett grid */
+  height: 100%;
 }
 
 .product-card:hover {
@@ -107,7 +106,7 @@
 
 .product-card .product-info h3 {
   margin-bottom: 5px;
-  font-size: 1.2rem; /* Justerad för bättre läsbarhet */
+  font-size: 1.2rem;
 }
 
 .product-card .product-info .category-tag {
@@ -136,7 +135,6 @@
   color: white;
   border: none;
   border-radius: 8px;
-  font-weight: bold;
   cursor: pointer;
   transition: filter 0.2s, transform 0.1s;
 }
@@ -146,7 +144,7 @@
 }
 
 .order-btn:active {
-  transform: scale(0.98); /* En liten "tryck"-effekt för mobilen */
+  transform: scale(0.98);
 }
 
 .order-btn:focus {
@@ -158,10 +156,10 @@
   display: none;
 }
 
-/* --- Responsiv Justering för små skärmar --- */
+/* --- Responsiv  --- */
 @media (max-width: 480px) {
   .product-card {
-    padding: 10px; /* Sparar plats på små skärmar */
+    padding: 10px;
   }
 
   .product-card .product-info h3 {

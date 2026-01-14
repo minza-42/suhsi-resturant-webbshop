@@ -149,7 +149,7 @@ input:focus {
   flex: 1;
   text-align: center;
   text-decoration: none;
-  display: inline-block; /* Ensures padding and width apply correctly */
+  display: inline-block;
 }
 
 #submit-btn {
@@ -172,18 +172,18 @@ input:focus {
 .back-to-store {
   display: block;
   margin-top: 2rem;
-  background-color: #000000; /* Pure black background */
-  color: var(--primary-color); /* Orange text */
-  border: 2px solid var(--primary-color); /* Orange border */
-  transition: all 0.3s ease;
+  background-color: #1e1e1e;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 12px;
+  border-radius: var(--radius);
+  transition: all 0.3s ease-in-out; /* Smooth transition for hover */
 }
 
-.back-to-store:hover {
-  background-color: var(--primary-color); /* Flips to orange on hover */
-  color: #000000; /* Flips to black text on hover */
-  transform: translateY(-2px);
-}
-
+/* --- The Hover State --- */
 /* Adjustment for Light Mode - so it doesn't stay black in light mode */
 :root:not(.dark-mode) .back-to-store {
   background-color: #ffffff;
@@ -198,6 +198,32 @@ input:focus {
   margin-top: 0.3rem;
   font-weight: 500;
   min-height: 1.2rem;
+}
+
+/* Specific override for the Back to Store link */
+.order-btn.back-to-store {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 2rem;
+  background-color: #1e1e1e;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+
+.order-btn.back-to-store:hover {
+  background-color: #ff8000;
+  color: #fff;
+  box-shadow: 0 0 18px 4px rgba(255, 128, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-weight: 900;
+  font-size: 1.1em;
+  letter-spacing: 1px;
+  transform: translateY(-2px) scale(1.03);
+}
+
+:root:not(.dark-mode) .order-btn.back-to-store:hover {
+  background-color: var(--primary-color);
+  color: #faf9f6;
 }
 
 /* Responsive adjustments */
