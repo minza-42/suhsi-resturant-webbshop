@@ -40,6 +40,11 @@ body {
   --border-color: #ccc;
 }
 
+/* Dark mode: make background a lighter black */
+.dark-mode {
+  --bg-color: #23272b;
+}
+
 /* Header & Navigation */
 header {
   padding: 20px;
