@@ -83,21 +83,17 @@ header h1 {
 /* Shop Layout */
 .shop-container {
   display: grid;
-  grid-template-columns: 240px 600px 240px;
-  justify-content: center;
+  grid-template-columns: 260px 1fr;
   gap: 30px;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 2rem auto;
   padding: 0 20px;
+  align-items: start;
 }
 
 #products {
-  flex: 1 1 700px;
-  max-width: 900px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
+  max-width: none;
 }
 
 #products h2 {
@@ -109,9 +105,9 @@ header h1 {
   margin-bottom: 1rem;
 }
 
-#product-grid {
+.product-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
   width: 100%;
 }
@@ -175,9 +171,7 @@ header h1 {
 /* --- Tablets and Small Desktops (max 1100px) --- */
 @media (max-width: 1100px) {
   .shop-container {
-    /* Switch to a two-column layout: Sidebar and Products */
-    grid-template-columns: 240px 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -188,11 +182,7 @@ header h1 {
   }
 
   .shop-container {
-    grid-template-columns: 1fr; /* Stack everything in one column */
-    margin-top: 20px !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* This centers the entire shop content */
+    grid-template-columns: 1fr;
   }
 
   #controls {

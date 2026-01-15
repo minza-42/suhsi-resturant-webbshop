@@ -67,18 +67,20 @@
 }
 
 /* --- Product Cards --- */
+#product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
 .product-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 15px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 15px;
-  background: var(--card-bg);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  transition: transform 0.2s ease;
-  height: 100%;
+  transition: transform 0.3s ease;
+  border: 1px solid var(--border-color);
 }
 
 .product-card:hover {
