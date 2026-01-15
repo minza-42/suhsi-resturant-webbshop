@@ -1,5 +1,6 @@
 /* src/main.js */
 
+import { renderCheckoutCart, initCheckoutOverlay } from "./checkout.js";
 // --- PRODUCT DATA ---
 const products = [
   {
@@ -281,13 +282,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Show checkout overlay instead of redirect
   checkoutBtn?.addEventListener("click", () => {
     if (cart.length > 0) {
-      window.location.href = "checkout.html";
+      const overlay = document.getElementById("checkout-overlay");
+      if (overlay) {
+        overlay.style.display = "flex";
+        // (Re-)initialize checkout overlay logic and cart
+        initCheckoutOverlay();
+      }
     } else {
       alert("Your cart is empty!");
     }
   });
+
+  // Close checkout overlay
+  const closeCheckoutBtn = document.getElementById("close-checkout");
+  if (closeCheckoutBtn) {
+    closeCheckoutBtn.addEventListener("click", () => {
+      const overlay = document.getElementById("checkout-overlay");
+      if (overlay) overlay.style.display = "none";
+    });
+  }
 
   window.addEventListener("scroll", () => {
     if (backToTopBtn) {

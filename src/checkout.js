@@ -1,5 +1,5 @@
 // --- 1. CART RENDERING LOGIC ---
-function renderCheckoutCart() {
+export function renderCheckoutCart() {
   // Retrieve cart from localStorage
   const cart = JSON.parse(localStorage.getItem("cart") || "[]");
   const container = document.getElementById("checkout-cart-items");
@@ -44,17 +44,18 @@ function renderCheckoutCart() {
 }
 
 // --- 2. FORM & VALIDATION LOGIC ---
-const form = document.getElementById("checkout-form");
-const submitBtn = document.getElementById("submit-btn");
-const resetBtn = document.getElementById("reset-btn");
-const paymentRadios = document.getElementsByName("payment");
-const cardFields = document.getElementById("card-fields");
-const invoiceFields = document.getElementById("invoice-fields");
-const ssnInput = document.getElementById("ssn");
-const gdprCheckbox = document.getElementById("gdpr");
+let form,
+  submitBtn,
+  resetBtn,
+  paymentRadios,
+  cardFields,
+  invoiceFields,
+  ssnInput,
+  gdprCheckbox;
 
 // Toggle fields based on payment choice
 function updatePaymentFields() {
+  if (!paymentRadios || !invoiceFields || !cardFields || !ssnInput) return;
   const payment = Array.from(paymentRadios).find((r) => r.checked)?.value;
   if (payment === "invoice") {
     invoiceFields.style.display = "block";
@@ -109,52 +110,56 @@ function updateErrorMessages() {
 }
 
 // --- 3. INITIALIZATION ---
-renderCheckoutCart();
-updatePaymentFields();
+export function initCheckoutOverlay() {
+  form = document.getElementById("checkout-form");
+  submitBtn = document.getElementById("submit-btn");
+  resetBtn = document.getElementById("reset-btn");
+  paymentRadios = document.getElementsByName("payment");
+  cardFields = document.getElementById("card-fields");
+  invoiceFields = document.getElementById("invoice-fields");
+  ssnInput = document.getElementById("ssn");
+  gdprCheckbox = document.getElementById("gdpr");
 
-// --- 4. EVENT LISTENERS ---
+  renderCheckoutCart();
+  updatePaymentFields();
 
-// Payment method toggle
-paymentRadios.forEach((radio) => {
-  radio.addEventListener("change", updatePaymentFields);
-});
+  // Payment method toggle
+  paymentRadios.forEach((radio) => {
+    radio.addEventListener("change", updatePaymentFields);
+  });
 
-// Update error messages in real-time as user types
-form.addEventListener("input", updateErrorMessages);
+  // Update error messages in real-time as user types
+  form.addEventListener("input", updateErrorMessages);
 
-// Handle form submission
-form.addEventListener("submit", (e) => {
-  // Check if browser validation (like @ in email) passes
-  if (!form.checkValidity()) {
-    e.preventDefault(); // Stop submission
-    updateErrorMessages(); // Show our English error texts
-    return;
-  }
-
-  // Check if cart is empty
-  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-  if (cart.length === 0) {
+  // Handle form submission
+  form.addEventListener("submit", (e) => {
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      updateErrorMessages();
+      return;
+    }
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (cart.length === 0) {
+      e.preventDefault();
+      alert("Your cart is empty. Please add products before checking out.");
+      return;
+    }
     e.preventDefault();
-    alert("Your cart is empty. Please add products before checking out.");
-    return;
-  }
-
-  // Successful order
-  e.preventDefault();
-  alert("Thank you for your order! Your sushi is on its way.");
-  localStorage.removeItem("cart");
-  window.location.href = "index.html";
-});
-
-// Clear Order Button
-resetBtn.addEventListener("click", () => {
-  // Timeout ensures the browser's native reset finishes first
-  setTimeout(() => {
+    alert("Thank you for your order! Your sushi is on its way.");
     localStorage.removeItem("cart");
     renderCheckoutCart();
-    // Clear all visual error messages
-    document
-      .querySelectorAll(".error-message")
-      .forEach((el) => (el.textContent = ""));
-  }, 0);
-});
+    // Optionally close overlay here
+    document.getElementById("checkout-overlay").style.display = "none";
+  });
+
+  // Clear Order Button
+  resetBtn.addEventListener("click", () => {
+    setTimeout(() => {
+      localStorage.removeItem("cart");
+      renderCheckoutCart();
+      document
+        .querySelectorAll(".error-message")
+        .forEach((el) => (el.textContent = ""));
+    }, 0);
+  });
+}
