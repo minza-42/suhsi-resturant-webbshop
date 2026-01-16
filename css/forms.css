@@ -29,7 +29,7 @@ select:focus {
 /* --- Validation Feedback --- */
 /* Highlight field in red if it is invalid and not empty */
 input:invalid:not(:placeholder-shown) {
-  border-color: #ff4d4d;
+  border-color: inherit;
 }
 
 /* Custom styling for English error messages */

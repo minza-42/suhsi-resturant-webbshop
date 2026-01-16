@@ -1,3 +1,9 @@
+/* Ensure payment method and invoice radio labels are normal case */
+#checkout-form label,
+#checkout-form label input[type="radio"],
+#checkout-form label input[type="radio"] + span {
+  text-transform: none;
+}
 /* Checkout.css - Styles specific to the checkout page */
 @import "components.css";
 
@@ -113,12 +119,24 @@ form#checkout-form {
 .form-group {
   display: flex;
   flex-direction: column;
+  background: transparent;
 }
 
 .form-group label {
   font-weight: 500;
   margin-bottom: 0.4rem;
   font-size: 0.9rem;
+}
+
+#checkout-form input[type="text"],
+#checkout-form input[type="email"],
+#checkout-form input[type="tel"],
+#checkout-form input[type="number"] {
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: var(--text-main);
+  box-shadow: none;
 }
 
 /* Input Fields */
@@ -142,21 +160,6 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(211, 84, 0, 0.2);
 }
 
-/* --- Buttons --- */
-.order-btn {
-  padding: 1rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
-  flex: 1;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-}
-
 #submit-btn {
   background-color: var(--primary-color);
   color: white;
@@ -169,7 +172,12 @@ input:focus {
 
 #reset-btn {
   background-color: #222;
-  color: #bbb;
+  color: #faf9f6;
+  border: 1px solid var(--border-color);
+}
+.dark-mode #reset-btn:hover {
+  background-color: #e67e22;
+  color: #faf9f6;
   border: 1px solid var(--border-color);
 }
 
@@ -181,8 +189,6 @@ input:focus {
   color: var(--primary-color);
   border: 2px solid var(--primary-color);
   text-align: center;
-  text-decoration: none;
-  font-weight: bold;
   padding: 12px;
   border-radius: var(--radius);
   transition: all 0.3s ease-in-out; /* Smooth transition for hover */
@@ -193,7 +199,7 @@ input:focus {
 :root:not(.dark-mode) .back-to-store {
   background-color: #ffffff;
   color: var(--primary-color);
-  border: 2px solid var(--primary-color);
+  border: 1px solid var(--primary-color);
 }
 
 /* --- Error Messaging --- */
@@ -210,20 +216,20 @@ input:focus {
   display: block;
   text-align: center;
   text-decoration: none;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   background-color: #1e1e1e;
   color: var(--primary-color);
   border: 2px solid var(--primary-color);
+  width: 100%;
 }
 
 .order-btn.back-to-store:hover {
   background-color: #ff8000;
   color: #fff;
-  box-shadow: 0 0 18px 4px rgba(255, 128, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
   font-weight: 900;
   font-size: 1.1em;
   letter-spacing: 1px;
-  transform: translateY(-2px) scale(1.03);
+  transform: translateY(-2px) scale(1.01);
 }
 
 :root:not(.dark-mode) .order-btn.back-to-store:hover {
@@ -231,18 +237,89 @@ input:focus {
   color: #faf9f6;
 }
 
-/* Responsive adjustments */
-@media (max-width: 600px) {
+/* --- Checkout Overlay Modal --- */
+.checkout-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 3000;
+
+  /* Central Positioning Logic */
+  display: none; /* Toggle to 'flex' via JS */
+  justify-content: center; /* Horizontal center */
+  align-items: center; /* Vertical center */
+
+  /* Scroll Handling */
+  overflow-y: auto; /* Allows scrolling if modal is taller than screen */
+  padding: 20px; /* Prevents modal from touching screen edges */
+}
+
+/* Use this class to show the modal via JavaScript */
+.checkout-overlay.active {
+  display: flex;
+}
+
+.checkout-overlay .checkout-modal {
+  background: var(--card-bg, #fff);
+  border-radius: var(--radius, 12px);
+  box-shadow: var(--shadow, 0 4px 10px rgba(0, 0, 0, 0.5));
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+
+  /* Reset margins - Flexbox handles the heavy lifting */
+  margin: auto;
+}
+
+/* --- Responsive Adjustments --- */
+
+/* Laptops and Tablets (Small Desktop/iPad) */
+@media (max-width: 1024px) {
+  .checkout-overlay .checkout-modal {
+    padding: 1.5rem 1rem;
+    max-width: 550px;
+  }
+}
+
+/* Tablets and Large Phones */
+@media (max-width: 768px) {
   main {
     padding: 1rem;
   }
 
   .form-row {
+    display: flex;
     flex-direction: column;
     gap: 1.2rem;
   }
 
   header h1 {
     font-size: 1.8rem;
+  }
+}
+
+/* Mobile Devices */
+@media (max-width: 480px) {
+  .checkout-overlay {
+    padding: 10px; /* Minimal edge spacing */
+    align-items: flex-start; /* Better for long forms on small screens */
+  }
+
+  .checkout-overlay .checkout-modal {
+    padding: 1.2rem 0.8rem;
+    border-radius: 8px; /* Slightly rounded or 0 for full-screen feel */
+    width: 100%;
+  }
+}
+
+/* Very Small Devices (e.g., iPhone SE) */
+@media (max-width: 375px) {
+  .checkout-overlay .checkout-modal {
+    padding: 1rem 0.5rem;
+    border-radius: 0; /* Full-width edges */
   }
 }

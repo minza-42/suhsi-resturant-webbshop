@@ -88,8 +88,6 @@
     <!-- Checkout Overlay (hidden by default) -->
     <div id="checkout-overlay" class="checkout-overlay" style="display:none;">
       <div class="checkout-modal">
-        <button id="close-checkout" aria-label="Close checkout" class="order-btn"
-          style="position:absolute;top:1rem;right:1rem;z-index:10;">×</button>
         <main style="max-width: 500px; margin: 0 auto;">
           <section id="checkout-cart" style="margin-bottom:2rem;">
             <h2>Your Cart</h2>
@@ -190,6 +188,8 @@
               <button type="reset" id="reset-btn" class="order-btn">Clear order</button>
             </div>
           </form>
+          <button id="close-checkout" aria-label="Back to store" class="order-btn back-to-store"
+            style="margin-top:2.5rem; width:100%;">Back to store</button>
         </main>
       </div>
     </div>

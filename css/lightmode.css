@@ -10,6 +10,12 @@
   --border-color: #ccc;
 }
 
+:root:not(.dark-mode) #reset-btn {
+  background-color: #f3e9e1;
+  color: #d35400;
+  border: 1px solid #d35400;
+}
+
 body {
   background-color: var(--bg-color);
   color: var(--text-main);
