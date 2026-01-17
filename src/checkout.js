@@ -28,14 +28,47 @@ export function renderCheckoutCart() {
     isWeekend = true;
   }
 
+  // --- Bulk Discount Logic ---
+  // 1. Calculate per-category quantities
+  const categoryTotals = {};
+  cart.forEach((item) => {
+    const cat = item.category || "Other";
+    categoryTotals[cat] = (categoryTotals[cat] || 0) + (item.quantity || 1);
+  });
+
+  // 2. Mark which categories get discount
+  const bulkDiscountCategories = Object.keys(categoryTotals).filter(
+    (cat) => categoryTotals[cat] >= 10,
+  );
+
+  // 3. Calculate total and discounts
   let total = 0;
-  // Map through cart items to create HTML, applying surcharge to each item if weekend
+  let bulkDiscounts = {};
+  cart.forEach((item) => {
+    const itemQuantity = item.quantity || 1;
+    const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
+    let itemTotal = itemPrice * itemQuantity;
+    // Apply 10% discount if this item's category qualifies
+    if (bulkDiscountCategories.includes(item.category)) {
+      const discount = Math.round(itemTotal * 0.1);
+      bulkDiscounts[item.category] =
+        (bulkDiscounts[item.category] || 0) + discount;
+      itemTotal -= discount;
+    }
+    total += itemTotal;
+  });
+
+  // 4. Render cart items (showing original price, but discount is shown below)
   const cartHtml = cart
     .map((item) => {
       const itemQuantity = item.quantity || 1;
-      // Apply 15% surcharge to each item's price if weekend
       const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
-      total += itemPrice * itemQuantity;
+      let itemTotal = itemPrice * itemQuantity;
+      let discount = 0;
+      if (bulkDiscountCategories.includes(item.category)) {
+        discount = Math.round(itemTotal * 0.1);
+        itemTotal -= discount;
+      }
       return `
     <div class="cart-item" style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem; border-bottom:1px solid #eee; padding-bottom:0.5rem;">
       <img src="${item.image}" alt="${item.name}" width="48" height="48" style="border-radius:8px; object-fit:cover;">
@@ -44,12 +77,10 @@ export function renderCheckoutCart() {
         <span style="font-size:0.85em; opacity: 0.8;">${item.category || ""}</span><br>
         <span style="font-size:0.95em; color:#888;">Quantity: ${itemQuantity}</span>
       </div>
-      <span>${itemPrice * itemQuantity} kr</span>
+      <span>${itemTotal} kr</span>
     </div>`;
     })
     .join("");
-
-  // (Surcharge is now applied per item above, nothing to do here)
 
   // --- Monday Discount Logic ---
   let discount = 0;
@@ -62,13 +93,22 @@ export function renderCheckoutCart() {
   // No separate surcharge row, just use the new total
   let finalTotal = discountedTotal; // discountedTotal is based on the new total above
 
+  // 5. Render discount rows for bulk discount
+  let bulkDiscountRows = "";
+  Object.entries(bulkDiscounts).forEach(([cat, amount]) => {
+    if (amount > 0) {
+      bulkDiscountRows += `<div class=\"checkout-discount-row\" style=\"color:#1abc9c;font-weight:bold;margin-top:0.5rem;text-align:right;\">10% bulk discount on ${cat}: -${amount} kr</div>`;
+    }
+  });
+
   // Inject items and final total
   container.innerHTML =
     cartHtml +
+    bulkDiscountRows +
     (discount > 0
-      ? `<div id="checkout-discount-row" style="color:#1abc9c;font-weight:bold;margin-top:1rem;text-align:right;">Monday morning discount: -${discount} kr</div>`
+      ? `<div id=\"checkout-discount-row\" style=\"color:#1abc9c;font-weight:bold;margin-top:1rem;text-align:right;\">Monday morning discount: -${discount} kr</div>`
       : "") +
-    `<div style="text-align:right; font-weight:bold; margin-top:0.5rem; font-size:1.1rem;">
+    `<div style=\"text-align:right; font-weight:bold; margin-top:0.5rem; font-size:1.1rem;\">
       Total: ${finalTotal} kr
     </div>`;
 }
@@ -83,9 +123,68 @@ let form,
   ssnInput,
   gdprCheckbox;
 
-// Toggle fields based on payment choice
+// Toggle fields based on payment choice and cart total
 function updatePaymentFields() {
   if (!paymentRadios || !invoiceFields || !cardFields || !ssnInput) return;
+  // Calculate cart total (with surcharge/discount)
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const now = new Date();
+  const hour = now.getHours();
+  const day = now.getDay();
+  let isWeekend = false;
+  if (
+    (day === 5 && hour >= 15) ||
+    day === 6 ||
+    day === 0 ||
+    (day === 1 && hour < 3)
+  ) {
+    isWeekend = true;
+  }
+  let total = 0;
+  cart.forEach((item) => {
+    const itemQuantity = item.quantity || 1;
+    const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
+    total += itemPrice * itemQuantity;
+  });
+  // Monday morning discount
+  if (now.getDay() === 1 && now.getHours() < 10) {
+    total = total - Math.round(total * 0.1);
+  }
+  // Disable invoice if total > 800 and show message
+  const invoiceRadio = Array.from(paymentRadios).find(
+    (r) => r.value === "invoice",
+  );
+  let invoiceMsg = document.getElementById("invoice-limit-msg");
+  if (invoiceRadio) {
+    if (total > 800) {
+      invoiceRadio.disabled = true;
+      // If invoice was selected, switch to card
+      if (invoiceRadio.checked) {
+        const cardRadio = Array.from(paymentRadios).find(
+          (r) => r.value === "card",
+        );
+        if (cardRadio) cardRadio.checked = true;
+      }
+      // Show message if not already present
+      if (!invoiceMsg) {
+        invoiceMsg = document.createElement("div");
+        invoiceMsg.id = "invoice-limit-msg";
+        invoiceMsg.style.color = "#e67e22";
+        invoiceMsg.style.fontSize = "0.95em";
+        invoiceMsg.style.marginTop = "0.3em";
+        invoiceMsg.textContent =
+          "Invoice payment is not available for orders above 800 kr.";
+        // Insert after the invoice radio label
+        const invoiceLabel = invoiceRadio.closest("label");
+        if (invoiceLabel && invoiceLabel.parentElement) {
+          invoiceLabel.parentElement.appendChild(invoiceMsg);
+        }
+      }
+    } else {
+      invoiceRadio.disabled = false;
+      if (invoiceMsg) invoiceMsg.remove();
+    }
+  }
   const payment = Array.from(paymentRadios).find((r) => r.checked)?.value;
   if (payment === "invoice") {
     invoiceFields.style.display = "block";
@@ -156,12 +255,24 @@ export function initCheckoutOverlay() {
   // Listen for cart clear event from main overlay
   window.addEventListener("cart:cleared", () => {
     renderCheckoutCart();
+    updatePaymentFields();
   });
 
   // Payment method toggle
   paymentRadios.forEach((radio) => {
     radio.addEventListener("change", updatePaymentFields);
   });
+
+  // Re-evaluate payment fields after cart is rendered (e.g. after quantity change)
+  // Listen for storage changes (if cart is updated in another tab)
+  window.addEventListener("storage", (e) => {
+    if (e.key === "cart") {
+      updatePaymentFields();
+    }
+  });
+
+  // Also update payment fields after rendering cart (in case total changed)
+  setTimeout(updatePaymentFields, 100);
 
   // Update error messages in real-time as user types
   form.addEventListener("input", updateErrorMessages);
