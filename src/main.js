@@ -129,6 +129,20 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 // --- PRODUCT RENDERING ---
 
 function createProductHTML({ id, name, price, rating, category, image }) {
+  // Weekend surcharge logic (same as in checkout)
+  const now = new Date();
+  const hour = now.getHours();
+  const day = now.getDay();
+  let isWeekend = false;
+  if (
+    (day === 5 && hour >= 15) || // Friday after 15:00
+    day === 6 || // Saturday
+    day === 0 || // Sunday
+    (day === 1 && hour < 3) // Monday before 03:00
+  ) {
+    isWeekend = true;
+  }
+  const displayPrice = isWeekend ? Math.round(price * 1.15) : price;
   return `
     <article class="product-card">
       <img src="${image}" alt="${name}" loading="lazy">
@@ -136,7 +150,7 @@ function createProductHTML({ id, name, price, rating, category, image }) {
         <h3>${name}</h3>
         <p class="category-tag">${category}</p>
         <p class="rating">Rating: ${rating} ⭐</p>
-        <p class="price"><strong>${price} kr</strong></p>
+        <p class="price"><strong>${displayPrice} kr</strong></p>
       </div>
       <button class="order-btn" data-id="${id}">Add to Cart</button>
     </article>
@@ -225,6 +239,20 @@ function updateCartUI() {
   container.innerHTML = "";
   let total = 0;
 
+  // Weekend surcharge logic (same as in product grid and checkout)
+  const now = new Date();
+  const hour = now.getHours();
+  const day = now.getDay();
+  let isWeekend = false;
+  if (
+    (day === 5 && hour >= 15) || // Friday after 15:00
+    day === 6 || // Saturday
+    day === 0 || // Sunday
+    (day === 1 && hour < 3) // Monday before 03:00
+  ) {
+    isWeekend = true;
+  }
+
   if (cart.length === 0) {
     container.innerHTML =
       "<p style='text-align:center; padding: 20px;'>Your cart is empty</p>";
@@ -238,7 +266,8 @@ function updateCartUI() {
 
   cart.forEach((item, index) => {
     const itemQuantity = item.quantity || 1;
-    total += item.price * itemQuantity;
+    const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
+    total += itemPrice * itemQuantity;
 
     const cartItem = document.createElement("div");
     cartItem.className = "cart-item";
@@ -246,7 +275,7 @@ function updateCartUI() {
       <img src="${item.image}" alt="${item.name}" class="cart-item-img">
       <div class="cart-item-info" style="flex:1;">
         <h4>${item.name}</h4>
-        <p>${item.price} kr</p>
+        <p>${itemPrice} kr</p>
         <div class="quantity-controls" style="display:flex; align-items:center; gap:10px; margin-top:5px;">
           <button class="qty-btn" onclick="changeQuantity(${index}, -1)">-</button>
           <span>${itemQuantity}</span>
@@ -261,8 +290,7 @@ function updateCartUI() {
   // --- Monday Discount Logic ---
   let discount = 0;
   let discountedTotal = total;
-  const now = new Date();
-  // Monday = 1 (getDay()), and before 10:00
+  // Use the 'now' variable already declared above
   if (now.getDay() === 1 && now.getHours() < 10) {
     discount = Math.round(total * 0.1);
     discountedTotal = total - discount;

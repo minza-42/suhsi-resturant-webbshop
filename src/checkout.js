@@ -14,12 +14,28 @@ export function renderCheckoutCart() {
     return;
   }
 
+  // --- Weekend Surcharge Logic (hidden from customer) ---
+  const now = new Date();
+  const hour = now.getHours();
+  const day = now.getDay();
+  let isWeekend = false;
+  if (
+    (day === 5 && hour >= 15) || // Friday after 15:00
+    day === 6 || // Saturday
+    day === 0 || // Sunday
+    (day === 1 && hour < 3) // Monday before 03:00
+  ) {
+    isWeekend = true;
+  }
+
   let total = 0;
-  // Map through cart items to create HTML
+  // Map through cart items to create HTML, applying surcharge to each item if weekend
   const cartHtml = cart
     .map((item) => {
       const itemQuantity = item.quantity || 1;
-      total += item.price * itemQuantity;
+      // Apply 15% surcharge to each item's price if weekend
+      const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
+      total += itemPrice * itemQuantity;
       return `
     <div class="cart-item" style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem; border-bottom:1px solid #eee; padding-bottom:0.5rem;">
       <img src="${item.image}" alt="${item.name}" width="48" height="48" style="border-radius:8px; object-fit:cover;">
@@ -28,19 +44,23 @@ export function renderCheckoutCart() {
         <span style="font-size:0.85em; opacity: 0.8;">${item.category || ""}</span><br>
         <span style="font-size:0.95em; color:#888;">Quantity: ${itemQuantity}</span>
       </div>
-      <span>${item.price * itemQuantity} kr</span>
+      <span>${itemPrice * itemQuantity} kr</span>
     </div>`;
     })
     .join("");
 
+  // (Surcharge is now applied per item above, nothing to do here)
+
   // --- Monday Discount Logic ---
   let discount = 0;
   let discountedTotal = total;
-  const now = new Date();
   if (now.getDay() === 1 && now.getHours() < 10) {
     discount = Math.round(total * 0.1);
     discountedTotal = total - discount;
   }
+
+  // No separate surcharge row, just use the new total
+  let finalTotal = discountedTotal; // discountedTotal is based on the new total above
 
   // Inject items and final total
   container.innerHTML =
@@ -49,7 +69,7 @@ export function renderCheckoutCart() {
       ? `<div id="checkout-discount-row" style="color:#1abc9c;font-weight:bold;margin-top:1rem;text-align:right;">Monday morning discount: -${discount} kr</div>`
       : "") +
     `<div style="text-align:right; font-weight:bold; margin-top:0.5rem; font-size:1.1rem;">
-      Total: ${discountedTotal} kr
+      Total: ${finalTotal} kr
     </div>`;
 }
 
