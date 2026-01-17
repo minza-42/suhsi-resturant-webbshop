@@ -1,16 +1,16 @@
 /* --- main.css --- */
 
-/* 1. Global Imports - Only here! */
+/* --- Global Imports - Only here! --- */
 @import url("https://fonts.googleapis.com/css2?family=Potta+One&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Zen+Antique&display=swap");
 
-/* 2. Modular Imports */
+/* --- Modular Imports --- */
 @import "layout.css";
 @import "components.css";
 @import "forms.css";
 @import "cart.css";
 
-/* 3. Global Variables (Dark theme is default) */
+/* --- Global Variables (Dark theme is default) --- */
 :root {
   --primary-color: #d35400;
   --secondary-color: #121212;
@@ -23,7 +23,7 @@
   --shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-/* LIGHT THEME: Triggered when .dark-mode class is REMOVED from <html> */
+/* --- LIGHT THEME: Triggered when .dark-mode class is REMOVED from <html> --- */
 html:not(.dark-mode) {
   --bg-color: #faf9f6;
   --text-main: #d35400;
@@ -103,23 +103,25 @@ footer {
   text-align: right;
 }
 
-/* Social Media Icons */
+/* --- Social Media Icons --- */
 .footer-left img {
   width: 30px;
   height: 30px;
   margin-right: 15px;
   cursor: pointer;
-  transition: transform 0.3s, opacity 0.3s;
+  transition:
+    transform 0.3s,
+    opacity 0.3s;
   margin-top: 10px;
 }
 
-/* Icon Hover Effects */
+/* --- Icon Hover Effects --- */
 .footer-left img:hover {
   transform: rotate(10deg) scale(1.2);
   opacity: 0.7;
 }
 
-/* Footer Mail Link Styles */
+/* --- Footer Mail Link Styles --- */
 .footer-mail-link {
   color: #faf9f6;
   text-decoration: underline;
