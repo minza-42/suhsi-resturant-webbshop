@@ -190,7 +190,7 @@ function toggleCart() {
   cartOverlay?.classList.toggle("active");
 }
 
-function addToCart(productId) {
+function addToCart(productId, buttonElement) {
   const product = products.find((p) => p.id === productId);
   if (!product) return;
 
@@ -202,7 +202,49 @@ function addToCart(productId) {
     cart.push({ ...product, quantity: 1 });
   }
 
+  // Visual feedback animation
+  if (buttonElement) {
+    createFlyToCartAnimation(buttonElement);
+  }
+
   saveAndUpdateCart();
+}
+
+function createFlyToCartAnimation(buttonElement) {
+  // Get button position
+  const buttonRect = buttonElement.getBoundingClientRect();
+  const cartIcon = document.getElementById("cart-indicator");
+  const cartRect = cartIcon.getBoundingClientRect();
+
+  // Create animated element
+  const flyingItem = document.createElement("div");
+  flyingItem.className = "flying-cart-item";
+  flyingItem.innerHTML = "🍣";
+  flyingItem.style.left = buttonRect.left + buttonRect.width / 2 + "px";
+  flyingItem.style.top = buttonRect.top + buttonRect.height / 2 + "px";
+
+  document.body.appendChild(flyingItem);
+
+  // Calculate trajectory
+  const deltaX = cartRect.left - buttonRect.left;
+  const deltaY = cartRect.top - buttonRect.top;
+
+  // Animate
+  setTimeout(() => {
+    flyingItem.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.3)`;
+    flyingItem.style.opacity = "0";
+  }, 10);
+
+  // Remove element after animation
+  setTimeout(() => {
+    flyingItem.remove();
+  }, 800);
+
+  // Button pulse effect
+  buttonElement.classList.add("btn-added");
+  setTimeout(() => {
+    buttonElement.classList.remove("btn-added");
+  }, 300);
 }
 
 // Globally accessible quantity changer
@@ -296,9 +338,26 @@ function updateCartUI() {
     discountedTotal = total - discount;
   }
 
-  // Update totals in UI
-  if (headerTotal) headerTotal.textContent = discountedTotal;
-  if (cartTotalPrice) cartTotalPrice.textContent = discountedTotal;
+  // Update totals in UI with visual feedback
+  if (headerTotal) {
+    const oldValue = headerTotal.textContent;
+    headerTotal.textContent = discountedTotal;
+
+    // Trigger animation if value changed
+    if (oldValue !== discountedTotal.toString()) {
+      headerTotal.parentElement.classList.add("cart-updated");
+      setTimeout(() => {
+        headerTotal.parentElement.classList.remove("cart-updated");
+      }, 600);
+    }
+  }
+  if (cartTotalPrice) {
+    cartTotalPrice.textContent = discountedTotal;
+    cartTotalPrice.classList.add("total-updated");
+    setTimeout(() => {
+      cartTotalPrice.classList.remove("total-updated");
+    }, 600);
+  }
 
   // Show discount row if discount is active
   let discountRow = document.getElementById("cart-discount-row");
@@ -335,7 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   productGrid?.addEventListener("click", (e) => {
     if (e.target.classList.contains("order-btn")) {
-      addToCart(e.target.getAttribute("data-id"));
+      addToCart(e.target.getAttribute("data-id"), e.target);
     }
   });
 

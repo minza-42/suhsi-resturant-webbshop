@@ -4,7 +4,6 @@ header {
   padding: 10px 20px;
   background: var(--header-bg, var(--secondary-color));
   color: var(--text-light);
-  margin-bottom: 2rem;
 }
 
 header nav {

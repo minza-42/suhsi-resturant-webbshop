@@ -63,6 +63,72 @@ body h1 {
   text-align: center;
 }
 
+/* --- Cart Update Animations --- */
+.cart-updated {
+  animation: cart-pulse 0.6s ease-in-out;
+}
+
+@keyframes cart-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+    color: #1abc9c;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.total-updated {
+  animation: total-highlight 2s ease-in-out;
+}
+
+@keyframes total-highlight {
+  0% {
+    transform: scale(1);
+    color: var(--text-main);
+  }
+  50% {
+    transform: scale(1.1);
+    color: #1abc9c;
+    text-shadow: 0 0 10px rgba(26, 188, 156, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    color: var(--text-main);
+  }
+}
+
+/* --- Flying Cart Item Animation --- */
+.flying-cart-item {
+  position: fixed;
+  font-size: 2rem;
+  pointer-events: none;
+  z-index: 9999;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-origin: center;
+}
+
+/* --- Button Added Feedback --- */
+.btn-added {
+  animation: button-success 0.3s ease;
+  background-color: #1abc9c !important;
+}
+
+@keyframes button-success {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* --- Footer Section --- */
 footer {
   text-align: center;

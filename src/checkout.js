@@ -126,6 +126,7 @@ let form,
 // Toggle fields based on payment choice and cart total
 function updatePaymentFields() {
   if (!paymentRadios || !invoiceFields || !cardFields || !ssnInput) return;
+
   // Calculate cart total (with surcharge/discount)
   const cart = JSON.parse(localStorage.getItem("cart") || "[]");
   const now = new Date();
@@ -150,6 +151,7 @@ function updatePaymentFields() {
   if (now.getDay() === 1 && now.getHours() < 10) {
     total = total - Math.round(total * 0.1);
   }
+
   // Disable invoice if total > 800 and show message
   const invoiceRadio = Array.from(paymentRadios).find(
     (r) => r.value === "invoice",
@@ -185,15 +187,30 @@ function updatePaymentFields() {
       if (invoiceMsg) invoiceMsg.remove();
     }
   }
+
+  // Get card input fields
+  const cardNumberInput = document.getElementById("cardNumber");
+  const cardExpiryInput = document.getElementById("cardExpiry");
+  const cardCVCInput = document.getElementById("cardCVC");
+
   const payment = Array.from(paymentRadios).find((r) => r.checked)?.value;
+
   if (payment === "invoice") {
     invoiceFields.style.display = "block";
     cardFields.style.display = "none";
     ssnInput.required = true; // SSN is required for invoice
+    // Card fields not required
+    if (cardNumberInput) cardNumberInput.required = false;
+    if (cardExpiryInput) cardExpiryInput.required = false;
+    if (cardCVCInput) cardCVCInput.required = false;
   } else {
     invoiceFields.style.display = "none";
     cardFields.style.display = "block";
     ssnInput.required = false;
+    // Card fields required
+    if (cardNumberInput) cardNumberInput.required = true;
+    if (cardExpiryInput) cardExpiryInput.required = true;
+    if (cardCVCInput) cardCVCInput.required = true;
   }
 }
 
@@ -212,6 +229,9 @@ function updateErrorMessages() {
     "phone",
     "gdpr",
     "ssn",
+    "cardNumber",
+    "cardExpiry",
+    "cardCVC",
   ];
 
   inputs.forEach((id) => {
