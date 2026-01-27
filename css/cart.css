@@ -1,138 +1,140 @@
+/* -- cart.css -- */
+/* --- Cart Drawer Styles --- */
 .cart-drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 100%;
-  max-width: 400px;
-  height: 100vh;
-  background: var(--card-bg);
-  z-index: 2001;
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 0.3s ease-in-out;
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: 100%;
+	max-width: 400px;
+	height: 100vh;
+	background: var(--card-bg);
+	z-index: 2001;
+	box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+	display: flex;
+	flex-direction: column;
+	transform: translateX(100%);
+	transition: transform 0.3s ease-in-out;
 }
 
 .cart-drawer.active {
-  transform: translateX(0);
+	transform: translateX(0);
 }
 
 .cart-drawer .cart-header {
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	padding: 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cart-drawer .cart-header #close-cart {
-  background: none;
-  border: none;
-  color: var(--text-main);
-  font-size: 2rem;
-  cursor: pointer;
+	background: none;
+	border: none;
+	color: var(--text-main);
+	font-size: 2rem;
+	cursor: pointer;
 }
 
 .cart-drawer #cart-items-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
+	flex: 1;
+	overflow-y: auto;
+	padding: 20px;
 }
 
 .cart-drawer .cart-footer {
-  padding: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+	padding: 20px;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cart-overlay.active {
-  display: block;
+	display: block;
 }
 
 /* --- Cart Item Layout --- */
 .cart-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle divider between items */
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	padding: 10px 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle divider between items */
 }
 
 .cart-summary {
-  padding: 15px;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  margin-top: 20px;
+	padding: 15px;
+	background-color: rgba(0, 0, 0, 0.05);
+	border-radius: 8px;
+	margin-top: 20px;
 }
 
 .summary-line {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 5px;
 }
 
 .summary-line.discount {
-  animation: pulse-green 2s infinite;
+	animation: pulse-green 2s infinite;
 }
 
 @keyframes pulse-green {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-  100% {
-    opacity: 1;
-  }
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.7;
+	}
+	100% {
+		opacity: 1;
+	}
 }
 
 /* --- Quantity Control Buttons (+ and -) --- */
 .qty-btn {
-  background-color: transparent;
-  color: var(--primary-color); /* Uses your orange theme color */
-  border: 1.5px solid var(--primary-color);
-  border-radius: 4px; /* Slightly rounded corners */
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out; /* Smooth hover transition */
+	background-color: transparent;
+	color: var(--primary-color); /* Uses your orange theme color */
+	border: 1.5px solid var(--primary-color);
+	border-radius: 4px; /* Slightly rounded corners */
+	width: 26px;
+	height: 26px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.1rem;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.2s ease-in-out; /* Smooth hover transition */
 }
 
 /* Hover effect for plus/minus buttons */
 .qty-btn:hover {
-  background-color: var(--primary-color);
-  color: #ffffff; /* Swaps colors on hover */
+	background-color: var(--primary-color);
+	color: #ffffff; /* Swaps colors on hover */
 }
 
 /* --- Remove Item Button (X) --- */
 .remove-item {
-  background: none;
-  border: none;
-  color: #ff4d4d; /* Red color for delete action */
-  font-size: 1.6rem; /* Makes the '×' symbol large and clear */
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 5px;
-  transition: transform 0.2s ease; /* Animation for the scale effect */
+	background: none;
+	border: none;
+	color: #ff4d4d; /* Red color for delete action */
+	font-size: 1.6rem; /* Makes the '×' symbol large and clear */
+	line-height: 1;
+	cursor: pointer;
+	padding: 0 5px;
+	transition: transform 0.2s ease; /* Animation for the scale effect */
 }
 
 /* Scales the X slightly when hovered to make it feel interactive */
 .remove-item:hover {
-  color: #ff1a1a; /* Darker red on hover */
-  transform: scale(1.2);
+	color: #ff1a1a; /* Darker red on hover */
+	transform: scale(1.2);
 }
 
 /* --- Quantity Number Styling --- */
 .quantity-controls span {
-  font-family: "Zen Antique", serif;
-  font-weight: bold;
-  min-width: 20px; /* Prevents the layout from jumping when numbers change */
-  text-align: center;
-  color: var(--text-main);
+	font-family: "Zen Antique", serif;
+	font-weight: bold;
+	min-width: 20px; /* Prevents the layout from jumping when numbers change */
+	text-align: center;
+	color: var(--text-main);
 }

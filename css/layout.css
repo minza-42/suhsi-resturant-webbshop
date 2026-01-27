@@ -1,247 +1,247 @@
 /* ------ Layout Styles ------ */
 /* --- Header Layout --- */
 header {
-  padding: 10px 20px;
-  background: var(--header-bg, var(--secondary-color));
-  color: var(--text-light);
+	padding: 10px 20px;
+	background: var(--header-bg, var(--secondary-color));
+	color: var(--text-light);
 }
 
 header nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	max-width: 1200px;
+	margin: 0 auto;
 }
 
 /* Logo on the left */
 header h1 {
-  font-size: 1.8rem;
-  margin: 0;
-  text-align: left;
+	font-size: 1.8rem;
+	margin: 0;
+	text-align: left;
 }
 
 /* Container for both button and cart on the right */
 .header-actions {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+	display: flex;
+	align-items: center;
+	gap: 20px;
 }
 
 /* --- Cart Indicator --- */
 #cart-indicator {
-  cursor: pointer;
-  white-space: nowrap;
+	cursor: pointer;
+	white-space: nowrap;
 }
 
 #theme-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	padding: 0;
 }
 
 /* --- Hero Section (Placed inside Sidebar) --- */
 .hero {
-  width: 100%;
-  min-height: 120px;
-  margin-bottom: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background-color: #d35400;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  color: #faf9f6;
-  padding: 15px;
-  margin-top: 55px;
+	width: 100%;
+	min-height: 120px;
+	margin-bottom: 2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	background-color: #d35400;
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
+	color: #faf9f6;
+	padding: 15px;
+	margin-top: 55px;
 }
 
 .hero-content h1 {
-  font-family: "Potta One", system-ui;
-  font-size: 1.4rem;
-  margin: 0;
-  line-height: 1.2;
+	font-family: "Potta One", system-ui;
+	font-size: 1.4rem;
+	margin: 0;
+	line-height: 1.2;
 }
 .hero-content p {
-  font-size: 1.1rem;
-  margin-top: 5px;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+	font-size: 1.1rem;
+	margin-top: 5px;
+	max-width: 500px;
+	margin-left: auto;
+	margin-right: auto;
 }
 .hero-content {
-  max-width: 100%;
-  padding: 0;
+	max-width: 100%;
+	padding: 0;
 }
 
 /* --- Shop Layout --- */
 .shop-container {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 30px;
-  max-width: 1400px;
-  margin: 2rem auto;
-  padding: 0 20px;
-  align-items: start;
+	display: grid;
+	grid-template-columns: 260px 1fr;
+	gap: 30px;
+	max-width: 1400px;
+	margin: 2rem auto;
+	padding: 0 20px;
+	align-items: start;
 }
 
 #products {
-  width: 100%;
-  max-width: none;
+	width: 100%;
+	max-width: none;
 }
 
 #products h2 {
-  margin-bottom: 1rem;
-  text-align: center;
+	margin-bottom: 1rem;
+	text-align: center;
 }
 
 .product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  width: 100%;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	gap: 20px;
+	width: 100%;
 }
 
 /* --- Controls Section (Filters) --- */
 #controls {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  margin-bottom: 2rem;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	margin-bottom: 2rem;
 }
 
 #controls .control-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }
 
 #controls .control-group label {
-  font-weight: bold;
-  font-size: 1.1rem;
+	font-weight: bold;
+	font-size: 1.1rem;
 }
 
 #controls .control-group select {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: #fff;
-  font-size: 1rem;
-  width: 100%;
-  max-width: 220px;
+	padding: 8px 12px;
+	border-radius: 8px;
+	border: 1px solid #ccc;
+	background: #fff;
+	font-size: 1rem;
+	width: 100%;
+	max-width: 220px;
 }
 
 /* --- Back to Top Button --- */
 #backToTop {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 99;
-  background-color: #d35400;
-  color: #faf9f6;
-  border: none;
-  width: 50px;
-  height: 50px;
-  max-width: 50px;
-  max-height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 20px;
-  box-shadow: var(--shadow);
-  transition:
-    opacity 0.3s,
-    transform 0.3s;
-  padding: 0;
+	display: none;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 99;
+	background-color: #d35400;
+	color: #faf9f6;
+	border: none;
+	width: 50px;
+	height: 50px;
+	max-width: 50px;
+	max-height: 50px;
+	border-radius: 50%;
+	cursor: pointer;
+	font-size: 20px;
+	box-shadow: var(--shadow);
+	transition:
+		opacity 0.3s,
+		transform 0.3s;
+	padding: 0;
 }
 
 #backToTop:hover {
-  transform: scale(1.1);
-  filter: brightness(1.1);
+	transform: scale(1.1);
+	filter: brightness(1.1);
 }
 
 /* --- Responsive Media Queries --- */
 /* --- Tablets and Small Desktops (max 1100px) --- */
 @media (max-width: 1100px) {
-  .shop-container {
-    grid-template-columns: 1fr;
-  }
+	.shop-container {
+		grid-template-columns: 1fr;
+	}
 }
 
 /* --- Large Mobiles and Tablets (max 900px) --- */
 @media (max-width: 900px) {
-  header {
-    margin-bottom: 15px !important;
-  }
+	header {
+		margin-bottom: 15px !important;
+	}
 
-  .shop-container {
-    grid-template-columns: 1fr;
-  }
+	.shop-container {
+		grid-template-columns: 1fr;
+	}
 
-  #controls {
-    order: -1;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centering the Hero, Hours, and Category filters */
-    width: 100%;
-    max-width: 600px; /* Limits width so it doesn't look too wide on tablets */
-    gap: 15px;
-    margin-bottom: 2rem;
-  }
+	#controls {
+		order: -1;
+		display: flex;
+		flex-direction: column;
+		align-items: center; /* Centering the Hero, Hours, and Category filters */
+		width: 100%;
+		max-width: 600px; /* Limits width so it doesn't look too wide on tablets */
+		gap: 15px;
+		margin-bottom: 2rem;
+	}
 
-  /* Centering the labels and select boxes */
-  .control-group {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centers the text and the dropdown */
-    text-align: center;
-  }
+	/* Centering the labels and select boxes */
+	.control-group {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center; /* Centers the text and the dropdown */
+		text-align: center;
+	}
 
-  #controls .control-group select {
-    max-width: 300px; /* Makes the dropdown a nice size for touch */
-    margin: 0 auto;
-  }
+	#controls .control-group select {
+		max-width: 300px; /* Makes the dropdown a nice size for touch */
+		margin: 0 auto;
+	}
 
-  .hero,
-  .opening-hours-box {
-    width: 100%;
-    max-width: 500px; /* Keeps info boxes centered and neat */
-    margin-left: auto;
-    margin-right: auto;
-  }
+	.hero,
+	.opening-hours-box {
+		width: 100%;
+		max-width: 500px; /* Keeps info boxes centered and neat */
+		margin-left: auto;
+		margin-right: auto;
+	}
 }
 
 /* --- Small Mobiles (max 600px) --- */
 @media (max-width: 600px) {
-  header nav {
-    padding: 10px 5px;
-  }
+	header nav {
+		padding: 10px 5px;
+	}
 
-  /* Force smaller font size for all main headings on small screens */
-  header h1,
-  .hero-content h1,
-  body h1 {
-    font-size: 1.5rem !important;
-  }
+	/* Force smaller font size for all main headings on small screens */
+	header h1,
+	.hero-content h1,
+	body h1 {
+		font-size: 1.5rem !important;
+	}
 
-  .header-actions {
-    gap: 10px; /* Reduce space between cart and theme button */
-  }
+	.header-actions {
+		gap: 10px; /* Reduce space between cart and theme button */
+	}
 
-  #product-grid {
-    /* Single product per row for maximum visibility on phones */
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
+	#product-grid {
+		/* Single product per row for maximum visibility on phones */
+		grid-template-columns: 1fr;
+		gap: 15px;
+	}
 
-  .footer-content {
-    grid-template-columns: 1fr; /* Stack footer columns */
-    text-align: center;
-  }
+	.footer-content {
+		grid-template-columns: 1fr; /* Stack footer columns */
+		text-align: center;
+	}
 }
