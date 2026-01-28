@@ -551,9 +551,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  cartIndicator?.addEventListener("click", toggleCart);
-  closeCartBtn?.addEventListener("click", toggleCart);
-  cartOverlay?.addEventListener("click", toggleCart);
+  // Bättre touch-stöd för cart-knapp och overlay (iPad/iOS fix)
+  const addCartListeners = (el, fn) => {
+    if (!el) return;
+    el.addEventListener("click", fn);
+    el.addEventListener(
+      "touchstart",
+      function (e) {
+        e.preventDefault();
+        fn();
+      },
+      { passive: false },
+    );
+  };
+  addCartListeners(cartIndicator, toggleCart);
+  addCartListeners(closeCartBtn, toggleCart);
+  addCartListeners(cartOverlay, toggleCart);
 
   clearCartBtn?.addEventListener("click", () => {
     if (confirm("Are you sure you want to clear your cart?")) {
