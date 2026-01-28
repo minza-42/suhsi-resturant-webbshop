@@ -6,72 +6,101 @@ input[type="tel"],
 input[type="password"],
 input[type="number"],
 select {
-	width: 100%;
-	padding: 0.5rem 0.75rem;
-	border: 1px solid var(--border-color, #ccc);
-	border-radius: 6px;
-	font-size: 1rem;
-	margin-top: 0.25rem;
-	margin-bottom: 0.25rem;
-	transition:
-		border-color 0.2s,
-		box-shadow 0.2s;
-	background-color: var(--card-bg);
-	color: var(--text-main);
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  background-color: var(--card-bg);
+  color: var(--text-main);
 }
 
 /* Focus state */
 input:focus,
 select:focus {
-	border-color: var(--primary-color, #d35400);
-	outline: none;
-	box-shadow: 0 0 5px rgba(211, 84, 0, 0.3);
+  border-color: var(--primary-color, #d35400);
+  outline: none;
+  box-shadow: 0 0 5px rgba(211, 84, 0, 0.3);
 }
 
 /* --- Validation Feedback --- */
 /* Highlight field in red if it is invalid and not empty */
 input:invalid:not(:placeholder-shown) {
-	border-color: inherit;
+  border-color: inherit;
 }
 
 /* Custom styling for English error messages */
 .error-message {
-	color: #ff4d4d;
-	font-size: 0.85rem;
-	margin-top: 4px;
-	font-weight: bold;
-	display: block;
-	min-height: 1.2rem;
+  color: #d92121; /* A darker red with 4.5:1 contrast */
+  font-size: 0.85rem;
+  margin-top: 4px;
+  font-weight: bold;
+  display: block;
+  min-height: 1.2rem;
+}
+
+/* Add a red border to the field for extra clarity */
+input:invalid:not(:placeholder-shown) {
+  border: 2px solid #d92121;
+}
+
+span.error-message {
+  color: #d92121 !important; /* A darker red for a11y */
+  font-size: 0.85rem;
+  margin-top: 4px;
+  font-weight: bold;
+  display: block;
+  min-height: 1.2rem;
 }
 
 /* Submit/Reset buttons behavior */
 .order-btn {
-	cursor: pointer;
-	border: none;
-	border-radius: var(--radius, 8px);
-	font-family: inherit;
-	transition:
-		transform 0.2s,
-		background-color 0.2s,
-		opacity 0.2s;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius, 8px);
+  font-family: inherit;
+  transition:
+    transform 0.2s,
+    background-color 0.2s,
+    opacity 0.2s;
 }
 
 /* Visual state for disabled button (e.g., empty cart) */
 .order-btn:disabled {
-	opacity: 0.5;
-	cursor: not-allowed;
-	transform: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(1);
+  transform: none;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #1abc9c;
+  outline-offset: 2px;
 }
 
 /* Target the labels and the select box text */
 .control-group label,
 #category-filter,
 #sort-order {
-	color: #d35400;
+  color: #d35400;
 }
 
 /* Ensure the options inside the dropdown are also black */
 #category-filter option {
-	color: #d35400;
-	background-color: #ffffff;
+  color: #d35400;
+  background-color: #ffffff;
+}
+
+/* Accessibility: High-contrast focus ring */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #1abc9c !important;
+  outline-offset: 2px;
 }

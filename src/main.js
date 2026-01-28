@@ -152,21 +152,21 @@ function createProductHTML({ id, name, price, rating, category, image }) {
   const displayPrice = isWeekend ? Math.round(price * 1.15) : price;
 
   return `
-    <article class="product-card">
-      <img src="${image}" alt="${name}" loading="lazy">
+    <article class="product-card" tabindex="0" aria-labelledby="product-title-${id}" aria-describedby="product-desc-${id}">
+      <img src="${image}" alt="${name} - ${category} sushi" loading="lazy" width="180" height="180">
       <div class="product-info">
-        <h3>${name}</h3>
-        <p class="category-tag">${category}</p>
-        <p class="rating">Rating: ${rating} ⭐</p>
+        <h3 id="product-title-${id}">${name}</h3>
+        <p class="category-tag" id="product-desc-${id}">${category}</p>
+        <p class="rating">Rating: ${rating} <span aria-label="out of 5 stars">⭐</span></p>
         <p class="price"><strong>${displayPrice} SEK</strong></p>
-        
-        <div class="quantity-input-container">
-          <button class="qty-btn" type="button" onclick="this.nextElementSibling.stepDown()" aria-label="Decrease quantity">−</button>
-          <input type="number" id="qty-${id}" class="qty-input" value="1" min="1" max="${MAX_QUANTITY}">
-          <button class="qty-btn" type="button" onclick="this.previousElementSibling.stepUp()" aria-label="Increase quantity">+</button>
-        </div>
+        <form class="quantity-input-container" aria-label="Choose quantity for ${name}" onsubmit="return false;">
+          <label for="qty-${id}" class="visually-hidden">Quantity</label>
+          <button class="qty-btn" type="button" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))" aria-label="Decrease quantity for ${name}">−</button>
+          <input type="number" id="qty-${id}" class="qty-input" value="1" min="1" max="${MAX_QUANTITY}" inputmode="numeric" aria-label="Quantity for ${name}">
+          <button class="qty-btn" type="button" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))" aria-label="Increase quantity for ${name}">+</button>
+        </form>
       </div>
-      <button class="order-btn" data-id="${id}">Add to Cart</button>
+      <button class="order-btn" data-id="${id}" aria-label="Add ${name} to cart">Add to Cart</button>
     </article>
   `;
 }

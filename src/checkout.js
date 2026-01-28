@@ -265,28 +265,45 @@ function updateErrorMessages() {
     "cardCVC",
   ];
 
+  const form = document.getElementById("checkout-form");
+  const submitBtn = document.getElementById("submit-btn");
+
   inputs.forEach((id) => {
     const input = document.getElementById(id);
     const errorSpan = document.getElementById(`error-${id}`);
 
     if (input && errorSpan) {
       if (!input.checkValidity()) {
-        // Validation logic for different error types
+        // 1. Mark field as invalid for screen readers
+        input.setAttribute("aria-invalid", "true");
+
+        // 2. Logic for different error types
         if (input.validity.valueMissing) {
           errorSpan.textContent = "This field is required.";
         } else if (input.validity.typeMismatch) {
           errorSpan.textContent =
             "Please enter a valid email address (e.g., name@example.com).";
         } else if (input.validity.patternMismatch) {
-          // Uses the 'title' attribute from HTML as the error message
+          // Uses the 'title' attribute from your HTML as the message
           errorSpan.textContent = input.title || "Invalid format.";
         }
       } else {
-        // Clear message if field is valid
+        // 3. Clear message and reset aria-invalid if valid
+        input.setAttribute("aria-invalid", "false");
         errorSpan.textContent = "";
       }
     }
   });
+
+  // --- BUTTON ACTIVATION LOGIC ---
+  // This part checks if the whole form is valid and enables/disables the button
+  if (submitBtn && form) {
+    submitBtn.disabled = !form.checkValidity();
+  }
+}
+
+if (_submitBtn) {
+  _submitBtn.disabled = !form.checkValidity();
 }
 
 // --- TIMER FUNCTIONS ---
@@ -354,6 +371,7 @@ function resetCheckoutTimer() {
 
 // --- 3. INITIALIZATION ---
 export function initCheckoutOverlay() {
+  // 1. Identify key elements
   form = document.getElementById("checkout-form");
   _submitBtn = document.getElementById("submit-btn");
   resetBtn = document.getElementById("reset-btn");
@@ -361,75 +379,101 @@ export function initCheckoutOverlay() {
   cardFields = document.getElementById("card-fields");
   invoiceFields = document.getElementById("invoice-fields");
   ssnInput = document.getElementById("ssn");
-  _gdprCheckbox = document.getElementById("gdpr");
 
+  // 2. Initial renders and Timer
   renderCheckoutCart();
-  updatePaymentFields();
-
-  // Start the 15-minute checkout timer
   startCheckoutTimer();
 
-  // Listen for cart clear event from main overlay
-  window.addEventListener("cart:cleared", () => {
-    renderCheckoutCart();
-    updatePaymentFields();
+  // --- 3. FOCUS TRAP LOGIC (A11y) ---
+  const overlay = document.getElementById("checkout-overlay");
+  const firstFocusable = document.getElementById("firstName"); // First input field
+  const lastFocusable = document.getElementById("close-checkout"); // Last button in modal
+
+  // Automatically move focus to the first field when opening for better UX
+  setTimeout(() => firstFocusable?.focus(), 100);
+
+  overlay.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+      if (e.shiftKey) {
+        // If Shift + Tab (Backward)
+        if (document.activeElement === firstFocusable) {
+          e.preventDefault();
+          lastFocusable.focus(); // Loop to the end
+        }
+      } else {
+        // If Tab (Forward)
+        if (document.activeElement === lastFocusable) {
+          e.preventDefault();
+          firstFocusable.focus(); // Loop to the start
+        }
+      }
+    }
+
+    // Close modal if user presses Escape key
+    if (e.key === "Escape") {
+      const closeBtn = document.getElementById("close-checkout");
+      closeBtn?.click();
+    }
   });
+  // --- END FOCUS TRAP ---
+
+  // 4. Event Listeners
+
+  // Update error messages and button state in real-time
+  form.addEventListener("input", updateErrorMessages);
 
   // Payment method toggle
   for (const radio of paymentRadios) {
     radio.addEventListener("change", updatePaymentFields);
   }
 
-  // Re-evaluate payment fields after cart is rendered (e.g. after quantity change)
-  // Listen for storage changes (if cart is updated in another tab)
+  // Handle storage changes (e.g., cart updated in another tab)
   window.addEventListener("storage", (e) => {
     if (e.key === "cart") {
       updatePaymentFields();
+      renderCheckoutCart();
     }
   });
 
-  // Also update payment fields after rendering cart (in case total changed)
-  setTimeout(updatePaymentFields, 100);
-
-  // Update error messages in real-time as user types
-  form.addEventListener("input", updateErrorMessages);
-
   // Handle form submission
   form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
     if (!form.checkValidity()) {
-      e.preventDefault();
       updateErrorMessages();
       return;
     }
+
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     if (cart.length === 0) {
-      e.preventDefault();
-      alert("Your cart is empty. Please add products before checking out.");
+      alert("Your cart is empty!");
       return;
     }
-    e.preventDefault();
 
-    // Stop the checkout timer since order is being submitted
     stopCheckoutTimer();
-
     alert("Thank you for your order! Your sushi is on its way.");
     localStorage.removeItem("cart");
-    renderCheckoutCart();
-    // Optionally close overlay here
+    window.dispatchEvent(new CustomEvent("cart:cleared"));
     document.getElementById("checkout-overlay").style.display = "none";
   });
 
   // Clear Order Button
   resetBtn.addEventListener("click", () => {
+    // Timeout 0 to let the native form reset finish first
     setTimeout(() => {
       localStorage.removeItem("cart");
       renderCheckoutCart();
-      // Notify main cart UI to update
       window.dispatchEvent(new CustomEvent("cart:cleared"));
-      const errorMessages = document.querySelectorAll(".error-message");
-      for (const el of errorMessages) {
-        el.textContent = "";
-      }
+
+      // Clear all visual error texts
+      document
+        .querySelectorAll(".error-message")
+        .forEach((el) => (el.textContent = ""));
+      updateErrorMessages();
     }, 0);
   });
+
+  // 5. Final Initialization
+  updatePaymentFields();
+  updateErrorMessages();
 }
