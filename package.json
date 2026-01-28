@@ -11,19 +11,6 @@
 	"devDependencies": {
 		"@biomejs/biome": "2.3.13",
 		"sass": "^1.97.2",
-		"vite": "^7.3.1"
-	},
-	"description": "[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/FFO6Kf7w)\r # Inlämningsuppgift 1 i JavaScript intro",
-	"main": "vite.config.js",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/Medieinstitutet/fed25d-js-intro-inl-1-minza-42.git"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"bugs": {
-		"url": "https://github.com/Medieinstitutet/fed25d-js-intro-inl-1-minza-42/issues"
-	},
-	"homepage": "https://github.com/Medieinstitutet/fed25d-js-intro-inl-1-minza-42#readme"
+		"vite": "^7.2.4"
+	}
 }
