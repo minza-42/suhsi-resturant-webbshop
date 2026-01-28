@@ -1,6 +1,6 @@
 // Script to copy static folders (like img) to dist after Vite build
-import { copyFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs';
-import { join } from 'path';
+import { copyFileSync, mkdirSync, existsSync, readdirSync, statSync } from "fs";
+import { join } from "path";
 
 function copyRecursiveSync(src, dest) {
   if (!existsSync(src)) return;
@@ -15,4 +15,4 @@ function copyRecursiveSync(src, dest) {
   }
 }
 
-copyRecursiveSync('img', 'dist/img');
+copyRecursiveSync("img", "dist/img");

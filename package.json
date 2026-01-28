@@ -1,16 +1,16 @@
 {
-	"name": "fed25d-js-intro-inl-1",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
-	"scripts": {
-		"dev": "vite",
-		"build": "vite build && node copy-static.js",
-		"preview": "vite preview"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.3.13",
-		"sass": "^1.97.2",
-		"vite": "^7.2.4"
-	}
+  "name": "fed25d-js-intro-inl-1",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node copy-static.js",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.13",
+    "sass": "^1.97.2",
+    "vite": "^7.2.4"
+  }
 }
