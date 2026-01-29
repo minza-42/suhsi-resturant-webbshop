@@ -6,6 +6,15 @@ import {
   stopCheckoutTimer,
 } from "./checkout.js";
 
+import {
+  applyDiscountCode,
+  removeDiscountCode,
+  getAppliedDiscountCode,
+  calculateCartTotal,
+  buildDiscountInfoHTML,
+  isWeekendSurcharge,
+} from "./discounts.js";
+
 // --- PRODUCT DATA ---
 const products = [
   {
@@ -132,23 +141,10 @@ const checkoutBtn = document.getElementById("checkout-btn");
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 // --- PRODUCT RENDERING ---
-
-const MAX_QUANTITY = 50; // Safety limit per product
+const MAX_QUANTITY = 20;
 
 function createProductHTML({ id, name, price, rating, category, image }) {
-  const now = new Date();
-  const hour = now.getHours();
-  const day = now.getDay();
-  // Weekend logic: Friday 15:00 to Monday 03:00
-  let isWeekend = false;
-  if (
-    (day === 5 && hour >= 15) ||
-    day === 6 ||
-    day === 0 ||
-    (day === 1 && hour < 3)
-  ) {
-    isWeekend = true;
-  }
+  const isWeekend = isWeekendSurcharge();
   const displayPrice = isWeekend ? Math.round(price * 1.15) : price;
 
   return `
@@ -211,7 +207,6 @@ function addToCart(productId, buttonElement) {
   const quantityInput = document.getElementById(`qty-${productId}`);
   let quantityToAdd = parseInt(quantityInput.value) || 1;
 
-  // Validation: Prevent exceeding MAX_QUANTITY from manual input
   if (quantityToAdd > MAX_QUANTITY) {
     alert(`Maximum limit is ${MAX_QUANTITY} per item.`);
     quantityToAdd = MAX_QUANTITY;
@@ -239,7 +234,6 @@ function addToCart(productId, buttonElement) {
     cart.push({ ...product, quantity: quantityToAdd });
   }
 
-  // Reset the input field to 1 after successful add
   quantityInput.value = 1;
 
   if (buttonElement) {
@@ -250,12 +244,10 @@ function addToCart(productId, buttonElement) {
 }
 
 function createFlyToCartAnimation(buttonElement) {
-  // Get button position
   const buttonRect = buttonElement.getBoundingClientRect();
   const cartIcon = document.getElementById("cart-indicator");
   const cartRect = cartIcon.getBoundingClientRect();
 
-  // Create animated element
   const flyingItem = document.createElement("div");
   flyingItem.className = "flying-cart-item";
   flyingItem.innerHTML = "🍣";
@@ -264,22 +256,18 @@ function createFlyToCartAnimation(buttonElement) {
 
   document.body.appendChild(flyingItem);
 
-  // Calculate trajectory
   const deltaX = cartRect.left - buttonRect.left;
   const deltaY = cartRect.top - buttonRect.top;
 
-  // Animate
   setTimeout(() => {
     flyingItem.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.3)`;
     flyingItem.style.opacity = "0";
   }, 10);
 
-  // Remove element after animation
   setTimeout(() => {
     flyingItem.remove();
   }, 800);
 
-  // Button pulse effect
   buttonElement.classList.add("btn-added");
   setTimeout(() => {
     buttonElement.classList.remove("btn-added");
@@ -299,9 +287,38 @@ window.changeQuantity = (index, delta) => {
   }
 };
 
+// Update quantity from direct input in cart
+window.updateQuantityFromInput = (index, newValue) => {
+  if (!cart[index]) return;
+
+  let quantity = parseInt(newValue) || 1;
+
+  if (quantity < 1) {
+    quantity = 1;
+  } else if (quantity > MAX_QUANTITY) {
+    alert(`Maximum limit is ${MAX_QUANTITY} per item.`);
+    quantity = MAX_QUANTITY;
+  }
+
+  cart[index].quantity = quantity;
+  saveAndUpdateCart();
+};
+
 // Globally accessible remove function
 window.removeFromCart = (index) => {
   cart.splice(index, 1);
+  saveAndUpdateCart();
+};
+
+// Make discount functions globally accessible
+window.applyDiscountCode = (code) => {
+  const result = applyDiscountCode(code);
+  saveAndUpdateCart();
+  return result;
+};
+
+window.removeDiscountCode = () => {
+  removeDiscountCode();
   saveAndUpdateCart();
 };
 
@@ -318,35 +335,6 @@ function updateCartUI() {
   if (!container) return;
 
   container.innerHTML = "";
-  let total = 0;
-
-  // Weekend surcharge logic (same as in product grid and checkout)
-  const now = new Date();
-  const hour = now.getHours();
-  const day = now.getDay();
-  let isWeekend = false;
-  if (
-    (day === 5 && hour >= 15) || // Friday after 15:00
-    day === 6 || // Saturday
-    day === 0 || // Sunday
-    (day === 1 && hour < 3) // Monday before 03:00
-  ) {
-    isWeekend = true;
-  }
-
-  // --- Bulk Discount Logic ---
-  // 1. Calculate per-category quantities
-  const categoryTotals = {};
-  cart.forEach((item) => {
-    const cat = item.category || "Other";
-    categoryTotals[cat] = (categoryTotals[cat] || 0) + (item.quantity || 1);
-  });
-  // 2. Mark which categories get discount
-  const bulkDiscountCategories = Object.keys(categoryTotals).filter(
-    (cat) => categoryTotals[cat] >= 10,
-  );
-  // 3. Calculate total and discounts
-  const bulkDiscounts = {};
 
   if (cart.length === 0) {
     container.innerHTML =
@@ -354,26 +342,18 @@ function updateCartUI() {
     if (headerTotal) headerTotal.textContent = 0;
     if (cartTotalPrice) cartTotalPrice.textContent = 0;
 
-    // Clear discount info container
     const discountInfoContainer = document.querySelector(".cart-discount-info");
     if (discountInfoContainer) discountInfoContainer.innerHTML = "";
 
     return;
   }
 
+  const isWeekend = isWeekendSurcharge();
+
+  // Render cart items
   cart.forEach((item, index) => {
     const itemQuantity = item.quantity || 1;
     const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
-    let itemTotal = itemPrice * itemQuantity;
-
-    // Bulk discount per item
-    if (bulkDiscountCategories.includes(item.category)) {
-      const discount = Math.round(itemTotal * 0.1);
-      bulkDiscounts[item.category] =
-        (bulkDiscounts[item.category] || 0) + discount;
-      itemTotal -= discount;
-    }
-    total += itemTotal;
 
     const cartItem = document.createElement("div");
     cartItem.className = "cart-item";
@@ -384,7 +364,15 @@ function updateCartUI() {
         <p class="cart-item-price">${itemPrice} SEK</p>
         <div class="quantity-controls">
           <button class="qty-btn" onclick="changeQuantity(${index}, -1)" aria-label="Decrease quantity">−</button>
-          <span>${itemQuantity}</span>
+          <input 
+            type="number" 
+            class="qty-input-cart" 
+            value="${itemQuantity}" 
+            min="1" 
+            max="${MAX_QUANTITY}"
+            onchange="updateQuantityFromInput(${index}, this.value)"
+            aria-label="Quantity for ${item.name}"
+          >
           <button class="qty-btn" onclick="changeQuantity(${index}, 1)" aria-label="Increase quantity">+</button>
         </div>
       </div>
@@ -393,72 +381,15 @@ function updateCartUI() {
     container.appendChild(cartItem);
   });
 
-  // --- Monday Discount Logic ---
-  let mondayDiscount = 0;
-  let discountedTotal = total;
-  if (now.getDay() === 1 && now.getHours() < 10) {
-    mondayDiscount = Math.round(total * 0.1);
-    discountedTotal = total - mondayDiscount;
-  }
+  // Calculate all discounts and totals using discounts.js
+  const totals = calculateCartTotal(cart);
 
-  // --- Shipping Cost Logic ---
-  // Calculate total number of items
-  let totalItems = 0;
-  cart.forEach((item) => {
-    totalItems += item.quantity || 1;
-  });
-
-  // Calculate shipping cost (free shipping over 15 items)
-  let shippingCost = 0;
-  if (totalItems < 15) {
-    shippingCost = 25 + Math.round(discountedTotal * 0.1);
-  }
-
-  // Calculate final total with shipping
-  const finalTotal = discountedTotal + shippingCost;
-
-  // --- Build Discount/Shipping Info HTML ---
-  let discountInfoHTML = "";
-
-  // Monday discount
-  if (mondayDiscount > 0) {
-    discountInfoHTML += `
-      <div class="cart-discount-row">
-        <span class="discount-label">Monday Discount (10%)</span>
-        <span class="discount-value">-${mondayDiscount} SEK</span>
-      </div>`;
-  }
-
-  // Bulk discounts
-  Object.entries(bulkDiscounts).forEach(([cat, amount]) => {
-    if (amount > 0) {
-      discountInfoHTML += `
-        <div class="cart-bulk-discount-row">
-          <span class="discount-label">Bulk Discount on ${cat}</span>
-          <span class="discount-value">-${amount} SEK</span>
-        </div>`;
-    }
-  });
-
-  // Shipping
-  if (shippingCost > 0) {
-    discountInfoHTML += `
-      <div class="cart-shipping-row">
-        <span class="shipping-label">Shipping</span>
-        <span class="shipping-value">+${shippingCost} SEK</span>
-      </div>`;
-  } else {
-    discountInfoHTML += `
-      <div class="cart-shipping-row free">
-        <span class="free-shipping-label">Free Shipping</span>
-        <span class="shipping-value">0 SEK</span>
-      </div>`;
-  }
+  // Build discount info HTML
+  const discountInfoHTML = buildDiscountInfoHTML(totals);
 
   // Insert discount info into container
   let discountInfoContainer = document.querySelector(".cart-discount-info");
   if (!discountInfoContainer) {
-    // Create container if it doesn't exist
     discountInfoContainer = document.createElement("div");
     discountInfoContainer.className = "cart-discount-info";
     const footer = document.querySelector(".cart-footer");
@@ -472,10 +403,9 @@ function updateCartUI() {
   // Update totals in UI with visual feedback
   if (headerTotal) {
     const oldValue = headerTotal.textContent;
-    headerTotal.textContent = finalTotal;
+    headerTotal.textContent = totals.finalTotal;
 
-    // Trigger animation if value changed
-    if (oldValue !== finalTotal.toString()) {
+    if (oldValue !== totals.finalTotal.toString()) {
       headerTotal.parentElement.classList.add("cart-updated");
       setTimeout(() => {
         headerTotal.parentElement.classList.remove("cart-updated");
@@ -484,7 +414,7 @@ function updateCartUI() {
   }
 
   if (cartTotalPrice) {
-    cartTotalPrice.textContent = finalTotal;
+    cartTotalPrice.textContent = totals.finalTotal;
     cartTotalPrice.classList.add("total-updated");
     setTimeout(() => {
       cartTotalPrice.classList.remove("total-updated");
@@ -494,7 +424,7 @@ function updateCartUI() {
 
 // --- GLOBAL INACTIVITY TIMER FOR CART ---
 let cartInactivityTimer = null;
-const CART_INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 min
+const CART_INACTIVITY_TIMEOUT = 15 * 60 * 1000;
 
 function startCartInactivityTimer() {
   if (cartInactivityTimer) clearTimeout(cartInactivityTimer);
@@ -502,7 +432,6 @@ function startCartInactivityTimer() {
     cart = [];
     saveAndUpdateCart();
     alert("Your cart was reset after 15 minutes of inactivity.");
-    // Notify overlays (like checkout) to update if open
     window.dispatchEvent(new CustomEvent("cart:cleared"));
   }, CART_INACTIVITY_TIMEOUT);
 }
@@ -511,10 +440,8 @@ function resetCartInactivityTimer() {
   startCartInactivityTimer();
 }
 
-// Start timer on page load
 startCartInactivityTimer();
 
-// Reset timer on user activity (click, keydown, touch)
 ["click", "keydown", "touchstart"].forEach((evt) => {
   window.addEventListener(evt, resetCartInactivityTimer, true);
 });
@@ -522,9 +449,9 @@ startCartInactivityTimer();
 // --- INITIALIZATION & EVENT LISTENERS ---
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Listen for cart clear event from checkout overlay
   window.addEventListener("cart:cleared", () => {
     cart = [];
+    removeDiscountCode();
     updateCartUI();
   });
 
@@ -540,7 +467,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Better touch support for cart button and overlay (iPad/iOS fix)
+  // Discount code handler
+  const cartDiscountInput = document.getElementById("cart-discount-input");
+  const cartApplyDiscountBtn = document.getElementById(
+    "cart-apply-discount-btn",
+  );
+  const cartDiscountFeedback = document.getElementById(
+    "cart-discount-feedback",
+  );
+
+  if (cartApplyDiscountBtn && cartDiscountInput && cartDiscountFeedback) {
+    cartApplyDiscountBtn.addEventListener("click", () => {
+      const code = cartDiscountInput.value;
+      const result = window.applyDiscountCode(code);
+
+      cartDiscountFeedback.textContent = result.message;
+      cartDiscountFeedback.className = `discount-feedback ${result.success ? "success" : "error"}`;
+
+      if (result.success) {
+        cartDiscountInput.value = "";
+      }
+    });
+
+    cartDiscountInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        cartApplyDiscountBtn.click();
+      }
+    });
+  }
+
   const addCartListeners = (el, fn) => {
     if (!el) return;
     el.addEventListener("click", fn);
@@ -560,23 +515,20 @@ document.addEventListener("DOMContentLoaded", () => {
   clearCartBtn?.addEventListener("click", () => {
     if (confirm("Are you sure you want to clear your cart?")) {
       cart = [];
+      removeDiscountCode();
       saveAndUpdateCart();
-      // Notify other overlays (like checkout) to update
       window.dispatchEvent(new CustomEvent("cart:cleared"));
     }
   });
 
-  // Show checkout overlay instead of redirect
   checkoutBtn?.addEventListener("click", () => {
     if (cart.length > 0) {
       const overlay = document.getElementById("checkout-overlay");
       if (overlay) {
         overlay.style.display = "flex";
-        // Always re-render cart summary when opening checkout
         import("./checkout.js").then((mod) => {
           mod.renderCheckoutCart();
         });
-        // (Re-)initialize checkout overlay logic and cart
         initCheckoutOverlay();
       }
     } else {
@@ -584,11 +536,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Close checkout overlay
   const closeCheckoutBtn = document.getElementById("close-checkout");
   if (closeCheckoutBtn) {
     closeCheckoutBtn.addEventListener("click", () => {
-      // Stop the checkout timer when closing
       stopCheckoutTimer();
       const overlay = document.getElementById("checkout-overlay");
       if (overlay) overlay.style.display = "none";

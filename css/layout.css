@@ -28,6 +28,63 @@ header h1 {
   gap: 20px;
 }
 
+/* --- Cart Indicator Button (looks like div, but accessible) --- */
+#cart-indicator {
+  /* Reset button styling */
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  /* Keep original styling */
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+
+  /* Flexbox layout (same as before) */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  /* Smooth transitions */
+  transition:
+    color 0.3s ease,
+    transform 0.2s ease;
+}
+
+#cart-indicator:hover {
+  color: var(--primary-color);
+}
+
+#cart-indicator:focus {
+  outline: none; /* Remove default outline */
+}
+
+#cart-indicator:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+#cart-indicator i {
+  font-size: 1.2rem;
+}
+
+#cart-indicator span {
+  font-weight: bold;
+}
+
+/* Light mode support */
+html:not(.dark-mode) #cart-indicator {
+  color: var(--text-main);
+}
+
+html:not(.dark-mode) #cart-indicator:hover {
+  color: var(--primary-color);
+}
+
 /* --- Cart Indicator --- */
 #cart-indicator {
   cursor: pointer;
