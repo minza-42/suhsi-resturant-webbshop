@@ -209,9 +209,8 @@ All the special rules for Minza's Sushi House are in place and tested:
 ## Thanks
 
 - **Fonts:** Google Fonts (Potta One, Zen Antique)
-- **Icons:** Custom SVGs
-- **Images:** [Product image sources]
-- **Inspiration:** Modern e-commerce best practices
+- **Icons:** Facebook and Instagram icons from IconScout. Other SVG icons from Google Icons.
+- **Images:** Product images are AI-generated with Google Gemini.
 
 ---
 
