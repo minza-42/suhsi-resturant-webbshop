@@ -1,4 +1,4 @@
-/* ---- Accessibility and Product Card Styles ---- */
+/* ---- a11y-product.css - Accessibility and Product Card Styles ---- */
 /* ---- The .visually-hidden class is used to visually hide elements while keeping them accessible to screen readers. ----*/
 .visually-hidden {
   position: absolute !important;

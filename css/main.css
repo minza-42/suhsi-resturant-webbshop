@@ -1,7 +1,4 @@
-/* ========================================
-   MAIN.CSS - Entry Point
-   Import order matters!
-   ======================================== */
+/* css/main.css - Main stylesheet that imports all other CSS files */
 
 /* --- 1. Fonts (Load First) --- */
 @import url("https://fonts.googleapis.com/css2?family=Potta+One&display=swap");

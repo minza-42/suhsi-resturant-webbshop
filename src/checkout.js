@@ -1,3 +1,5 @@
+/* src/checkout.js */
+
 // --- CHECKOUT TIMEOUT LOGIC ---
 let checkoutTimer = null;
 const CHECKOUT_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds

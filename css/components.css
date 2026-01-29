@@ -1,11 +1,4 @@
-/* ========================================
-   REUSABLE COMPONENTS
-   ======================================== */
-
-/* ========================================
-   PRODUCT CARDS
-   ======================================== */
-
+/* components.css - Shared component styles for the site */
 #product-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));

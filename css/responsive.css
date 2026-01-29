@@ -1,6 +1,4 @@
-/* ========================================
-   RESPONSIVE BREAKPOINTS - MOBILE FIRST
-   ======================================== */
+/* css/responsive.css - Responsive design and media queries for various screen sizes */
 
 /* --- Very Small Phones (max 360px) --- */
 @media (max-width: 360px) {

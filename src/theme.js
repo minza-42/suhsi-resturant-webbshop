@@ -1,6 +1,4 @@
-/**
- * theme.js - Shared theme logic for all pages
- */
+/* theme.js - Shared theme logic for all pages */
 
 export function initTheme() {
   const themeToggle = document.getElementById("theme-toggle");

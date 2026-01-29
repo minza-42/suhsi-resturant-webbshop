@@ -1,4 +1,5 @@
-// lightmode.js - Handles switching between dark and light mode
+/* src/lightmode.js */
+//Handles switching between dark and light mode
 
 document.addEventListener("DOMContentLoaded", () => {
   const themeToggle = document.getElementById("theme-toggle");
