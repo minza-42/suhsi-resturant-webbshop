@@ -1,75 +1,63 @@
-# 🍣 Minza's Sushi House - E-Commerce Platform
+# 🍣 Minza's Sushi House
 
-> A modern, responsive e-commerce web application for ordering premium sushi and Japanese cuisine online.
+Welcome to my sushi e-commerce project! This is a web app where you can browse, filter, and order premium sushi and Japanese food online. I built it from scratch using only vanilla JavaScript, with a big focus on user experience, accessibility, and fun business logic.
 
-## 📖 Project Overview
+**Live Demo:** [Try it here!](https://medieinstitutet.github.io/fed25d-js-intro-inl-1-minza-42/)
 
-Minza's Sushi House is a fully functional e-commerce platform built with vanilla JavaScript, featuring a sophisticated shopping cart, dynamic pricing rules, and a comprehensive checkout system. The project demonstrates advanced web development techniques including responsive design, accessibility features, and complex business logic implementation.
+## Features
 
-**Live Demo:** https://medieinstitutet.github.io/fed25d-js-intro-inl-1-minza-42/
+**Shopping**
 
-## ✨ Key Features
+- Browse and filter a full sushi menu
+- Add items to your cart, adjust quantities (up to 20 per product)
+- Cart is saved in your browser (localStorage)
+- Cart times out after 15 minutes of inactivity
 
-### 🛒 Shopping Experience
+**Pricing & Discounts**
 
-- **Dynamic Product Catalog** with filtering and sorting
-- **Smart Shopping Cart** with real-time price calculations
-- **Quantity Controls** with validation (max 20 per product)
-- **Persistent Cart** using localStorage
-- **15-minute Inactivity Timeout** for cart security
+- Monday morning discount (10% off before 10:00)
+- Weekend surcharge (15% extra from Friday 15:00 to Monday 03:00)
+- Bulk discount (10% off if you buy 10+ of the same item)
+- Discount codes: SUSHI10 (10%), SUSHI20 (20%)
+- Free shipping if you order 15+ items, otherwise 25 SEK + 10% of cart
 
-### 💰 Pricing & Discounts
+**Checkout**
 
-- **Monday Morning Discount** (10% off before 10:00 AM)
-- **Weekend Surcharge** (15% from Friday 15:00 to Monday 03:00)
-- **Bulk Discount** (10% off when ordering 10+ of the same product)
-- **Discount Codes** (SUSHI10 for 10%, SUSHI20 for 20%)
-- **Smart Shipping** (Free shipping on 15+ items, otherwise 25 SEK + 10% of cart)
+- Full form validation with instant feedback
+- Pay by card or invoice (invoice disabled for orders over 800 SEK)
+- 15-minute timer on checkout
+- GDPR consent required
 
-### 📦 Checkout System
+**Design & Accessibility**
 
-- **Comprehensive Form Validation** with real-time error messages
-- **Multiple Payment Methods** (Card & Invoice)
-- **Invoice Limit** (disabled for orders over 800 SEK)
-- **15-minute Checkout Timer** with automatic form reset
-- **GDPR Compliance** checkbox
+- Toggle between dark and light mode (your choice is saved)
+- Works on all screen sizes (mobile, tablet, desktop)
+- Touch-friendly and keyboard accessible
+- Animations for a smooth experience
 
-### 🎨 Design & UX
+## Screenshots
 
-- **Dark/Light Mode Toggle** with persistent preference
-- **Fully Responsive** design (320px - 1920px+)
-- **Touch-Optimized** for mobile and tablet devices
-- **Smooth Animations** including "flying cart" effect
-- **Accessibility First** with ARIA labels and keyboard navigation
-
-## 🖼️ Screenshots
-
-### Desktop View - Dark Mode
-
+**Desktop (Dark Mode):**
 ![Desktop Dark Mode](img/screenshots/Desktop-View-DM.jpg)
 
-### Desktop View - Light Mode
-
+**Desktop (Light Mode):**
 ![Desktop Light Mode](img/screenshots/Desktop-View-LM.jpg)
 
-### Mobile View - Cart Drawer
+**Mobile Cart Drawer:**
 
-![Mobile Cart](img/screenshots/Mobile-DM.jpg)
+<img src="img/screenshots/Mobile-DM.jpg" alt="Mobile Cart" width="250"/>
 
-### Tablet View - iPad
+**Tablet (iPad):**
 
-![Tablet View](img/screenshots/Tablet-DM.jpg)
+<img src="img/screenshots/Tablet-DM.jpg" alt="Tablet View" width="350"/>
 
-### Checkout Form
-
+**Checkout Form:**
 ![Checkout Form](img/screenshots/Checkout-DM.jpg)
 
-### HTML
-
+**HTML Validation:**
 ![HTML Validation Report](img/screenshots/HTML-Validation.jpg)
 
-### CSS Validation
-
+**CSS Validation:**
 ![CSS Validation Report](img/screenshots/CSS-Validation-a11y.jpg)
 ![CSS Validation Report](img/screenshots/CSS-Validation-cart.jpg)
 ![CSS Validation Report](img/screenshots/CSS-Validation-checkout.jpg)
@@ -80,27 +68,21 @@ Minza's Sushi House is a fully functional e-commerce platform built with vanilla
 ![CSS Validation Report](img/screenshots/CSS-Validation-responsive.jpg)
 ![CSS Validation Report](img/screenshots/CSS-Validation-utilities.jpg)
 
-## 🛠️ Technologies Used
+## Tech Stack
 
-### Frontend
+- **HTML5** (semantic, accessible)
+- **CSS3** (custom properties, grid, flexbox, animations)
+- **Vanilla JavaScript (ES6+)** (modules, async/await, event delegation)
+- Modular file structure for both JS and CSS
+- Uses localStorage for cart and preferences
+- Developed in VS Code, version controlled with Git
 
-- **HTML5** - Semantic markup with accessibility features
-- **CSS3** - Custom properties, Grid, Flexbox, animations
-- **Vanilla JavaScript (ES6+)** - Modules, async/await, event delegation
+  ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+  ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+  ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+  ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222?style=for-the-badge&logo=githubpages&logoColor=white)
 
-### Architecture
-
-- **Modular JavaScript** - Separate files for concerns (main, checkout, discounts, theme)
-- **CSS Architecture** - Component-based styling with 7 separate CSS files
-- **LocalStorage API** - For cart persistence and user preferences
-
-### Development
-
-- **Git** - Version control
-- **VS Code** - Development environment
-- **W3C Validators** - HTML & CSS validation
-
-## 📂 Project Structure
+## Project Structure
 
 ```text
 minza-sushi-house/
@@ -129,82 +111,64 @@ minza-sushi-house/
     └── screenshots/          # Validation & Lighthouse reports
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
-### Prerequisites
+**You need:**
 
-- Modern web browser (Chrome, Firefox, Safari, Edge)
-- Local web server (optional, for development)
+- A modern browser (Chrome, Firefox, Safari, Edge)
+- (Optional) A local web server for development
 
-### Installation
+**To run locally:**
 
-1. **Clone the repository**
-
+1. Clone the repo:
    ```bash
    git clone https://github.com/yourusername/minza-sushi-house.git
    cd minza-sushi-house
    ```
-
-2. **Open in browser**
-
+2. Open `index.html` in your browser, or run a local server:
    ```bash
-   # Simply open index.html in your browser
-   # OR use a local server:
    python -m http.server 8000
-   # Then visit: http://localhost:8000
+   # Go to http://localhost:8000
    ```
+3. Shop, add to cart, test discounts, and try the checkout!
 
-3. **Start shopping!**
-   - Browse products
-   - Add items to cart
-   - Apply discount codes **(SUSHI10 or SUSHI20)**
-   - Complete checkout
+## How to Test Discounts
 
-## 🧪 Testing Discount Rules
+**Monday Discount:**
 
-### Monday Morning Discount (10%)
+- Try the site on a Monday before 10:00 and you’ll get 10% off automatically.
 
-- Visit the site on Monday between 00:00 - 09:59
-- Add items to cart
-- See "Monday Discount (10%)" applied automatically
+**Weekend Surcharge:**
 
-### Weekend Surcharge (15%)
+- Shop Friday after 15:00, Saturday, Sunday, or early Monday and prices are 15% higher (but you won’t see a warning).
 
-- Visit Friday after 15:00, or Saturday/Sunday, or Monday before 03:00
-- Prices automatically increase by 15% (hidden from customer)
+**Bulk Discount:**
 
-### Bulk Discount (10%)
+- Add 10 or more of the same product to your cart for 10% off that item.
 
-- Add 10+ of the same product
-- See "Bulk Discount on [Product Name]" applied
+**Discount Codes:**
 
-### Discount Codes
+- Use SUSHI10 or SUSHI20 at checkout for extra discounts.
 
-- At checkout, enter code: `SUSHI10` (10% off) or `SUSHI20` (20% off)
-- Click "Apply" to see discount
+**Free Shipping:**
 
-### Free Shipping
+- Order 15+ items and shipping is free.
 
-- Add 15+ items to cart (total quantity, not unique products)
-- Shipping cost becomes 0 SEK
+**Invoice Limit:**
 
-### Invoice Limit
+- If your cart is over 800 SEK, invoice payment is disabled.
 
-- Add items totaling over 800 SEK
-- Try selecting "Invoice" payment method
-- See that it's disabled with explanation message
+## Accessibility
 
-## ♿ Accessibility Features
+- ARIA labels on all buttons and forms
+- Full keyboard navigation (Tab, Enter, Space)
+- Works with screen readers
+- Focus indicators everywhere
+- Respects "reduced motion" settings
+- Good color contrast
+- Large enough touch targets for mobile
 
-- **ARIA Labels** on all interactive elements
-- **Keyboard Navigation** fully supported (Tab, Enter, Space)
-- **Screen Reader Friendly** with semantic HTML
-- **Focus Indicators** visible on all focusable elements
-- **Reduced Motion** support for users with vestibular disorders
-- **Color Contrast** meets WCAG AA standards
-- **Touch Targets** minimum 24x24px for mobile
-
-## 📱 Responsive Breakpoints
+## Responsive Design
 
 - **Mobile Small:** 320px - 360px
 - **Mobile:** 361px - 480px
@@ -212,46 +176,43 @@ minza-sushi-house/
 - **Tablet:** 601px - 800px
 - **Desktop Small:** 801px - 1100px
 - **Desktop:** 1100px+
-- **Landscape Mode:** Special optimization for height < 600px
+- **Landscape:** Optimized for short screens
 
-## 🎯 Business Rules Implementation
+## Business Rules
 
-### Minza's Sushi House Special Rules ✅
+All the special rules for Minza's Sushi House are in place and tested:
 
-All business rules are fully implemented and tested:
+1. Monday discount (10% before 10:00)
+2. Weekend surcharge (15% Friday 15:00 - Monday 03:00)
+3. Invoice blocked above 800 SEK
+4. Bulk discount (10+ of same product)
+5. Free shipping (15+ items)
+6. 15-minute checkout timeout
 
-1. ✅ Monday discount (10% before 10:00)
-2. ✅ Weekend surcharge (15% Friday 15:00 - Monday 03:00)
-3. ✅ Invoice blocked above 800 SEK
-4. ✅ Bulk discount (10% for 10+ of same product)
-5. ✅ Smart shipping (Free on 15+ items)
-6. ✅ 15-minute timeout for checkout
+## Code Quality
 
-## 📝 Code Quality
+- HTML and CSS validated (W3C)
+- Consistent English naming
+- Semantic HTML5
 
-- ✅ **HTML Validated** - W3C HTML Validator
-- ✅ **CSS Validated** - W3C CSS Validator
-- ✅ **No Swenglish** - Consistent English naming
-- ✅ **Semantic HTML** - Proper use of HTML5 elements
+## Future Ideas
 
-## 🔮 Future Enhancements
+- Backend with Node.js/Express
+- Database for products/orders
+- User login and order history
+- Payment integration (Stripe/Klarna)
+- Email confirmations
+- Admin panel for products
+- Multi-language (Swedish/English)
+- PWA features
 
-- [ ] Backend integration with Node.js/Express
-- [ ] Database for products and orders
-- [ ] User authentication & order history
-- [ ] Payment gateway integration (Stripe/Klarna)
-- [ ] Email confirmations
-- [ ] Admin panel for product management
-- [ ] Multi-language support (Swedish/English)
-- [ ] Progressive Web App (PWA) features
-
-## 🙏 Acknowledgments
+## Thanks
 
 - **Fonts:** Google Fonts (Potta One, Zen Antique)
-- **Icons:** Custom SVG icons
-- **Images:** [Source of product images]
+- **Icons:** Custom SVGs
+- **Images:** [Product image sources]
 - **Inspiration:** Modern e-commerce best practices
 
 ---
 
-**Made with ❤️ and 🍣 by Minai Karlsson**
+Made with ❤️ and 🍣 by Minai Karlsson
