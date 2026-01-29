@@ -1,7 +1,5 @@
 # 🍣 Minza's Sushi House - E-Commerce Platform
 
-![Minza's Sushi House Banner](https://via.placeholder.com/1200x400/d35400/ffffff?text=Minza%27s+Sushi+House)
-
 > A modern, responsive e-commerce web application for ordering premium sushi and Japanese cuisine online.
 
 ## 📖 Project Overview
@@ -48,23 +46,39 @@ Minza's Sushi House is a fully functional e-commerce platform built with vanilla
 
 ### Desktop View - Dark Mode
 
-![Desktop Dark Mode](https://via.placeholder.com/1200x700/1e1e1e/d35400?text=Desktop+Dark+Mode)
+![Desktop Dark Mode](img/screenshots/Desktop-View-DM.jpg)
 
 ### Desktop View - Light Mode
 
-![Desktop Light Mode](https://via.placeholder.com/1200x700/faf9f6/d35400?text=Desktop+Light+Mode)
+![Desktop Light Mode](img/screenshots/Desktop-View-LM.jpg)
 
 ### Mobile View - Cart Drawer
 
-![Mobile Cart](https://via.placeholder.com/400x800/1e1e1e/d35400?text=Mobile+Cart+Drawer)
-
-### Checkout Form
-
-![Checkout Form](https://via.placeholder.com/1200x700/1e1e1e/d35400?text=Checkout+Form)
+![Mobile Cart](img/screenshots/Mobile-DM.jpg)
 
 ### Tablet View - iPad
 
-![Tablet View](https://via.placeholder.com/800x600/1e1e1e/d35400?text=Tablet+View)
+![Tablet View](img/screenshots/Tablet-DM.jpg)
+
+### Checkout Form
+
+![Checkout Form](img/screenshots/Checkout-DM.jpg)
+
+### HTML
+
+![HTML Validation Report](img/screenshots/HTML-Validation.jpg)
+
+### CSS Validation
+
+![CSS Validation Report](img/screenshots/CSS-Validation-a11y.jpg)
+![CSS Validation Report](img/screenshots/CSS-Validation-cart.jpg)
+![CSS Validation Report](img/screenshots/CSS-Validation-checkout.jpg)
+![CSS Validation Report](img/screenshots/CSS-Validation-components.jpg)
+![CSS Validation Report](img/screenshots/CSS-Validation-forms.jpg)
+![CSS Validation Report](img/screenshots/CSS-Validation-layout.jpg)
+![CSS Validation Report](img/screenshots/CSS-Validation-main.jpg)
+![CSS Validation Report](img/screenshots/CSS-Validation-responsive.jpg)
+![CSS Validation Report](img/screenshots/CSS-Validation-utilities.jpg)
 
 ## 🛠️ Technologies Used
 
@@ -86,34 +100,33 @@ Minza's Sushi House is a fully functional e-commerce platform built with vanilla
 - **VS Code** - Development environment
 - **W3C Validators** - HTML & CSS validation
 
-## 📁 Project Structure
+## 📂 Project Structure
 
-```
+```text
 minza-sushi-house/
+├── index.html                # Main entry point & app structure
+├── README.md                 # Project documentation & VG-reports
 │
-├── index.html                 # Main HTML file
+├── css/                      # Modular CSS Architecture
+│   ├── main.css              # Entry point for styles & @imports
+│   ├── variables.css         # CSS Custom Properties (colors, spacing)
+│   ├── layout.css            # Grid, header/footer & page structure
+│   ├── components.css        # Reusable UI (product cards, buttons)
+│   ├── forms.css             # Form inputs & validation styling
+│   ├── cart.css              # Shopping cart drawer & overlay
+│   ├── checkout.css          # Specific styles for the checkout modal
+│   ├── utilities.css         # Animations & accessibility helpers
+│   ├── responsive.css        # Media queries (Mobile-first approach)
+│   └── a11y-product.css      # Screen reader & focus enhancements
 │
-├── css/
-│   ├── main.css              # Global styles & imports
-│   ├── layout.css            # Grid & page structure
-│   ├── components.css        # Reusable UI components
-│   ├── cart.css              # Shopping cart styles
-│   ├── checkout.css          # Checkout page styles
-│   ├── forms.css             # Form elements
-│   └── a11y-product.css      # Accessibility enhancements
+├── src/                      # JavaScript Logic (ES-Modules)
+│   ├── main.js               # Product rendering & cart management
+│   ├── checkout.js           # Form validation & checkout timeout
+│   ├── discounts.js          # Pricing engine & business rules
+│   └── theme.js              # Dark/light mode state & logic
 │
-├── src/
-│   ├── main.js               # Main app logic & cart
-│   ├── checkout.js           # Checkout form & validation
-│   ├── discounts.js          # Business rules & pricing
-│   └── theme.js              # Dark/light mode toggle
-│
-├── img/
-│   ├── products/             # Product images
-│                             # UI icons (SVG)
-│                             # Branding assets
-│
-└── README.md                 # Project documentation
+└── img/                      # Assets
+    └── screenshots/          # Validation & Lighthouse reports
 ```
 
 ## 🚀 Getting Started
@@ -144,7 +157,7 @@ minza-sushi-house/
 3. **Start shopping!**
    - Browse products
    - Add items to cart
-   - Apply discount codes (SUSHI10 or SUSHI20)
+   - Apply discount codes **(SUSHI10 or SUSHI20)**
    - Complete checkout
 
 ## 🧪 Testing Discount Rules
@@ -203,7 +216,7 @@ minza-sushi-house/
 
 ## 🎯 Business Rules Implementation
 
-### Gottfrid's Special Rules ✅
+### Minza's Sushi House Special Rules ✅
 
 All business rules are fully implemented and tested:
 
@@ -214,21 +227,12 @@ All business rules are fully implemented and tested:
 5. ✅ Smart shipping (Free on 15+ items)
 6. ✅ 15-minute timeout for checkout
 
-## 🤝 Contributors
-
-- **[Your Name]** - Lead Developer & Designer
-- **[Team Member 2]** - [Role]
-- **[Team Member 3]** - [Role]
-
 ## 📝 Code Quality
 
 - ✅ **HTML Validated** - W3C HTML Validator
 - ✅ **CSS Validated** - W3C CSS Validator
 - ✅ **No Swenglish** - Consistent English naming
 - ✅ **Semantic HTML** - Proper use of HTML5 elements
-- ✅ **Modular Code** - Separation of concerns
-- ✅ **Documented** - Clear comments and structure
-- ✅ **Best Practices** - ES6+ features, modern CSS
 
 ## 🔮 Future Enhancements
 
@@ -240,10 +244,6 @@ All business rules are fully implemented and tested:
 - [ ] Admin panel for product management
 - [ ] Multi-language support (Swedish/English)
 - [ ] Progressive Web App (PWA) features
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 

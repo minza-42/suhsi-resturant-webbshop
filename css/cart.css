@@ -60,6 +60,7 @@
 }
 
 /* Close Button */
+/* Default close button style */
 .close-cart-btn {
   background: none;
   border: none;
@@ -73,9 +74,20 @@
     color var(--transition-fast);
 }
 
+/* Light mode: make close button dark for visibility */
+html:not(.dark-mode) .close-cart-btn {
+  color: #fff;
+}
+
+/* Default hover for dark mode */
 .close-cart-btn:hover {
   transform: scale(1.1);
   color: var(--primary-color);
+}
+
+/* Light mode: make close button white on hover for visibility */
+html:not(.dark-mode) .close-cart-btn:hover {
+  color: #ff4d4d;
 }
 
 .close-cart-btn:focus-visible {
@@ -325,18 +337,39 @@
   gap: 10px;
 }
 
-/* Clear Cart Button (Secondary) */
+/* Clear Cart Button (Secondary) - outlined style */
 .order-btn--secondary {
-  background: var(--danger-color);
-  color: #ffffff;
-  border: 2px solid var(--danger-color);
+  background: transparent;
+  color: var(--danger-color);
+  border: 2px solid var(--danger-color) !important;
   transition: all var(--transition-fast) ease;
   font-weight: 600;
 }
 
+html:not(.dark-mode) .order-btn--secondary {
+  background: var(--danger-color) !important;
+  color: #fff !important;
+  border: 2px solid var(--danger-color) !important;
+}
+
+html:not(.dark-mode) .order-btn--secondary:hover:not(:disabled) {
+  background: var(--danger-hover) !important;
+  color: #fff !important;
+  border-color: var(--danger-hover) !important;
+}
+
+html:not(.dark-mode) .order-btn--secondary:disabled {
+  background: #9ca3af !important;
+  border-color: #9ca3af !important;
+  color: #fff !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .order-btn--secondary:hover:not(:disabled) {
-  background: var(--danger-hover);
-  border-color: var(--danger-hover);
+  background: var(--danger-color);
+  color: #fff;
+  border-color: var(--danger-hover) !important;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
 }
@@ -352,7 +385,8 @@
 
 .order-btn--secondary:disabled {
   background: #9ca3af;
-  border-color: #9ca3af;
+  border-color: #9ca3af !important;
+  color: #fff;
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -394,12 +428,15 @@
    DARK MODE SUPPORT
    ======================================== */
 
+/* Remove dark mode fill for outlined style */
 .dark-mode .order-btn--secondary {
-  background: #ef4444;
-  border-color: #ef4444;
+  background: transparent;
+  color: #ef4444;
+  border-color: #ef4444 !important;
 }
 
 .dark-mode .order-btn--secondary:hover:not(:disabled) {
   background: var(--danger-color);
-  border-color: var(--danger-color);
+  color: #fff;
+  border-color: var(--danger-hover) !important;
 }

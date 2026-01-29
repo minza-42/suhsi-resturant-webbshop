@@ -88,7 +88,7 @@ header h1 {
 
 /* Light Mode Support */
 html:not(.dark-mode) #cart-indicator {
-  color: var(--text-main);
+  color: #fff;
 }
 
 html:not(.dark-mode) #cart-indicator:hover {

@@ -64,7 +64,9 @@ html:not(.dark-mode) h2 {
 }
 
 html:not(.dark-mode) h3,
-html:not(.dark-mode) .category-tag,
+html:not(.dark-mode) .category-tag {
+  color: var(--text-main);
+}
 html:not(.dark-mode) .footer-mail-link,
 html:not(.dark-mode) .footer-content p {
   color: #fff;
