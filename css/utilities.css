@@ -1,0 +1,136 @@
+/* ========================================
+   UTILITY CLASSES & HELPERS
+   ======================================== */
+
+/* --- Visibility --- */
+.hidden {
+  display: none;
+}
+
+/* --- Animations --- */
+@keyframes cart-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+    color: var(--success-color);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes total-highlight {
+  0% {
+    transform: scale(1);
+    color: var(--text-main);
+  }
+  50% {
+    transform: scale(1.1);
+    color: var(--success-color);
+    text-shadow: 0 0 10px rgba(26, 188, 156, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    color: var(--text-main);
+  }
+}
+
+@keyframes button-success {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* --- Animation Classes --- */
+.cart-updated {
+  animation: cart-pulse 0.6s ease-in-out;
+}
+
+.total-updated {
+  animation: total-highlight 2s ease-in-out;
+}
+
+.btn-added {
+  animation: button-success 0.3s ease;
+  background-color: var(--success-color) !important;
+}
+
+/* --- Flying Cart Item --- */
+.flying-cart-item {
+  position: fixed;
+  font-size: 2rem;
+  pointer-events: none;
+  z-index: var(--z-flying-item);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-origin: center;
+}
+
+/* --- Accessibility --- */
+
+/* Focus Visible States */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--success-color);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .cart-drawer,
+  .close-cart-btn,
+  .qty-btn,
+  .qty-input,
+  .remove-item,
+  .order-btn,
+  .flying-cart-item {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* --- Remove Number Input Spinners --- */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* --- Scroll Bar Styling (Optional) --- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--card-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}

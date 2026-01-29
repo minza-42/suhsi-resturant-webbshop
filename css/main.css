@@ -1,54 +1,29 @@
-/* --- main.css --- */
+/* ========================================
+   MAIN.CSS - Entry Point
+   Import order matters!
+   ======================================== */
 
-/* --- Global Imports - Only here! --- */
+/* --- 1. Fonts (Load First) --- */
 @import url("https://fonts.googleapis.com/css2?family=Potta+One&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Zen+Antique&display=swap");
 
-/* --- Modular Imports --- */
+/* --- 2. Variables & Utilities --- */
+@import "variables.css";
+@import "utilities.css";
+
+/* --- 3. Base Styles & Layout --- */
 @import "layout.css";
 @import "components.css";
 @import "forms.css";
 @import "cart.css";
 
-/* --- Global Variables (Dark theme is default) --- */
-:root {
-  --primary-color: #d35400;
-  --secondary-color: #121212;
-  --bg-color: #2b2626;
-  --card-bg: #1e1e1e;
-  --text-main: #f4f9f6;
-  --text-light: #d35400;
-  --border-color: #444;
-  --radius: 12px;
-  --shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-}
+/* --- 4. Responsive (Load Last) --- */
+@import "responsive.css";
 
-/* --- LIGHT MODE LOGIC --- */
-/* If the 'dark-mode' class is NOT present on the html tag, use these colors */
-html:not(.dark-mode) {
-  --bg-color: #faf9f6;
-  --text-main: #2c3e50; /* Improved accessibility (A11y) color */
-  --card-bg: #ebeae7;
-  --secondary-color: #2c3e50;
-  --footer-bg: #f3e9e1;
-  --border-color: #ccc;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
-}
+/* ========================================
+   GLOBAL BASE STYLES
+   ======================================== */
 
-/* Force headings to remain orange in light mode for branding and design */
-html:not(.dark-mode) h1,
-html:not(.dark-mode) h2 {
-  color: var(--primary-color);
-}
-
-html:not(.dark-mode) h3,
-html:not(.dark-mode) .category-tag,
-html:not(.dark-mode) .footer-mail-link,
-html:not(.dark-mode) .footer-content p {
-  color: #fff;
-}
-
-/* --- Global Styles --- */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -70,6 +45,10 @@ body {
   line-height: 1.6;
 }
 
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+
 body h1 {
   font-family: "Potta One", system-ui;
   font-weight: 400;
@@ -78,17 +57,33 @@ body h1 {
   text-align: center;
 }
 
-/* Forcing titles inside the hero section to always be readable */
+/* Light Mode Typography Overrides */
+html:not(.dark-mode) h1,
+html:not(.dark-mode) h2 {
+  color: var(--primary-color);
+}
+
+html:not(.dark-mode) h3,
+html:not(.dark-mode) .category-tag,
+html:not(.dark-mode) .footer-mail-link,
+html:not(.dark-mode) .footer-content p {
+  color: #fff;
+}
+
+/* Force hero titles to be readable */
 .hero h2 {
   color: #ffffff !important;
 }
 
-/* If "Our Menu" is in the main section (outside orange boxes) */
+/* Main section titles */
 .shop-container h2 {
   color: var(--primary-color);
 }
 
-/* Quantity Input Styling for Product Grid */
+/* ========================================
+   QUANTITY INPUT (Product Grid)
+   ======================================== */
+
 .quantity-input-container {
   display: flex;
   align-items: center;
@@ -109,86 +104,14 @@ body h1 {
   font-weight: bold;
 }
 
-/* Hide arrows in the number field for a cleaner look */
-.qty-input::-webkit-inner-spin-button,
-.qty-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Re-using your existing .qty-btn from cart.css */
 .quantity-input-container .qty-btn {
   width: 32px;
   height: 32px;
 }
 
-/* --- Cart Update Animations --- */
-.cart-updated {
-  animation: cart-pulse 0.6s ease-in-out;
-}
-
-@keyframes cart-pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.15);
-    color: #1abc9c;
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.total-updated {
-  animation: total-highlight 2s ease-in-out;
-}
-
-@keyframes total-highlight {
-  0% {
-    transform: scale(1);
-    color: var(--text-main);
-  }
-  50% {
-    transform: scale(1.1);
-    color: #1abc9c;
-    text-shadow: 0 0 10px rgba(26, 188, 156, 0.5);
-  }
-  100% {
-    transform: scale(1);
-    color: var(--text-main);
-  }
-}
-
-/* --- Flying Cart Item Animation --- */
-.flying-cart-item {
-  position: fixed;
-  font-size: 2rem;
-  pointer-events: none;
-  z-index: 9999;
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  transform-origin: center;
-}
-
-/* --- Button Added Feedback --- */
-.btn-added {
-  animation: button-success 0.3s ease;
-  background-color: #1abc9c !important;
-}
-
-@keyframes button-success {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* --- Footer Section --- */
+/* ========================================
+   FOOTER
+   ======================================== */
 
 footer {
   text-align: center;
@@ -213,7 +136,7 @@ html:not(.dark-mode) footer {
 
 .footer-content h2 {
   font-size: 1.2rem;
-  color: #d35400;
+  color: var(--primary-color);
   margin-bottom: 10px;
 }
 
@@ -234,48 +157,32 @@ html:not(.dark-mode) footer {
   text-align: right;
 }
 
-/* --- Social Media Icons --- */
+/* Social Media Icons */
 .footer-left img {
   width: 30px;
   height: 30px;
   margin-right: 15px;
   cursor: pointer;
   transition:
-    transform 0.3s,
-    opacity 0.3s;
+    transform var(--transition-normal),
+    opacity var(--transition-normal);
   margin-top: 10px;
 }
 
-/* --- Icon Hover Effects --- */
 .footer-left img:hover {
   transform: rotate(10deg) scale(1.2);
   opacity: 0.7;
 }
 
-/* --- Footer Mail Link Styles --- */
-
+/* Footer Mail Link */
 .footer-mail-link {
   color: #faf9f6;
   text-decoration: underline;
-  transition: color 0.2s;
+  transition: color var(--transition-fast);
 }
 
 .footer-mail-link:hover,
 html:not(.dark-mode) .footer-mail-link:hover {
-  color: #d35400;
+  color: var(--primary-color);
   text-decoration: underline;
-}
-
-/* --- Responsive Design --- */
-@media (max-width: 768px) {
-  .footer-content {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .footer-left,
-  .footer-center,
-  .footer-right {
-    text-align: center;
-  }
 }

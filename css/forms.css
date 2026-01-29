@@ -1,5 +1,11 @@
-/* --- Forms.css --- */
-/* Standard Input Styling */
+/* ========================================
+   FORM STYLES
+   ======================================== */
+
+/* ========================================
+   STANDARD INPUT STYLING
+   ======================================== */
+
 input[type="text"],
 input[type="email"],
 input[type="tel"],
@@ -14,13 +20,13 @@ select {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
   transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
   background-color: var(--card-bg);
   color: var(--text-main);
 }
 
-/* Focus state */
+/* Focus State */
 input:focus,
 select:focus {
   border-color: var(--primary-color, #d35400);
@@ -28,29 +34,19 @@ select:focus {
   box-shadow: 0 0 5px rgba(211, 84, 0, 0.3);
 }
 
-/* --- Validation Feedback --- */
-/* Highlight field in red if it is invalid and not empty */
+/* ========================================
+   VALIDATION FEEDBACK
+   ======================================== */
+
+/* Invalid Field State */
 input:invalid:not(:placeholder-shown) {
-  border-color: inherit;
+  border: 2px solid var(--error-color);
 }
 
-/* Custom styling for English error messages */
-.error-message {
-  color: #d92121; /* A darker red with 4.5:1 contrast */
-  font-size: 0.85rem;
-  margin-top: 4px;
-  font-weight: bold;
-  display: block;
-  min-height: 1.2rem;
-}
-
-/* Add a red border to the field for extra clarity */
-input:invalid:not(:placeholder-shown) {
-  border: 2px solid #d92121;
-}
-
+/* Error Message */
+.error-message,
 span.error-message {
-  color: #d92121 !important; /* A darker red for a11y */
+  color: var(--error-color);
   font-size: 0.85rem;
   margin-top: 4px;
   font-weight: bold;
@@ -58,19 +54,22 @@ span.error-message {
   min-height: 1.2rem;
 }
 
-/* Submit/Reset buttons behavior */
+/* ========================================
+   BUTTON STYLES
+   ======================================== */
+
 .order-btn {
   cursor: pointer;
   border: none;
   border-radius: var(--radius, 8px);
   font-family: inherit;
   transition:
-    transform 0.2s,
-    background-color 0.2s,
-    opacity 0.2s;
+    transform var(--transition-fast),
+    background-color var(--transition-fast),
+    opacity var(--transition-fast);
 }
 
-/* Visual state for disabled button (e.g., empty cart) */
+/* Disabled Button State */
 .order-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -78,29 +77,19 @@ span.error-message {
   transform: none;
 }
 
-button:focus-visible,
-a:focus-visible {
-  outline: 3px solid #1abc9c;
-  outline-offset: 2px;
-}
+/* ========================================
+   SELECT DROPDOWNS
+   ======================================== */
 
-/* Target the labels and the select box text */
+/* Target labels and select boxes */
 .control-group label,
 #category-filter,
 #sort-order {
-  color: #d35400;
+  color: var(--primary-color);
 }
 
-/* Ensure the options inside the dropdown are also black */
+/* Options inside dropdown */
 #category-filter option {
-  color: #d35400;
+  color: var(--primary-color);
   background-color: #ffffff;
-}
-
-/* Accessibility: High-contrast focus ring */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 3px solid #1abc9c !important;
-  outline-offset: 2px;
 }

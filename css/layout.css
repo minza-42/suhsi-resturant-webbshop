@@ -1,5 +1,11 @@
-/* ------ Layout Styles ------ */
-/* --- Header Layout --- */
+/* ========================================
+   LAYOUT STYLES
+   ======================================== */
+
+/* ========================================
+   HEADER LAYOUT
+   ======================================== */
+
 header {
   padding: 10px 20px;
   background: var(--header-bg, var(--secondary-color));
@@ -14,21 +20,24 @@ header nav {
   margin: 0 auto;
 }
 
-/* Logo on the left */
+/* Logo */
 header h1 {
   font-size: 1.8rem;
   margin: 0;
   text-align: left;
 }
 
-/* Container for both button and cart on the right */
+/* Header Actions Container */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-/* --- Cart Indicator Button (looks like div, but accessible) --- */
+/* ========================================
+   CART INDICATOR BUTTON
+   ======================================== */
+
 #cart-indicator {
   /* Reset button styling */
   background: none;
@@ -36,22 +45,23 @@ header h1 {
   padding: 0;
   margin: 0;
 
-  /* Keep original styling */
+  /* Styling */
   color: var(--text-main);
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
   cursor: pointer;
 
-  /* Flexbox layout (same as before) */
+  /* Layout */
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
 
-  /* Smooth transitions */
+  /* Transitions */
   transition:
-    color 0.3s ease,
-    transform 0.2s ease;
+    color var(--transition-normal) ease,
+    transform var(--transition-fast) ease;
 }
 
 #cart-indicator:hover {
@@ -59,7 +69,7 @@ header h1 {
 }
 
 #cart-indicator:focus {
-  outline: none; /* Remove default outline */
+  outline: none;
 }
 
 #cart-indicator:focus-visible {
@@ -76,7 +86,7 @@ header h1 {
   font-weight: bold;
 }
 
-/* Light mode support */
+/* Light Mode Support */
 html:not(.dark-mode) #cart-indicator {
   color: var(--text-main);
 }
@@ -85,11 +95,9 @@ html:not(.dark-mode) #cart-indicator:hover {
   color: var(--primary-color);
 }
 
-/* --- Cart Indicator --- */
-#cart-indicator {
-  cursor: pointer;
-  white-space: nowrap;
-}
+/* ========================================
+   THEME TOGGLE
+   ======================================== */
 
 #theme-toggle {
   background: none;
@@ -100,7 +108,10 @@ html:not(.dark-mode) #cart-indicator:hover {
   padding: 0;
 }
 
-/* --- Hero Section (Placed inside Sidebar) --- */
+/* ========================================
+   HERO SECTION
+   ======================================== */
+
 .hero {
   width: 100%;
   min-height: 120px;
@@ -110,12 +121,17 @@ html:not(.dark-mode) #cart-indicator:hover {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: #d35400;
+  background-color: var(--primary-color);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   color: #faf9f6;
   padding: 15px;
   margin-top: 55px;
+}
+
+.hero-content {
+  max-width: 100%;
+  padding: 0;
 }
 
 .hero-content h1 {
@@ -124,6 +140,7 @@ html:not(.dark-mode) #cart-indicator:hover {
   margin: 0;
   line-height: 1.2;
 }
+
 .hero-content p {
   font-size: 1.1rem;
   margin-top: 5px;
@@ -131,12 +148,11 @@ html:not(.dark-mode) #cart-indicator:hover {
   margin-left: auto;
   margin-right: auto;
 }
-.hero-content {
-  max-width: 100%;
-  padding: 0;
-}
 
-/* --- Shop Layout --- */
+/* ========================================
+   SHOP LAYOUT
+   ======================================== */
+
 .shop-container {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -164,7 +180,10 @@ html:not(.dark-mode) #cart-indicator:hover {
   width: 100%;
 }
 
-/* --- Controls Section (Filters) --- */
+/* ========================================
+   CONTROLS SECTION (Filters)
+   ======================================== */
+
 #controls {
   display: flex;
   flex-direction: column;
@@ -193,14 +212,17 @@ html:not(.dark-mode) #cart-indicator:hover {
   max-width: 220px;
 }
 
-/* --- Back to Top Button --- */
+/* ========================================
+   BACK TO TOP BUTTON
+   ======================================== */
+
 #backToTop {
   display: none;
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 99;
-  background-color: #d35400;
+  z-index: var(--z-back-to-top);
+  background-color: var(--primary-color);
   color: #faf9f6;
   border: none;
   width: 50px;
@@ -212,126 +234,12 @@ html:not(.dark-mode) #cart-indicator:hover {
   font-size: 20px;
   box-shadow: var(--shadow);
   transition:
-    opacity 0.3s,
-    transform 0.3s;
+    opacity var(--transition-normal),
+    transform var(--transition-normal);
   padding: 0;
 }
 
 #backToTop:hover {
   transform: scale(1.1);
   filter: brightness(1.1);
-}
-
-/* --- Responsive Media Queries --- */
-/* --- Tablets and Small Desktops (max 1100px) --- */
-@media (max-width: 1100px) {
-  .shop-container {
-    grid-template-columns: 1fr;
-  }
-  main {
-    margin-top: -5rem !important;
-    padding-top: 0 !important;
-  }
-  #controls {
-    align-items: center;
-    width: 100%;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .control-group {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  #controls .control-group select {
-    margin: 0 auto;
-    max-width: 300px;
-  }
-}
-
-/* --- Large Mobiles and Tablets (max 900px) --- */
-@media (max-width: 900px) {
-  header {
-    margin-bottom: 15px !important;
-  }
-
-  main {
-    margin-top: -5rem !important;
-    padding-top: 0 !important;
-  }
-
-  .shop-container {
-    grid-template-columns: 1fr;
-  }
-
-  #controls {
-    order: -1;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centering the Hero, Hours, and Category filters */
-    width: 100%;
-    max-width: 600px; /* Limits width so it doesn't look too wide on tablets */
-    gap: 15px;
-    margin-bottom: 2rem;
-  }
-
-  /* Centering the labels and select boxes */
-  .control-group {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centers the text and the dropdown */
-    text-align: center;
-  }
-
-  #controls .control-group select {
-    max-width: 300px; /* Makes the dropdown a nice size for touch */
-    margin: 0 auto;
-  }
-
-  .hero,
-  .opening-hours-box {
-    width: 100%;
-    max-width: 500px; /* Keeps info boxes centered and neat */
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-/* --- Small Mobiles (max 600px) --- */
-@media (max-width: 600px) {
-  header nav {
-    padding: 10px 5px;
-  }
-
-  /* Move up main on mobile */
-  main {
-    margin-top: -5rem !important;
-    padding-top: 0 !important;
-  }
-
-  /* Force smaller font size for all main headings on small screens */
-  header h1,
-  .hero-content h1,
-  body h1 {
-    font-size: 1.5rem !important;
-  }
-
-  .header-actions {
-    gap: 10px; /* Reduce space between cart and theme button */
-  }
-
-  #product-grid {
-    /* Single product per row for maximum visibility on phones */
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .footer-content {
-    grid-template-columns: 1fr; /* Stack footer columns */
-    text-align: center;
-  }
 }
