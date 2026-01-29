@@ -184,7 +184,7 @@
   display: none;
 }
 
-/* --- Responsiv  --- */
+/* --- Responsive Design --- */
 @media (max-width: 480px) {
   .product-card {
     padding: 10px;

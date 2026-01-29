@@ -67,23 +67,47 @@
     </div>
   </main>
 
-  <div id="cart-overlay" class="cart-overlay"></div>
-  <section id="cart-drawer" class="cart-drawer">
-    <div class="cart-header">
-      <h2>Your Cart</h2>
-      <button id="close-cart">×</button>
-    </div>
-    <div id="cart-items-container"></div>
-    <div class="cart-footer">
-      <div class="total-row">
-        <span>Total:</span>
-        <span><span id="cart-total-price">0</span> SEK</span>
+  <!-- Cart Overlay -->
+  <div id="cart-overlay" class="cart-overlay" aria-hidden="true"></div>
+
+  <!-- Cart Drawer -->
+  <aside id="cart-drawer" class="cart-drawer" role="dialog" aria-labelledby="cart-title" aria-modal="true">
+    <!-- Cart Header -->
+    <header class="cart-header">
+      <h2 id="cart-title">Your Cart</h2>
+      <button id="close-cart" class="close-cart-btn" aria-label="Close cart" type="button">
+        ×
+      </button>
+    </header>
+
+    <!-- Cart Items -->
+    <div id="cart-items-container" class="cart-items" role="list"></div>
+
+    <!-- Cart Footer -->
+    <footer class="cart-footer">
+      <!-- Discount/Shipping Info -->
+      <div id="cart-discount-info" class="cart-discount-info"></div>
+
+      <!-- Total Row -->
+      <div class="total-row" aria-live="polite" aria-atomic="true">
+        <span class="total-label">Total:</span>
+        <span class="total-amount">
+          <span id="cart-total-price">0</span> SEK
+        </span>
       </div>
-      <button id="clear-cart-btn" class="order-btn" style="background:#ccc;color:#222;margin-bottom:0.5rem;">Clear
-        cart</button>
-      <button id="checkout-btn" class="order-btn">Checkout</button>
-    </div>
-  </section>
+
+      <!-- Action Buttons -->
+      <div class="cart-actions">
+        <button id="clear-cart-btn" class="order-btn order-btn--secondary" type="button"
+          aria-label="Clear all items from cart">
+          Clear cart
+        </button>
+        <button id="checkout-btn" class="order-btn order-btn--primary" type="button">
+          Checkout
+        </button>
+      </div>
+    </footer>
+  </aside>
 
   <!-- Checkout Overlay (hidden by default) -->
   <div id="checkout-overlay" class="checkout-overlay" style="display:none;">

@@ -350,16 +350,14 @@ function updateCartUI() {
 
   if (cart.length === 0) {
     container.innerHTML =
-      "<p style='text-align:center; padding: 20px;'>Your cart is empty</p>";
+      "<p style='text-align:center; padding: 20px; color: #999;'>Your cart is empty</p>";
     if (headerTotal) headerTotal.textContent = 0;
     if (cartTotalPrice) cartTotalPrice.textContent = 0;
-    // Remove any discount/shipping summary if present
-    const discountRow = document.getElementById("cart-discount-row");
-    if (discountRow) discountRow.remove();
-    const bulkDiscountRows = document.getElementById("cart-bulk-discount-rows");
-    if (bulkDiscountRows) bulkDiscountRows.remove();
-    const shippingRow = document.getElementById("cart-shipping-row");
-    if (shippingRow) shippingRow.remove();
+
+    // Clear discount info container
+    const discountInfoContainer = document.querySelector(".cart-discount-info");
+    if (discountInfoContainer) discountInfoContainer.innerHTML = "";
+
     return;
   }
 
@@ -367,6 +365,7 @@ function updateCartUI() {
     const itemQuantity = item.quantity || 1;
     const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
     let itemTotal = itemPrice * itemQuantity;
+
     // Bulk discount per item
     if (bulkDiscountCategories.includes(item.category)) {
       const discount = Math.round(itemTotal * 0.1);
@@ -380,26 +379,26 @@ function updateCartUI() {
     cartItem.className = "cart-item";
     cartItem.innerHTML = `
       <img src="${item.image}" alt="${item.name}" class="cart-item-img">
-      <div class="cart-item-info" style="flex:1;">
+      <div class="cart-item-info">
         <h4>${item.name}</h4>
-        <p>${itemPrice} SEK</p>
-        <div class="quantity-controls" style="display:flex; align-items:center; gap:10px; margin-top:5px;">
-          <button class="qty-btn" onclick="changeQuantity(${index}, -1)">-</button>
+        <p class="cart-item-price">${itemPrice} SEK</p>
+        <div class="quantity-controls">
+          <button class="qty-btn" onclick="changeQuantity(${index}, -1)" aria-label="Decrease quantity">−</button>
           <span>${itemQuantity}</span>
-          <button class="qty-btn" onclick="changeQuantity(${index}, 1)">+</button>
+          <button class="qty-btn" onclick="changeQuantity(${index}, 1)" aria-label="Increase quantity">+</button>
         </div>
       </div>
-      <button class="remove-item" onclick="removeFromCart(${index})">&times;</button>
+      <button class="remove-item" onclick="removeFromCart(${index})" aria-label="Remove ${item.name} from cart">×</button>
     `;
     container.appendChild(cartItem);
   });
 
   // --- Monday Discount Logic ---
-  let discount = 0;
+  let mondayDiscount = 0;
   let discountedTotal = total;
   if (now.getDay() === 1 && now.getHours() < 10) {
-    discount = Math.round(total * 0.1);
-    discountedTotal = total - discount;
+    mondayDiscount = Math.round(total * 0.1);
+    discountedTotal = total - mondayDiscount;
   }
 
   // --- Shipping Cost Logic ---
@@ -418,6 +417,58 @@ function updateCartUI() {
   // Calculate final total with shipping
   const finalTotal = discountedTotal + shippingCost;
 
+  // --- Build Discount/Shipping Info HTML ---
+  let discountInfoHTML = "";
+
+  // Monday discount
+  if (mondayDiscount > 0) {
+    discountInfoHTML += `
+      <div class="cart-discount-row">
+        <span class="discount-label">Monday Discount (10%)</span>
+        <span class="discount-value">-${mondayDiscount} SEK</span>
+      </div>`;
+  }
+
+  // Bulk discounts
+  Object.entries(bulkDiscounts).forEach(([cat, amount]) => {
+    if (amount > 0) {
+      discountInfoHTML += `
+        <div class="cart-bulk-discount-row">
+          <span class="discount-label">Bulk Discount on ${cat}</span>
+          <span class="discount-value">-${amount} SEK</span>
+        </div>`;
+    }
+  });
+
+  // Shipping
+  if (shippingCost > 0) {
+    discountInfoHTML += `
+      <div class="cart-shipping-row">
+        <span class="shipping-label">Shipping</span>
+        <span class="shipping-value">+${shippingCost} SEK</span>
+      </div>`;
+  } else {
+    discountInfoHTML += `
+      <div class="cart-shipping-row free">
+        <span class="free-shipping-label">Free Shipping</span>
+        <span class="shipping-value">0 SEK</span>
+      </div>`;
+  }
+
+  // Insert discount info into container
+  let discountInfoContainer = document.querySelector(".cart-discount-info");
+  if (!discountInfoContainer) {
+    // Create container if it doesn't exist
+    discountInfoContainer = document.createElement("div");
+    discountInfoContainer.className = "cart-discount-info";
+    const footer = document.querySelector(".cart-footer");
+    const totalRow = document.querySelector(".total-row");
+    if (footer && totalRow) {
+      footer.insertBefore(discountInfoContainer, totalRow);
+    }
+  }
+  discountInfoContainer.innerHTML = discountInfoHTML;
+
   // Update totals in UI with visual feedback
   if (headerTotal) {
     const oldValue = headerTotal.textContent;
@@ -431,75 +482,13 @@ function updateCartUI() {
       }, 600);
     }
   }
+
   if (cartTotalPrice) {
     cartTotalPrice.textContent = finalTotal;
     cartTotalPrice.classList.add("total-updated");
     setTimeout(() => {
       cartTotalPrice.classList.remove("total-updated");
     }, 600);
-  }
-
-  // Display bulk discounts (per category)
-  let bulkDiscountRows = document.getElementById("cart-bulk-discount-rows");
-  if (bulkDiscountRows) bulkDiscountRows.remove();
-  const hasBulkDiscounts = Object.keys(bulkDiscounts).length > 0;
-  if (hasBulkDiscounts) {
-    bulkDiscountRows = document.createElement("div");
-    bulkDiscountRows.id = "cart-bulk-discount-rows";
-    bulkDiscountRows.style = "margin-top:0.5rem;text-align:right;";
-    Object.entries(bulkDiscounts).forEach(([cat, amount]) => {
-      if (amount > 0) {
-        const row = document.createElement("div");
-        row.className = "cart-bulk-discount-row";
-        row.style = "color:#1abc9c;font-weight:bold;";
-        row.innerHTML = `10% bulk discount on ${cat}: -${amount} SEK`;
-        bulkDiscountRows.appendChild(row);
-      }
-    });
-    cartTotalPrice?.parentElement?.parentElement?.insertBefore(
-      bulkDiscountRows,
-      cartTotalPrice.parentElement.nextSibling,
-    );
-  }
-
-  // Display Monday discount if active
-  let discountRow = document.getElementById("cart-discount-row");
-  if (discount > 0) {
-    if (!discountRow) {
-      discountRow = document.createElement("div");
-      discountRow.id = "cart-discount-row";
-      discountRow.style =
-        "color:#1abc9c;font-weight:bold;margin-top:0.5rem;text-align:right;";
-      cartTotalPrice?.parentElement?.parentElement?.insertBefore(
-        discountRow,
-        cartTotalPrice.parentElement.nextSibling,
-      );
-    }
-    discountRow.innerHTML = `Monday morning discount: -${discount} SEK`;
-  } else if (discountRow) {
-    discountRow.remove();
-  }
-
-  // Show shipping row
-  let shippingRow = document.getElementById("cart-shipping-row");
-  if (!shippingRow) {
-    shippingRow = document.createElement("div");
-    shippingRow.id = "cart-shipping-row";
-    shippingRow.style = "margin-top:0.5rem;text-align:right;";
-    // Insert before the total row
-    cartTotalPrice?.parentElement?.parentElement?.insertBefore(
-      shippingRow,
-      cartTotalPrice.parentElement,
-    );
-  }
-  if (shippingCost > 0) {
-    shippingRow.innerHTML = `Shipping: ${shippingCost} SEK`;
-    shippingRow.style.color = "#555";
-    shippingRow.style.fontWeight = "normal";
-  } else {
-    shippingRow.innerHTML = `Free shipping!`;
-    shippingRow.style.color = "#1abc9c";
-    shippingRow.style.fontWeight = "bold";
   }
 }
 
@@ -551,7 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Bättre touch-stöd för cart-knapp och overlay (iPad/iOS fix)
+  // Better touch support for cart button and overlay (iPad/iOS fix)
   const addCartListeners = (el, fn) => {
     if (!el) return;
     el.addEventListener("click", fn);
