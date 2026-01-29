@@ -1,4 +1,5 @@
 /* src/lightmode.js */
+/* jshint esversion: 6 */
 //Handles switching between dark and light mode
 
 document.addEventListener("DOMContentLoaded", () => {

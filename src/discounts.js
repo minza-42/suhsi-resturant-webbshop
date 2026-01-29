@@ -1,4 +1,5 @@
 /* src/discounts.js */
+/* jshint esversion: 8 */
 
 // --- DISCOUNT CODES ---
 export const DISCOUNT_CODES = {

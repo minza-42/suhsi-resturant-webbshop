@@ -1,4 +1,5 @@
 /* src/checkout.js */
+/* jshint esversion: 11 */
 
 // --- CHECKOUT TIMEOUT LOGIC ---
 let checkoutTimer = null;
@@ -177,8 +178,7 @@ let form,
   paymentRadios,
   cardFields,
   invoiceFields,
-  ssnInput,
-  _gdprCheckbox;
+  ssnInput;
 
 // Toggle fields based on payment choice and cart total
 function updatePaymentFields() {
@@ -405,14 +405,6 @@ function stopCheckoutTimer() {
 
 // Export timer function so it can be called from main.js
 export { stopCheckoutTimer };
-
-// Reset timer on user interaction (optional - extends time on activity)
-function resetCheckoutTimer() {
-  if (checkoutTimer) {
-    console.log("Checkout timer reset due to user activity");
-    startCheckoutTimer(); // Restart the timer
-  }
-}
 
 // --- 3. INITIALIZATION ---
 export function initCheckoutOverlay() {

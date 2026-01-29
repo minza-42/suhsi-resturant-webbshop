@@ -1,15 +1,11 @@
 /* src/main.js */
+/* jshint esversion: 11 */
 
-import {
-  initCheckoutOverlay,
-  renderCheckoutCart,
-  stopCheckoutTimer,
-} from "./checkout.js";
+import { initCheckoutOverlay, stopCheckoutTimer } from "./checkout.js";
 
 import {
   applyDiscountCode,
   removeDiscountCode,
-  getAppliedDiscountCode,
   calculateCartTotal,
   buildDiscountInfoHTML,
   isWeekendSurcharge,
@@ -281,7 +277,7 @@ window.changeQuantity = (index, delta) => {
   cart[index].quantity = (cart[index].quantity || 1) + delta;
 
   if (cart[index].quantity <= 0) {
-    removeFromCart(index);
+    window.removeFromCart(index);
   } else {
     saveAndUpdateCart();
   }

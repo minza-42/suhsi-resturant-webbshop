@@ -1,4 +1,5 @@
 /* theme.js - Shared theme logic for all pages */
+/* jshint esversion: 6 */
 
 export function initTheme() {
   const themeToggle = document.getElementById("theme-toggle");
