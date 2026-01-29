@@ -4,38 +4,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="Order premium sushi and Japanese cuisine online from Minza's Sushi House. Fresh ingredients, fast delivery, and special discounts!">
-
-  <title>Minza's Sushi House | Premium Sushi & Japanese Cuisine</title>
+  <title>Minza's Sushi House | Premium Sushi</title>
 
   <!-- Preconnect to Google Fonts for faster loading -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <!-- Preload critical CSS files -->
-  <link rel="preload" href="css/main.css" as="style">
-
-  <!-- Load CSS -->
+  <!-- Main stylesheets -->
   <link id="main-css" rel="stylesheet" href="css/main.css">
   <link id="checkout-css" rel="stylesheet" href="css/checkout.css">
   <link rel="stylesheet" href="css/a11y-product.css">
-
-  <!-- Favicon (optional but professional) -->
-  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 </head>
 
 <body>
+  <!-- Header with navigation and cart -->
   <header>
     <nav class="header-container">
+      <!-- Theme toggle button -->
       <div class="header-left">
         <button id="theme-toggle" aria-label="Toggle dark/light mode">
           <img id="theme-icon" src="img/light_mode.svg" alt="Theme Icon" width="24" height="24">
         </button>
       </div>
 
+      <!-- Site title -->
       <h1>Minza's Sushi House</h1>
 
+      <!-- Shopping cart indicator -->
       <button id="cart-indicator" type="button" aria-label="Open shopping cart">
         <span class="cart-emoji" aria-hidden="true">🛒</span>
         <span id="header-total">0</span> SEK
@@ -43,9 +38,12 @@
     </nav>
   </header>
 
+  <!-- Main content area -->
   <main>
     <div class="shop-container">
+      <!-- Sidebar with filters and opening hours -->
       <aside id="controls">
+        <!-- Opening hours section -->
         <section class="hero">
           <div class="hero-content">
             <h2>Opening Hours</h2>
@@ -53,6 +51,8 @@
             <p>Sat - Sun: 12:00 - 22:00</p>
           </div>
         </section>
+
+        <!-- Category filter -->
         <div class="control-group">
           <label for="category-filter">Category:</label>
           <select id="category-filter">
@@ -65,6 +65,7 @@
           </select>
         </div>
 
+        <!-- Sort order filter -->
         <div class="control-group">
           <label for="sort-order">Sort by:</label>
           <select id="sort-order">
@@ -76,6 +77,7 @@
         </div>
       </aside>
 
+      <!-- Product grid section -->
       <section id="products">
         <h2>Our Menu</h2>
         <div id="product-grid" class="product-grid"></div>
@@ -83,12 +85,12 @@
     </div>
   </main>
 
-  <!-- Cart Overlay -->
+  <!-- Cart overlay (darkens background when cart is open) -->
   <div id="cart-overlay" class="cart-overlay" aria-hidden="true"></div>
 
-  <!-- Cart Drawer -->
+  <!-- Shopping cart drawer (slides in from right) -->
   <div id="cart-drawer" class="cart-drawer" role="dialog" aria-labelledby="cart-title" aria-modal="true">
-    <!-- Cart Header -->
+    <!-- Cart header with title and close button -->
     <header class="cart-header">
       <h2 id="cart-title">Your Cart</h2>
       <button id="close-cart" class="close-cart-btn" aria-label="Close cart" type="button">
@@ -96,15 +98,15 @@
       </button>
     </header>
 
-    <!-- Cart Items -->
+    <!-- Cart items container (populated dynamically) -->
     <div id="cart-items-container" class="cart-items" role="list"></div>
 
-    <!-- Cart Footer -->
+    <!-- Cart footer with totals and actions -->
     <footer class="cart-footer">
-      <!-- Discount/Shipping Info -->
+      <!-- Discount and shipping information (populated dynamically) -->
       <div id="cart-discount-info" class="cart-discount-info"></div>
 
-      <!-- Total Row -->
+      <!-- Total price row -->
       <div class="total-row" aria-live="polite" aria-atomic="true">
         <span class="total-label">Total:</span>
         <span class="total-amount">
@@ -112,7 +114,7 @@
         </span>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Cart action buttons -->
       <div class="cart-actions">
         <button id="clear-cart-btn" class="order-btn order-btn--secondary" type="button"
           aria-label="Clear all items from cart">
@@ -125,19 +127,23 @@
     </footer>
   </div>
 
-  <!-- Checkout Overlay (hidden by default) -->
+  <!-- Checkout overlay modal (hidden by default) -->
   <div id="checkout-overlay" class="checkout-overlay" style="display:none;">
     <div class="checkout-modal">
       <div style="max-width: 500px; margin: 0 auto;">
+        <!-- Cart summary in checkout -->
         <section id="checkout-cart" style="margin-bottom:2rem;">
           <h2>Your Cart</h2>
           <div id="checkout-cart-items">
             <p>Loading cart...</p>
           </div>
         </section>
-        <!-- Personal Information Fields -->
+
+        <!-- Checkout form -->
         <form id="checkout-form">
-          <!-- First Name -->
+          <!-- Personal information section -->
+
+          <!-- First name field -->
           <div class="form-group">
             <label for="firstName">First name</label>
             <input type="text" id="firstName" name="firstName" required autocomplete="given-name"
@@ -145,7 +151,7 @@
             <span class="error-message" id="error-firstName" aria-live="polite"></span>
           </div>
 
-          <!-- Last Name -->
+          <!-- Last name field -->
           <div class="form-group">
             <label for="lastName">Last name</label>
             <input type="text" id="lastName" name="lastName" required autocomplete="family-name"
@@ -153,7 +159,9 @@
             <span class="error-message" id="error-lastName" aria-live="polite"></span>
           </div>
 
-          <!-- Address -->
+          <!-- Address section -->
+
+          <!-- Street address -->
           <div class="form-group">
             <label for="address">Address (street)</label>
             <input type="text" id="address" name="address" required autocomplete="address-line1"
@@ -161,8 +169,9 @@
             <span class="error-message" id="error-address" aria-live="polite"></span>
           </div>
 
+          <!-- Zip code and city row -->
           <div class="form-row" style="display:flex; gap:1rem;">
-            <!-- Zip Code -->
+            <!-- Zip code (5 digits required) -->
             <div class="form-group">
               <label for="zip">Zip code</label>
               <input type="text" id="zip" name="zip" required pattern="^[0-9]{5}$"
@@ -177,13 +186,15 @@
             </div>
           </div>
 
-          <!-- Optional Gate Code -->
+          <!-- Optional gate code for apartment buildings -->
           <div class="form-group">
             <label for="gateCode">Optional gate code</label>
             <input type="text" id="gateCode" name="gateCode">
           </div>
 
-          <!-- Phone Number -->
+          <!-- Contact information section -->
+
+          <!-- Phone number (7-15 digits) -->
           <div class="form-group">
             <label for="phone">Phone (mobile)</label>
             <input type="tel" id="phone" name="phone" required pattern="^\+?\d{7,15}$"
@@ -191,14 +202,14 @@
             <span class="error-message" id="error-phone" aria-live="polite"></span>
           </div>
 
-          <!-- Email Address -->
+          <!-- Email address -->
           <div class="form-group">
             <label for="email">Email address</label>
             <input type="email" id="email" name="email" required autocomplete="email" aria-describedby="error-email">
             <span class="error-message" id="error-email" aria-live="polite"></span>
           </div>
 
-          <!-- Payment Method -->
+          <!-- Payment method selection (card or invoice) -->
           <div class="form-group">
             <label>Payment method</label>
             <div style="display:flex; gap:1rem;">
@@ -207,16 +218,18 @@
             </div>
           </div>
 
-          <!-- Card Fields -->
+          <!-- Card payment fields (shown by default) -->
           <div id="card-fields" class="form-group">
+            <!-- Card number (13-19 digits) -->
             <label for="cardNumber">Card number</label>
             <input type="text" id="cardNumber" name="cardNumber" inputmode="numeric" maxlength="19"
               placeholder="1234 5678 9012 3456" pattern="^\d{13,19}$"
               title="Please enter a valid card number (13-19 digits)" aria-describedby="error-cardNumber">
             <span class="error-message" id="error-cardNumber" aria-live="polite"></span>
 
+            <!-- Expiry date and CVC row -->
             <div style="display:flex; gap:1rem;">
-              <!-- Expiry Date -->
+              <!-- Expiry date (MM/YY format) -->
               <div style="flex:1;">
                 <label for="cardExpiry">Date/Year</label>
                 <input type="text" id="cardExpiry" name="cardExpiry" maxlength="5" placeholder="MM/YY"
@@ -224,7 +237,7 @@
                   aria-describedby="error-cardExpiry">
                 <span class="error-message" id="error-cardExpiry" aria-live="polite"></span>
               </div>
-              <!-- CVC -->
+              <!-- Security code (CVC, 3-4 digits) -->
               <div style="flex:1;">
                 <label for="cardCVC">Security code</label>
                 <input type="text" id="cardCVC" name="cardCVC" maxlength="4" placeholder="123" pattern="^\d{3,4}$"
@@ -234,19 +247,22 @@
             </div>
           </div>
 
-          <!-- Invoice Fields -->
+          <!-- Invoice fields (hidden by default, shown when invoice is selected) -->
+          <!-- Note: Invoice disabled for orders over 800 SEK (Gottfrid's rule #3) -->
           <div id="invoice-fields" class="form-group" style="display:none;">
             <label for="ssn">Personal identity number (YYYYMMDD-XXXX)</label>
             <input type="text" id="ssn" name="ssn" pattern="^(19|20)?[0-9]{6}[- ]?[0-9]{4}$"
               aria-describedby="error-ssn">
             <span class="error-message" id="error-ssn" aria-live="polite"></span>
           </div>
-          <!-- Discount Code -->
+
+          <!-- Discount code field (supports SUSHI10 and SUSHI20) -->
           <div class="form-group">
             <label for="discount">Discount code</label>
             <input type="text" id="discount" name="discount">
           </div>
-          <!-- GDPR Consent -->
+
+          <!-- GDPR consent (required by law) -->
           <div class="form-group">
             <label>
               <input type="checkbox" id="gdpr" name="gdpr" required aria-describedby="error-gdpr">
@@ -255,27 +271,32 @@
             <span class="error-message" id="error-gdpr" aria-live="polite"></span>
           </div>
 
+          <!-- Newsletter subscription (optional, checked by default) -->
           <div class="form-group">
             <label>
               <input type="checkbox" id="newsletter" name="newsletter" checked>
               Subscribe to newsletter
             </label>
           </div>
-          <!-- Form Buttons -->
+
+          <!-- Form action buttons -->
           <div style="display:flex; gap:1rem; margin-top:2rem;">
             <button type="submit" id="submit-btn" class="order-btn" disabled>Submit order</button>
             <button type="reset" id="reset-btn" class="order-btn">Clear order</button>
           </div>
         </form>
-        <!-- Back to Store Button -->
+
+        <!-- Back to store button (closes checkout overlay) -->
         <button id="close-checkout" aria-label="Back to store" class="order-btn back-to-store"
           style="margin-top:2.5rem; width:100%;">Back to store</button>
       </div>
     </div>
   </div>
-  <!-- Footer -->
+
+  <!-- Site footer -->
   <footer>
     <div class="footer-content">
+      <!-- Social media links -->
       <div class="footer-left">
         <h2>Follow Us</h2>
         <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
@@ -289,20 +310,23 @@
         </a>
       </div>
 
+      <!-- Company information -->
       <div class="footer-center">
         <h2>Minza's Sushi House</h2>
         <p>Premium Sushi & Ramen</p>
         <p>© 2024 Minza's Sushi</p>
       </div>
 
+      <!-- Contact information -->
       <div class="footer-right">
         <h2>Contact</h2>
         <p><a href="mailto:info@minzasushi.se" class="footer-mail-link">info@minzasushi.se</a></p>
-        <p> 08-123 456 78</p>
+        <p>📞 08-123 456 78</p>
       </div>
     </div>
   </footer>
-  <!-- JavaScript Files -->
+
+  <!-- JavaScript modules (ES6 modules) -->
   <script type="module" src="src/main.js"></script>
   <script type="module" src="src/theme.js"></script>
 </body>
