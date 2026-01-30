@@ -1,12 +1,276 @@
 /* css/responsive.css - Responsive design and media queries for various screen sizes */
 
-/* --- Very Small Phones (max 360px) --- */
+/* ============================================================================
+   MOBILE-FIRST IMPROVEMENTS
+   ============================================================================ */
+
+/* --- Base Mobile Styles (applied to all screens) --- */
+@media (max-width: 768px) {
+  /* Prevent text from being too small */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Better touch targets (min 44x44px) */
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Header improvements */
+  header {
+    padding: 12px 15px;
+    margin-bottom: 10px;
+  }
+
+  header nav {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+    flex: unset;
+    text-align: center;
+    order: 2;
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .header-left,
+  #cart-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  #theme-toggle {
+    margin: 0 auto 5px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  #cart-indicator {
+    order: 3;
+    font-size: 1rem;
+    margin: 0 auto 10px auto;
+  }
+
+  #theme-toggle {
+    order: 1;
+  }
+
+  #cart-indicator {
+    order: 2;
+    font-size: 1rem;
+  }
+
+  /* Hero section */
+  .hero {
+    margin-top: 20px;
+    padding: 20px 15px;
+    min-height: auto;
+  }
+
+  .hero-content h1 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  /* Product grid - single column on mobile */
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 0 10px;
+  }
+
+  .product-card {
+    max-width: 100%;
+    padding: 15px;
+  }
+
+  .product-card img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Controls/Filters */
+  #controls {
+    padding: 0 15px;
+  }
+
+  #controls .control-group select {
+    width: 100%;
+    max-width: 100%;
+    font-size: 1rem;
+    padding: 12px;
+  }
+
+  /* Footer adjustments */
+  footer {
+    padding: 28px 8px 18px 8px;
+  }
+  .footer-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 24px;
+    text-align: center;
+    width: 100%;
+    padding: 0;
+  }
+
+  .footer-left,
+  .footer-center,
+  .footer-right {
+    width: 100%;
+    margin: 0 0 10px 0;
+    padding: 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .footer-left h2,
+  .footer-center h2,
+  .footer-right h2,
+  .footer-left p,
+  .footer-center p,
+  .footer-right p,
+  .footer-left a,
+  .footer-center a,
+  .footer-right a {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .footer-left h2,
+  .footer-center h2,
+  .footer-right h2 {
+    margin-bottom: 8px;
+  }
+
+  .footer-socials {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 10px;
+  }
+
+  .footer-socials a {
+    display: inline-block;
+    margin: 0;
+    width: fit-content;
+  }
+
+  .footer-socials img {
+    display: block;
+    margin: 0;
+    width: 36px;
+    height: 36px;
+  }
+
+  .footer-center p {
+    margin-bottom: 8px;
+    margin-top: 0;
+    word-break: break-word;
+  }
+
+  .footer-right p {
+    margin-bottom: 2px;
+    margin-top: 0;
+    word-break: break-word;
+  }
+
+  .footer-right .footer-mail-link {
+    margin-bottom: 0;
+    margin-right: 0;
+    display: inline-block;
+  }
+
+  .footer-mail-link {
+    display: inline-block;
+    margin-bottom: 6px;
+    word-break: break-all;
+  }
+}
+
+/* ============================================================================
+   VERY SMALL PHONES (max 360px)
+   ============================================================================ */
+
 @media (max-width: 360px) {
-  /* Header */
-  header h1,
-  .hero-content h1,
-  body h1 {
+  /* Header - even smaller */
+  header h1 {
     font-size: 1.3rem;
+  }
+
+  #cart-indicator {
+    font-size: 0.9rem;
+    gap: 5px;
+  }
+
+  #cart-indicator i {
+    font-size: 1rem;
+  }
+
+  /* Hero */
+  .hero-content h1 {
+    font-size: 1.2rem;
+  }
+
+  .hero-content p {
+    font-size: 0.9rem;
+  }
+
+  /* Product cards */
+  .product-card {
+    padding: 12px;
+  }
+
+  .product-card .product-info h3 {
+    font-size: 1rem;
+  }
+
+  .product-card .category-tag {
+    font-size: 0.75rem;
+  }
+
+  .product-card .price {
+    font-size: 1rem;
+  }
+
+  /* Quantity controls in product cards */
+  .quantity-input-container .qty-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+
+  .quantity-input-container .qty-input {
+    width: 45px;
+    height: 30px;
+    font-size: 0.9rem;
   }
 
   /* Cart Drawer */
@@ -43,14 +307,14 @@
   }
 
   .qty-btn {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     font-size: 0.9rem;
   }
 
-  .qty-input {
-    width: 26px;
-    height: 22px;
+  .qty-input-cart {
+    width: 28px;
+    height: 24px;
     font-size: 0.75rem;
   }
 
@@ -58,12 +322,23 @@
     gap: 4px;
   }
 
+  .remove-item {
+    font-size: 1.3rem;
+  }
+
   .total-row {
     font-size: 0.85rem;
+    padding: 10px 0;
   }
 
   .total-amount {
     font-size: 0.95rem;
+  }
+
+  .cart-discount-row,
+  .cart-shipping-row,
+  .cart-bulk-discount-row {
+    font-size: 0.7rem;
   }
 
   .order-btn,
@@ -74,7 +349,10 @@
   }
 }
 
-/* --- Mobile Phones (361px - 480px) --- */
+/* ============================================================================
+   MOBILE PHONES (361px - 480px)
+   ============================================================================ */
+
 @media (min-width: 361px) and (max-width: 480px) {
   /* Header */
   header h1 {
@@ -83,7 +361,7 @@
 
   /* Product Cards */
   .product-card {
-    padding: 10px;
+    padding: 12px;
   }
 
   .product-card .product-info h3 {
@@ -124,23 +402,23 @@
   }
 
   .cart-item-info h4 {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
 
   .cart-item-price {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .qty-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 0.95rem;
+    width: 26px;
+    height: 26px;
+    font-size: 1rem;
   }
 
-  .qty-input {
-    width: 28px;
-    height: 24px;
-    font-size: 0.8rem;
+  .qty-input-cart {
+    width: 32px;
+    height: 26px;
+    font-size: 0.85rem;
   }
 
   .quantity-controls {
@@ -148,7 +426,7 @@
   }
 
   .remove-item {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     padding: 2px;
   }
 
@@ -197,33 +475,54 @@
     padding: 1.2rem 0.8rem;
     border-radius: 8px;
     width: 100%;
+    max-width: 100%;
+  }
+
+  /* Checkout form improvements */
+  #checkout-form input,
+  #checkout-form select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  #checkout-form .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  #checkout-form .form-group {
+    margin-bottom: 1rem;
   }
 }
 
-/* --- Small Tablets and Large Phones (481px - 600px) --- */
+/* ============================================================================
+   SMALL TABLETS AND LARGE PHONES (481px - 600px)
+   ============================================================================ */
+
 @media (min-width: 481px) and (max-width: 600px) {
   /* Header */
   header nav {
     padding: 10px 5px;
   }
 
-  header h1,
-  .hero-content h1,
-  body h1 {
-    font-size: 1.5rem;
+  header h1 {
+    font-size: 1.6rem;
   }
 
   .header-actions {
-    gap: 10px;
+    gap: 12px;
   }
 
   /* Layout */
   main {
-    margin-top: -5rem;
-    padding-top: 0;
+    margin-top: 0;
+    padding: 15px;
   }
 
-  #product-grid {
+  .shop-container {
+    padding: 0 10px;
+  }
+
+  .product-grid {
     grid-template-columns: 1fr;
     gap: 15px;
   }
@@ -240,34 +539,32 @@
   }
 
   .cart-item {
-    grid-template-columns: 52px 1fr auto;
+    grid-template-columns: 55px 1fr auto;
     gap: 10px;
     padding: 12px 0;
   }
 
   .cart-item-img {
-    width: 52px;
-    height: 52px;
+    width: 55px;
+    height: 55px;
   }
 
   .cart-item-info h4 {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 
   .cart-item-price {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
 
   .qty-btn {
-    width: 26px;
-    height: 26px;
-    font-size: 1rem;
+    width: 28px;
+    height: 28px;
   }
 
-  .qty-input {
-    width: 30px;
-    height: 26px;
-    font-size: 0.85rem;
+  .qty-input-cart {
+    width: 35px;
+    height: 28px;
   }
 
   .total-row {
@@ -282,7 +579,7 @@
   .cart-discount-row,
   .cart-shipping-row,
   .cart-bulk-discount-row {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     padding: 5px 0;
   }
 
@@ -292,20 +589,18 @@
     padding: 12px;
   }
 
-  /* Footer */
-  .footer-content {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .footer-left,
-  .footer-center,
-  .footer-right {
-    text-align: center;
+  /* Checkout */
+  #checkout-form .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 }
 
-/* --- Tablets and Medium Screens (601px - 800px) --- */
+/* ============================================================================
+   TABLETS (601px - 800px)
+   ============================================================================ */
+
 @media (min-width: 601px) and (max-width: 800px) {
   /* Cart - Full Width on Tablets */
   .cart-drawer {
@@ -333,32 +628,38 @@
   }
 
   .cart-item {
-    grid-template-columns: 55px 1fr auto;
+    grid-template-columns: 60px 1fr auto;
     gap: 12px;
     padding: 12px 0;
   }
 
   .cart-item-img {
-    width: 55px;
-    height: 55px;
+    width: 60px;
+    height: 60px;
   }
 
   .cart-item-info h4 {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .total-row {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .total-amount {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
   }
 
   .cart-discount-row,
   .cart-shipping-row,
   .cart-bulk-discount-row {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  /* Product grid - 2 columns */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
 
   /* Checkout */
@@ -366,10 +667,10 @@
     padding: 1rem;
   }
 
-  .form-row {
+  #checkout-form .form-row {
     display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
+    flex-direction: row;
+    gap: 1rem;
   }
 
   header h1 {
@@ -377,19 +678,23 @@
   }
 }
 
-/* --- Large Mobiles and Tablets (max 900px) --- */
+/* ============================================================================
+   TABLETS AND MEDIUM SCREENS (max 900px)
+   ============================================================================ */
+
 @media (max-width: 900px) {
   header {
     margin-bottom: 15px;
   }
 
   main {
-    margin-top: -5rem;
+    margin-top: 0;
     padding-top: 0;
   }
 
   .shop-container {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   #controls {
@@ -400,7 +705,7 @@
     width: 100%;
     max-width: 600px;
     gap: 15px;
-    margin-bottom: 2rem;
+    margin: 0 auto 2rem auto;
   }
 
   .control-group {
@@ -416,8 +721,7 @@
     margin: 0 auto;
   }
 
-  .hero,
-  .opening-hours-box {
+  .hero {
     width: 100%;
     max-width: 500px;
     margin-left: auto;
@@ -425,14 +729,17 @@
   }
 }
 
-/* --- Tablets and Small Desktops (max 1100px) --- */
+/* ============================================================================
+   TABLETS AND SMALL DESKTOPS (max 1100px)
+   ============================================================================ */
+
 @media (max-width: 1100px) {
   .shop-container {
     grid-template-columns: 1fr;
   }
 
   main {
-    margin-top: -5rem;
+    margin-top: 0;
     padding-top: 0;
   }
 
@@ -463,16 +770,19 @@
   }
 }
 
-/* --- Landscape Mode for Mobile (height < 600px) --- */
+/* ============================================================================
+   LANDSCAPE MODE FOR MOBILE (height < 600px)
+   ============================================================================ */
+
 @media (max-height: 600px) and (orientation: landscape) {
   .cart-header,
   .cart-items,
   .cart-footer {
-    padding: 12px 20px;
+    padding: 10px 20px;
   }
 
   .cart-item {
-    padding: 8px 0;
+    padding: 6px 0;
   }
 
   .total-row {
@@ -496,12 +806,90 @@
   .order-btn--secondary {
     padding: 8px;
   }
+
+  /* Hero smaller in landscape */
+  .hero {
+    min-height: 80px;
+    padding: 10px;
+  }
+
+  .hero-content h1 {
+    font-size: 1.2rem;
+  }
+
+  .hero-content p {
+    font-size: 0.9rem;
+  }
 }
 
-/* --- Very Small Devices (e.g., iPhone SE) --- */
+/* ============================================================================
+   VERY SMALL DEVICES (e.g., iPhone SE)
+   ============================================================================ */
+
 @media (max-width: 375px) {
   .checkout-overlay .checkout-modal {
     padding: 1rem 0.5rem;
     border-radius: 0;
+  }
+
+  #checkout-form {
+    padding: 1rem 0.5rem;
+  }
+
+  #checkout-form input,
+  #checkout-form select {
+    font-size: 16px; /* Prevents iOS zoom */
+  }
+
+  /* Product grid */
+  .product-grid {
+    padding: 0 5px;
+    gap: 10px;
+  }
+}
+
+/* ============================================================================
+   PREVENT HORIZONTAL SCROLL ON MOBILE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  * {
+    max-width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ============================================================================
+   IMPROVE TOUCH TARGETS
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  /* Ensure all interactive elements are at least 44x44px */
+  .qty-btn,
+  .remove-item,
+  .close-cart-btn,
+  #theme-toggle {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Better spacing between touch targets */
+  .quantity-controls {
+    gap: 8px;
+  }
+
+  .header-actions {
+    gap: 15px;
   }
 }
