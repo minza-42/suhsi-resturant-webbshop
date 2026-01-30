@@ -1,102 +1,86 @@
 /* src/checkout.js */
 /* jshint esversion: 11 */
 
-// --- CHECKOUT TIMEOUT LOGIC ---
+import {
+  applyDiscountCode,
+  removeDiscountCode,
+  getAppliedDiscountCode,
+  calculateCartTotal,
+  isWeekendSurcharge,
+} from "./discounts.js";
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const CHECKOUT_TIMEOUT = 15 * 60 * 1000; // 15 minutes
+const INVOICE_LIMIT = 800; // SEK
+
+// ============================================================================
+// STATE
+// ============================================================================
+
 let checkoutTimer = null;
-const CHECKOUT_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
 
-// --- DISCOUNT CODE LOGIC ---
-const DISCOUNT_CODES = {
-  SUSHI10: 0.1, // 10% discount
-  SUSHI20: 0.2, // 20% discount
-};
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
 
-let appliedDiscountCode = null;
-let discountCodeAmount = 0;
-
-// Function to validate and apply discount code
-function applyDiscountCode(code) {
-  const upperCode = code.trim().toUpperCase();
-
-  if (DISCOUNT_CODES[upperCode]) {
-    appliedDiscountCode = upperCode;
-    return DISCOUNT_CODES[upperCode];
+/**
+ * Safely get cart from localStorage
+ */
+function getCart() {
+  try {
+    return JSON.parse(localStorage.getItem("cart") || "[]");
+  } catch (e) {
+    console.error("Failed to load cart:", e);
+    return [];
   }
-
-  return null;
 }
 
-// --- 1. CART RENDERING LOGIC ---
+/**
+ * Safely clear cart from localStorage
+ */
+function clearCart() {
+  try {
+    localStorage.removeItem("cart");
+  } catch (e) {
+    console.error("Failed to clear cart:", e);
+  }
+}
+
+// ============================================================================
+// CART RENDERING
+// ============================================================================
+
+/**
+ * Render checkout cart with all discounts
+ */
 export function renderCheckoutCart() {
-  // Retrieve cart from localStorage
-  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const cart = getCart();
   const container = document.getElementById("checkout-cart-items");
   const submitBtn = document.getElementById("submit-btn");
 
   if (!container) return;
 
-  // Display message if cart is empty
+  // Handle empty cart
   if (cart.length === 0) {
     container.innerHTML = "<p>Your cart is empty.</p>";
-    if (submitBtn) submitBtn.style.opacity = "0.5";
+    if (submitBtn) submitBtn.disabled = true;
     return;
   }
 
-  // --- Weekend Surcharge Logic (hidden from customer) ---
-  const now = new Date();
-  const hour = now.getHours();
-  const day = now.getDay();
-  let isWeekend = false;
-  if (
-    (day === 5 && hour >= 15) || // Friday after 15:00
-    day === 6 || // Saturday
-    day === 0 || // Sunday
-    (day === 1 && hour < 3) // Monday before 03:00
-  ) {
-    isWeekend = true;
-  }
+  // Use centralized calculation from discounts.js
+  const totals = calculateCartTotal(cart);
+  const isWeekend = isWeekendSurcharge();
 
-  // --- Bulk Discount Logic ---
-  // 1. Calculate per-category quantities
-  const categoryTotals = {};
-  cart.forEach((item) => {
-    const cat = item.category || "Other";
-    categoryTotals[cat] = (categoryTotals[cat] || 0) + (item.quantity || 1);
-  });
-
-  // 2. Mark which categories get discount
-  const bulkDiscountCategories = Object.keys(categoryTotals).filter(
-    (cat) => categoryTotals[cat] >= 10,
-  );
-
-  // 3. Calculate total and discounts
-  let total = 0;
-  const bulkDiscounts = {};
-  cart.forEach((item) => {
-    const itemQuantity = item.quantity || 1;
-    const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
-    let itemTotal = itemPrice * itemQuantity;
-    // Apply 10% discount if this item's category qualifies
-    if (bulkDiscountCategories.includes(item.category)) {
-      const discount = Math.round(itemTotal * 0.1);
-      bulkDiscounts[item.category] =
-        (bulkDiscounts[item.category] || 0) + discount;
-      itemTotal -= discount;
-    }
-    total += itemTotal;
-  });
-
-  // 4. Render cart items (showing original price, but discount is shown below)
+  // Render cart items
   const cartHtml = cart
     .map((item) => {
       const itemQuantity = item.quantity || 1;
       const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
-      let itemTotal = itemPrice * itemQuantity;
-      let discount = 0;
-      if (bulkDiscountCategories.includes(item.category)) {
-        discount = Math.round(itemTotal * 0.1);
-        itemTotal -= discount;
-      }
+      const itemTotal = itemPrice * itemQuantity;
+
       return `
     <div class="cart-item" style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem; border-bottom:1px solid #eee; padding-bottom:0.5rem;">
       <img src="${item.image}" alt="${item.name}" width="48" height="48" style="border-radius:8px; object-fit:cover;">
@@ -110,132 +94,72 @@ export function renderCheckoutCart() {
     })
     .join("");
 
-  // --- Monday Discount Logic ---
-  let mondayDiscount = 0;
-  let discountedTotal = total;
-  if (now.getDay() === 1 && now.getHours() < 10) {
-    mondayDiscount = Math.round(total * 0.1);
-    discountedTotal = total - mondayDiscount;
-  }
+  // Build discount rows HTML
+  let discountRows = "";
 
-  // --- Shipping Cost Logic ---
-  // Calculate total number of items
-  let totalItems = 0;
-  cart.forEach((item) => {
-    totalItems += item.quantity || 1;
-  });
-
-  // Calculate shipping cost (free shipping over 15 items)
-  let shippingCost = 0;
-  if (totalItems < 15) {
-    shippingCost = 25 + Math.round(discountedTotal * 0.1);
-  }
-
-  // Calculate subtotal with shipping
-  let subtotal = discountedTotal + shippingCost;
-
-  // --- Apply Discount Code ---
-  discountCodeAmount = 0;
-  if (appliedDiscountCode && DISCOUNT_CODES[appliedDiscountCode]) {
-    discountCodeAmount = Math.round(
-      subtotal * DISCOUNT_CODES[appliedDiscountCode],
-    );
-  }
-
-  // Calculate final total
-  const finalTotal = subtotal - discountCodeAmount;
-
-  // 5. Render discount rows for bulk discount
-  let bulkDiscountRows = "";
-  Object.entries(bulkDiscounts).forEach(([cat, amount]) => {
+  // Bulk discounts
+  Object.entries(totals.bulkDiscounts).forEach(([productName, amount]) => {
     if (amount > 0) {
-      bulkDiscountRows += `<div class="checkout-discount-row" style="color:#1abc9c;font-weight:bold;margin-top:0.5rem;text-align:right;">10% bulk discount on ${cat}: -${amount} SEK</div>`;
+      discountRows += `<div class="checkout-discount-row" style="color:#1abc9c;font-weight:bold;margin-top:0.5rem;text-align:right;">10% bulk discount on ${productName}: -${amount} SEK</div>`;
     }
   });
 
-  // Inject items and final total
+  // Monday discount
+  if (totals.mondayDiscount > 0) {
+    discountRows += `<div class="checkout-discount-row" style="color:#1abc9c;font-weight:bold;margin-top:0.5rem;text-align:right;">Monday morning discount: -${totals.mondayDiscount} SEK</div>`;
+  }
+
+  // Shipping
+  if (totals.shippingCost > 0) {
+    discountRows += `<div style="text-align:right; margin-top:0.5rem; color:#555;">Shipping: ${totals.shippingCost} SEK</div>`;
+  } else {
+    discountRows += `<div style="text-align:right; margin-top:0.5rem; color:#1abc9c;font-weight:bold;">Free shipping!</div>`;
+  }
+
+  // Discount code
+  if (totals.discountCodeAmount > 0 && totals.discountCode) {
+    discountRows += `<div class="checkout-discount-row" style="color:#1abc9c;font-weight:bold;margin-top:0.5rem;text-align:right;">Discount code ${totals.discountCode}: -${totals.discountCodeAmount} SEK</div>`;
+  }
+
+  // Inject HTML
   container.innerHTML =
     cartHtml +
-    bulkDiscountRows +
-    (mondayDiscount > 0
-      ? `<div id="checkout-discount-row" style="color:#1abc9c;font-weight:bold;margin-top:1rem;text-align:right;">Monday morning discount: -${mondayDiscount} SEK</div>`
-      : "") +
-    (shippingCost > 0
-      ? `<div style="text-align:right; margin-top:0.5rem; color:#555;">Shipping: ${shippingCost} SEK</div>`
-      : `<div style="text-align:right; margin-top:0.5rem; color:#1abc9c;font-weight:bold;">Free shipping!</div>`) +
-    (discountCodeAmount > 0
-      ? `<div id="discount-code-row" style="color:#1abc9c;font-weight:bold;margin-top:0.5rem;text-align:right;">Discount code ${appliedDiscountCode}: -${discountCodeAmount} SEK</div>`
-      : "") +
+    discountRows +
     `<div style="text-align:right; font-weight:bold; margin-top:0.5rem; font-size:1.1rem;">
-      Total: ${finalTotal} SEK
+      Total: ${totals.finalTotal} SEK
     </div>`;
 }
 
-// --- 2. FORM & VALIDATION LOGIC ---
-let form,
-  _submitBtn,
-  resetBtn,
-  paymentRadios,
-  cardFields,
-  invoiceFields,
-  ssnInput;
+// ============================================================================
+// FORM VALIDATION
+// ============================================================================
 
-// Toggle fields based on payment choice and cart total
+/**
+ * Update payment fields based on selection and cart total
+ */
 function updatePaymentFields() {
-  if (!paymentRadios || !invoiceFields || !cardFields || !ssnInput) return;
+  const paymentRadios = document.getElementsByName("payment");
+  const cardFields = document.getElementById("card-fields");
+  const invoiceFields = document.getElementById("invoice-fields");
+  const ssnInput = document.getElementById("ssn");
 
-  // Calculate cart total (with surcharge/discount)
-  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-  const now = new Date();
-  const hour = now.getHours();
-  const day = now.getDay();
-  let isWeekend = false;
-  if (
-    (day === 5 && hour >= 15) ||
-    day === 6 ||
-    day === 0 ||
-    (day === 1 && hour < 3)
-  ) {
-    isWeekend = true;
-  }
-  let total = 0;
-  cart.forEach((item) => {
-    const itemQuantity = item.quantity || 1;
-    const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
-    total += itemPrice * itemQuantity;
-  });
-  // Monday morning discount
-  if (now.getDay() === 1 && now.getHours() < 10) {
-    total = total - Math.round(total * 0.1);
-  }
+  if (!paymentRadios || !cardFields || !invoiceFields || !ssnInput) return;
 
-  // Add shipping cost to total
-  let totalItems = 0;
-  cart.forEach((item) => {
-    totalItems += item.quantity || 1;
-  });
-  let shippingCost = 0;
-  if (totalItems < 15) {
-    shippingCost = 25 + Math.round(total * 0.1);
-  }
-  total += shippingCost;
+  // Get cart total using centralized calculation
+  const cart = getCart();
+  const totals = calculateCartTotal(cart);
+  const total = totals.finalTotal;
 
-  // Apply discount code to total for invoice check
-  if (appliedDiscountCode && DISCOUNT_CODES[appliedDiscountCode]) {
-    const codeDiscount = Math.round(
-      total * DISCOUNT_CODES[appliedDiscountCode],
-    );
-    total -= codeDiscount;
-  }
-
-  // Disable invoice if total > 800 and show message
+  // Handle invoice limit
   const invoiceRadio = Array.from(paymentRadios).find(
     (r) => r.value === "invoice",
   );
   let invoiceMsg = document.getElementById("invoice-limit-msg");
+
   if (invoiceRadio) {
-    if (total > 800) {
+    if (total > INVOICE_LIMIT) {
       invoiceRadio.disabled = true;
+
       // If invoice was selected, switch to card
       if (invoiceRadio.checked) {
         const cardRadio = Array.from(paymentRadios).find(
@@ -243,16 +167,17 @@ function updatePaymentFields() {
         );
         if (cardRadio) cardRadio.checked = true;
       }
-      // Show message if not already present
+
+      // Show message
       if (!invoiceMsg) {
         invoiceMsg = document.createElement("div");
         invoiceMsg.id = "invoice-limit-msg";
         invoiceMsg.style.color = "#e67e22";
+        invoiceMsg.style.fontWeight = "bold";
         invoiceMsg.style.fontSize = "0.95em";
         invoiceMsg.style.marginTop = "0.3em";
-        invoiceMsg.textContent =
-          "Invoice payment is not available for orders above 800 SEK.";
-        // Insert after the invoice radio label
+        invoiceMsg.textContent = `Invoice payment is not available for orders above ${INVOICE_LIMIT} SEK.`;
+
         const invoiceLabel = invoiceRadio.closest("label");
         if (invoiceLabel?.parentElement) {
           invoiceLabel.parentElement.appendChild(invoiceMsg);
@@ -271,11 +196,12 @@ function updatePaymentFields() {
 
   const payment = Array.from(paymentRadios).find((r) => r.checked)?.value;
 
+  // Toggle field visibility and requirements
   if (payment === "invoice") {
     invoiceFields.style.display = "block";
     cardFields.style.display = "none";
-    ssnInput.required = true; // SSN is required for invoice
-    // Card fields not required
+    ssnInput.required = true;
+
     if (cardNumberInput) cardNumberInput.required = false;
     if (cardExpiryInput) cardExpiryInput.required = false;
     if (cardCVCInput) cardCVCInput.required = false;
@@ -283,7 +209,7 @@ function updatePaymentFields() {
     invoiceFields.style.display = "none";
     cardFields.style.display = "block";
     ssnInput.required = false;
-    // Card fields required
+
     if (cardNumberInput) cardNumberInput.required = true;
     if (cardExpiryInput) cardExpiryInput.required = true;
     if (cardCVCInput) cardCVCInput.required = true;
@@ -291,8 +217,7 @@ function updatePaymentFields() {
 }
 
 /**
- * Updates the custom error messages below each input field
- * Uses English text regardless of browser language
+ * Update error messages for all form fields
  */
 function updateErrorMessages() {
   const inputs = [
@@ -319,83 +244,70 @@ function updateErrorMessages() {
 
     if (input && errorSpan) {
       if (!input.checkValidity()) {
-        // 1. Mark field as invalid for screen readers
         input.setAttribute("aria-invalid", "true");
 
-        // 2. Logic for different error types
         if (input.validity.valueMissing) {
           errorSpan.textContent = "This field is required.";
         } else if (input.validity.typeMismatch) {
           errorSpan.textContent =
             "Please enter a valid email address (e.g., name@example.com).";
         } else if (input.validity.patternMismatch) {
-          // Uses the 'title' attribute from your HTML as the message
           errorSpan.textContent = input.title || "Invalid format.";
         }
       } else {
-        // 3. Clear message and reset aria-invalid if valid
         input.setAttribute("aria-invalid", "false");
         errorSpan.textContent = "";
       }
     }
   });
 
-  // --- BUTTON ACTIVATION LOGIC ---
-  // This part checks if the whole form is valid and enables/disables the button
+  // Update submit button state
   if (submitBtn && form) {
     submitBtn.disabled = !form.checkValidity();
   }
 }
 
-if (_submitBtn) {
-  _submitBtn.disabled = !form.checkValidity();
-}
+// ============================================================================
+// TIMER FUNCTIONS
+// ============================================================================
 
-// --- TIMER FUNCTIONS ---
+/**
+ * Start 15-minute checkout timer
+ */
 function startCheckoutTimer() {
-  // Clear any existing timer
   if (checkoutTimer) {
     clearTimeout(checkoutTimer);
   }
 
-  // Start 15-minute timer
   checkoutTimer = setTimeout(() => {
-    // Clear the form
     const form = document.getElementById("checkout-form");
-    if (form) {
-      form.reset();
-    }
+    if (form) form.reset();
 
-    // Clear all error messages
     document.querySelectorAll(".error-message").forEach((el) => {
       el.textContent = "";
     });
 
-    // Show alert to user
     alert(
       "Your checkout session has expired. You took too long to complete the order. Please start over.",
     );
 
-    // Clear the cart
-    localStorage.removeItem("cart");
-
-    // Notify other components that cart was cleared
+    clearCart();
+    removeDiscountCode();
     window.dispatchEvent(new CustomEvent("cart:cleared"));
 
-    // Close checkout overlay
     const overlay = document.getElementById("checkout-overlay");
-    if (overlay) {
-      overlay.style.display = "none";
-    }
+    if (overlay) overlay.style.display = "none";
 
-    // Re-render the (now empty) cart
     renderCheckoutCart();
   }, CHECKOUT_TIMEOUT);
 
   console.log("Checkout timer started: 15 minutes until timeout");
 }
 
-function stopCheckoutTimer() {
+/**
+ * Stop checkout timer
+ */
+export function stopCheckoutTimer() {
   if (checkoutTimer) {
     clearTimeout(checkoutTimer);
     checkoutTimer = null;
@@ -403,28 +315,35 @@ function stopCheckoutTimer() {
   }
 }
 
-// Export timer function so it can be called from main.js
-export { stopCheckoutTimer };
+// ============================================================================
+// INITIALIZATION
+// ============================================================================
 
-// --- 3. INITIALIZATION ---
+/**
+ * Initialize checkout overlay
+ */
 export function initCheckoutOverlay() {
-  // 1. Identify key elements
-  form = document.getElementById("checkout-form");
-  _submitBtn = document.getElementById("submit-btn");
-  resetBtn = document.getElementById("reset-btn");
-  paymentRadios = document.getElementsByName("payment");
-  cardFields = document.getElementById("card-fields");
-  invoiceFields = document.getElementById("invoice-fields");
-  ssnInput = document.getElementById("ssn");
+  // Get form elements
+  const form = document.getElementById("checkout-form");
+  const submitBtn = document.getElementById("submit-btn");
+  const resetBtn = document.getElementById("reset-btn");
+  const paymentRadios = document.getElementsByName("payment");
   const discountInput = document.getElementById("discount");
 
-  // 2. Initial renders and Timer
+  if (!form) {
+    console.error("Checkout form not found");
+    return;
+  }
+
+  // Initial render and start timer
   renderCheckoutCart();
   startCheckoutTimer();
 
-  // --- DISCOUNT CODE INPUT HANDLER ---
+  // ============================================================================
+  // DISCOUNT CODE HANDLER
+  // ============================================================================
+
   if (discountInput) {
-    // Add visual feedback container
     let discountFeedback = document.getElementById("discount-feedback");
     if (!discountFeedback) {
       discountFeedback = document.createElement("div");
@@ -436,10 +355,10 @@ export function initCheckoutOverlay() {
     }
 
     discountInput.addEventListener("input", (e) => {
-      const code = e.target.value.trim().toUpperCase();
+      const code = e.target.value.trim();
 
       if (code === "") {
-        appliedDiscountCode = null;
+        removeDiscountCode();
         discountFeedback.textContent = "";
         discountFeedback.style.color = "";
         renderCheckoutCart();
@@ -447,60 +366,59 @@ export function initCheckoutOverlay() {
         return;
       }
 
-      const discountRate = applyDiscountCode(code);
+      const result = applyDiscountCode(code);
 
-      if (discountRate !== null) {
-        const percentage = Math.round(discountRate * 100);
-        discountFeedback.textContent = `✓ Code applied! You get ${percentage}% off`;
+      if (result.success) {
+        discountFeedback.textContent = result.message;
         discountFeedback.style.color = "#1abc9c";
-        renderCheckoutCart();
-        updatePaymentFields();
       } else {
-        appliedDiscountCode = null;
-        discountFeedback.textContent = "✗ Invalid discount code";
+        discountFeedback.textContent = result.message;
         discountFeedback.style.color = "#e74c3c";
-        renderCheckoutCart();
-        updatePaymentFields();
+      }
+
+      renderCheckoutCart();
+      updatePaymentFields();
+    });
+  }
+
+  // ============================================================================
+  // FOCUS TRAP (Accessibility)
+  // ============================================================================
+
+  const overlay = document.getElementById("checkout-overlay");
+  const firstFocusable = document.getElementById("firstName");
+  const lastFocusable = document.getElementById("close-checkout");
+
+  setTimeout(() => firstFocusable?.focus(), 100);
+
+  if (overlay) {
+    overlay.addEventListener("keydown", (e) => {
+      if (e.key === "Tab") {
+        if (e.shiftKey) {
+          if (document.activeElement === firstFocusable) {
+            e.preventDefault();
+            lastFocusable?.focus();
+          }
+        } else {
+          if (document.activeElement === lastFocusable) {
+            e.preventDefault();
+            firstFocusable?.focus();
+          }
+        }
+      }
+
+      if (e.key === "Escape") {
+        const closeBtn = document.getElementById("close-checkout");
+        closeBtn?.click();
       }
     });
   }
 
-  // --- 3. FOCUS TRAP LOGIC (A11y) ---
-  const overlay = document.getElementById("checkout-overlay");
-  const firstFocusable = document.getElementById("firstName"); // First input field
-  const lastFocusable = document.getElementById("close-checkout"); // Last button in modal
+  // ============================================================================
+  // EVENT LISTENERS
+  // ============================================================================
 
-  // Automatically move focus to the first field when opening for better UX
-  setTimeout(() => firstFocusable?.focus(), 100);
-
-  overlay.addEventListener("keydown", (e) => {
-    if (e.key === "Tab") {
-      if (e.shiftKey) {
-        // If Shift + Tab (Backward)
-        if (document.activeElement === firstFocusable) {
-          e.preventDefault();
-          lastFocusable.focus(); // Loop to the end
-        }
-      } else {
-        // If Tab (Forward)
-        if (document.activeElement === lastFocusable) {
-          e.preventDefault();
-          firstFocusable.focus(); // Loop to the start
-        }
-      }
-    }
-
-    // Close modal if user presses Escape key
-    if (e.key === "Escape") {
-      const closeBtn = document.getElementById("close-checkout");
-      closeBtn?.click();
-    }
-  });
-  // --- END FOCUS TRAP ---
-
-  // 4. Event Listeners
-
-  // Update error messages and button state in real-time
+  // Real-time validation
   form.addEventListener("input", updateErrorMessages);
 
   // Payment method toggle
@@ -508,15 +426,15 @@ export function initCheckoutOverlay() {
     radio.addEventListener("change", updatePaymentFields);
   }
 
-  // Handle storage changes (e.g., cart updated in another tab)
+  // Handle storage changes (cart updated in another tab)
   window.addEventListener("storage", (e) => {
-    if (e.key === "cart") {
+    if (e.key === "cart" || e.key === "discountCode") {
       updatePaymentFields();
       renderCheckoutCart();
     }
   });
 
-  // Handle form submission
+  // Form submission
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -525,7 +443,7 @@ export function initCheckoutOverlay() {
       return;
     }
 
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const cart = getCart();
     if (cart.length === 0) {
       alert("Your cart is empty!");
       return;
@@ -533,49 +451,51 @@ export function initCheckoutOverlay() {
 
     stopCheckoutTimer();
 
-    // Show discount in confirmation message if applied
+    // Get final totals for confirmation
+    const totals = calculateCartTotal(cart);
+    const discountCode = getAppliedDiscountCode();
+
     let confirmationMessage =
       "Thank you for your order! Your sushi is on its way.";
-    if (appliedDiscountCode && discountCodeAmount > 0) {
-      confirmationMessage += ` You saved ${discountCodeAmount} SEK with code ${appliedDiscountCode}!`;
+    if (discountCode && totals.discountCodeAmount > 0) {
+      confirmationMessage += ` You saved ${totals.discountCodeAmount} SEK with code ${discountCode}!`;
     }
 
     alert(confirmationMessage);
-    localStorage.removeItem("cart");
+
+    clearCart();
+    removeDiscountCode();
     window.dispatchEvent(new CustomEvent("cart:cleared"));
-    document.getElementById("checkout-overlay").style.display = "none";
 
-    // Reset discount code
-    appliedDiscountCode = null;
-    discountCodeAmount = 0;
+    const checkoutOverlay = document.getElementById("checkout-overlay");
+    if (checkoutOverlay) checkoutOverlay.style.display = "none";
   });
 
-  // Clear Order Button
-  resetBtn.addEventListener("click", () => {
-    // Timeout 0 to let the native form reset finish first
-    setTimeout(() => {
-      localStorage.removeItem("cart");
-      appliedDiscountCode = null;
-      discountCodeAmount = 0;
+  // Reset button
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      setTimeout(() => {
+        clearCart();
+        removeDiscountCode();
 
-      // Clear discount feedback
-      const discountFeedback = document.getElementById("discount-feedback");
-      if (discountFeedback) {
-        discountFeedback.textContent = "";
-      }
+        const discountFeedback = document.getElementById("discount-feedback");
+        if (discountFeedback) {
+          discountFeedback.textContent = "";
+        }
 
-      renderCheckoutCart();
-      window.dispatchEvent(new CustomEvent("cart:cleared"));
+        renderCheckoutCart();
+        window.dispatchEvent(new CustomEvent("cart:cleared"));
 
-      // Clear all visual error texts
-      document
-        .querySelectorAll(".error-message")
-        .forEach((el) => (el.textContent = ""));
-      updateErrorMessages();
-    }, 0);
-  });
+        document
+          .querySelectorAll(".error-message")
+          .forEach((el) => (el.textContent = ""));
 
-  // 5. Final Initialization
+        updateErrorMessages();
+      }, 0);
+    });
+  }
+
+  // Initial setup
   updatePaymentFields();
   updateErrorMessages();
 }

@@ -11,7 +11,17 @@ import {
   isWeekendSurcharge,
 } from "./discounts.js";
 
-// --- PRODUCT DATA ---
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const MAX_QUANTITY = 20;
+const CART_INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutes
+
+// ============================================================================
+// PRODUCT DATA
+// ============================================================================
+
 const products = [
   {
     id: "salmon-nigiri",
@@ -119,13 +129,16 @@ const products = [
   },
 ];
 
-// --- SELECTORS ---
+// ============================================================================
+// DOM SELECTORS
+// ============================================================================
+
 const productGrid = document.getElementById("product-grid");
 const categoryFilter = document.getElementById("category-filter");
 const sortOrder = document.getElementById("sort-order");
 const backToTopBtn = document.getElementById("backToTop");
 
-// --- CART SELECTORS ---
+// Cart selectors
 const cartIndicator = document.getElementById("cart-indicator");
 const cartDrawer = document.getElementById("cart-drawer");
 const cartOverlay = document.getElementById("cart-overlay");
@@ -133,12 +146,46 @@ const closeCartBtn = document.getElementById("close-cart");
 const clearCartBtn = document.getElementById("clear-cart-btn");
 const checkoutBtn = document.getElementById("checkout-btn");
 
-// --- GLOBAL STATE ---
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+// ============================================================================
+// GLOBAL STATE
+// ============================================================================
 
-// --- PRODUCT RENDERING ---
-const MAX_QUANTITY = 20;
+let cart = [];
 
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+/**
+ * Safely get cart from localStorage
+ */
+function getCart() {
+  try {
+    return JSON.parse(localStorage.getItem("cart") || "[]");
+  } catch (e) {
+    console.error("Failed to load cart:", e);
+    return [];
+  }
+}
+
+/**
+ * Safely save cart to localStorage
+ */
+function saveCart(cartData) {
+  try {
+    localStorage.setItem("cart", JSON.stringify(cartData));
+  } catch (e) {
+    console.error("Failed to save cart:", e);
+  }
+}
+
+// ============================================================================
+// PRODUCT RENDERING
+// ============================================================================
+
+/**
+ * Create HTML for a single product card
+ */
 function createProductHTML({ id, name, price, rating, category, image }) {
   const isWeekend = isWeekendSurcharge();
   const displayPrice = isWeekend ? Math.round(price * 1.15) : price;
@@ -153,9 +200,9 @@ function createProductHTML({ id, name, price, rating, category, image }) {
         <p class="price"><strong>${displayPrice} SEK</strong></p>
         <form class="quantity-input-container" aria-label="Choose quantity for ${name}" onsubmit="return false;">
           <label for="qty-${id}" class="visually-hidden">Quantity</label>
-          <button class="qty-btn" type="button" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))" aria-label="Decrease quantity for ${name}">−</button>
+          <button class="qty-btn qty-btn-minus" type="button" data-product-id="${id}" aria-label="Decrease quantity for ${name}">−</button>
           <input type="number" id="qty-${id}" class="qty-input" value="1" min="1" max="${MAX_QUANTITY}" inputmode="numeric" aria-label="Quantity for ${name}">
-          <button class="qty-btn" type="button" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))" aria-label="Increase quantity for ${name}">+</button>
+          <button class="qty-btn qty-btn-plus" type="button" data-product-id="${id}" aria-label="Increase quantity for ${name}">+</button>
         </form>
       </div>
       <button class="order-btn" data-id="${id}" aria-label="Add ${name} to cart">Add to Cart</button>
@@ -163,11 +210,17 @@ function createProductHTML({ id, name, price, rating, category, image }) {
   `;
 }
 
+/**
+ * Render all products to the grid
+ */
 function renderProducts(items) {
   if (!productGrid) return;
   productGrid.innerHTML = items.map(createProductHTML).join("");
 }
 
+/**
+ * Update product display based on filters
+ */
 function updateDisplay() {
   const selectedCategory = categoryFilter?.value || "all";
   const selectedSort = sortOrder?.value || "default";
@@ -189,29 +242,38 @@ function updateDisplay() {
   renderProducts(filteredItems);
 }
 
-// --- CART LOGIC ---
+// ============================================================================
+// CART LOGIC
+// ============================================================================
 
+/**
+ * Toggle cart drawer visibility
+ */
 function toggleCart() {
   cartDrawer?.classList.toggle("active");
   cartOverlay?.classList.toggle("active");
 }
 
+/**
+ * Add product to cart
+ */
 function addToCart(productId, buttonElement) {
   const product = products.find((p) => p.id === productId);
   if (!product) return;
 
   const quantityInput = document.getElementById(`qty-${productId}`);
-  let quantityToAdd = parseInt(quantityInput.value) || 1;
+  let quantityToAdd = parseInt(quantityInput?.value) || 1;
 
+  // Validate quantity
   if (quantityToAdd > MAX_QUANTITY) {
     alert(`Maximum limit is ${MAX_QUANTITY} per item.`);
     quantityToAdd = MAX_QUANTITY;
-    quantityInput.value = MAX_QUANTITY;
+    if (quantityInput) quantityInput.value = MAX_QUANTITY;
   }
 
   if (quantityToAdd < 1) {
     quantityToAdd = 1;
-    quantityInput.value = 1;
+    if (quantityInput) quantityInput.value = 1;
   }
 
   const existingItem = cart.find((item) => item.id === productId);
@@ -230,8 +292,10 @@ function addToCart(productId, buttonElement) {
     cart.push({ ...product, quantity: quantityToAdd });
   }
 
-  quantityInput.value = 1;
+  // Reset input
+  if (quantityInput) quantityInput.value = 1;
 
+  // Animation
   if (buttonElement) {
     createFlyToCartAnimation(buttonElement);
   }
@@ -239,9 +303,14 @@ function addToCart(productId, buttonElement) {
   saveAndUpdateCart();
 }
 
+/**
+ * Create flying animation when adding to cart
+ */
 function createFlyToCartAnimation(buttonElement) {
   const buttonRect = buttonElement.getBoundingClientRect();
   const cartIcon = document.getElementById("cart-indicator");
+  if (!cartIcon) return;
+
   const cartRect = cartIcon.getBoundingClientRect();
 
   const flyingItem = document.createElement("div");
@@ -270,59 +339,17 @@ function createFlyToCartAnimation(buttonElement) {
   }, 300);
 }
 
-// Globally accessible quantity changer
-window.changeQuantity = (index, delta) => {
-  if (!cart[index]) return;
-
-  cart[index].quantity = (cart[index].quantity || 1) + delta;
-
-  if (cart[index].quantity <= 0) {
-    window.removeFromCart(index);
-  } else {
-    saveAndUpdateCart();
-  }
-};
-
-// Update quantity from direct input in cart
-window.updateQuantityFromInput = (index, newValue) => {
-  if (!cart[index]) return;
-
-  let quantity = parseInt(newValue) || 1;
-
-  if (quantity < 1) {
-    quantity = 1;
-  } else if (quantity > MAX_QUANTITY) {
-    alert(`Maximum limit is ${MAX_QUANTITY} per item.`);
-    quantity = MAX_QUANTITY;
-  }
-
-  cart[index].quantity = quantity;
-  saveAndUpdateCart();
-};
-
-// Globally accessible remove function
-window.removeFromCart = (index) => {
-  cart.splice(index, 1);
-  saveAndUpdateCart();
-};
-
-// Make discount functions globally accessible
-window.applyDiscountCode = (code) => {
-  const result = applyDiscountCode(code);
-  saveAndUpdateCart();
-  return result;
-};
-
-window.removeDiscountCode = () => {
-  removeDiscountCode();
-  saveAndUpdateCart();
-};
-
+/**
+ * Save cart and update UI
+ */
 function saveAndUpdateCart() {
-  localStorage.setItem("cart", JSON.stringify(cart));
+  saveCart(cart);
   updateCartUI();
 }
 
+/**
+ * Update cart UI with all calculations
+ */
 function updateCartUI() {
   const container = document.getElementById("cart-items-container");
   const headerTotal = document.getElementById("header-total");
@@ -332,6 +359,7 @@ function updateCartUI() {
 
   container.innerHTML = "";
 
+  // Handle empty cart
   if (cart.length === 0) {
     container.innerHTML =
       "<p style='text-align:center; padding: 20px; color: #999;'>Your cart is empty</p>";
@@ -359,20 +387,20 @@ function updateCartUI() {
         <h4>${item.name}</h4>
         <p class="cart-item-price">${itemPrice} SEK</p>
         <div class="quantity-controls">
-          <button class="qty-btn" onclick="changeQuantity(${index}, -1)" aria-label="Decrease quantity">−</button>
+          <button class="qty-btn" data-action="decrease" data-index="${index}" aria-label="Decrease quantity">−</button>
           <input 
             type="number" 
             class="qty-input-cart" 
             value="${itemQuantity}" 
             min="1" 
             max="${MAX_QUANTITY}"
-            onchange="updateQuantityFromInput(${index}, this.value)"
+            data-index="${index}"
             aria-label="Quantity for ${item.name}"
           >
-          <button class="qty-btn" onclick="changeQuantity(${index}, 1)" aria-label="Increase quantity">+</button>
+          <button class="qty-btn" data-action="increase" data-index="${index}" aria-label="Increase quantity">+</button>
         </div>
       </div>
-      <button class="remove-item" onclick="removeFromCart(${index})" aria-label="Remove ${item.name} from cart">×</button>
+      <button class="remove-item" data-index="${index}" aria-label="Remove ${item.name} from cart">×</button>
     `;
     container.appendChild(cartItem);
   });
@@ -418,15 +446,67 @@ function updateCartUI() {
   }
 }
 
-// --- GLOBAL INACTIVITY TIMER FOR CART ---
+// ============================================================================
+// CART EVENT HANDLERS (using event delegation)
+// ============================================================================
+
+/**
+ * Handle quantity changes in cart
+ */
+function handleCartQuantityChange(index, delta) {
+  if (!cart[index]) return;
+
+  cart[index].quantity = (cart[index].quantity || 1) + delta;
+
+  if (cart[index].quantity <= 0) {
+    cart.splice(index, 1);
+  } else if (cart[index].quantity > MAX_QUANTITY) {
+    alert(`Maximum limit is ${MAX_QUANTITY} per item.`);
+    cart[index].quantity = MAX_QUANTITY;
+  }
+
+  saveAndUpdateCart();
+}
+
+/**
+ * Handle direct input changes in cart
+ */
+function handleCartInputChange(index, newValue) {
+  if (!cart[index]) return;
+
+  let quantity = parseInt(newValue) || 1;
+
+  if (quantity < 1) {
+    quantity = 1;
+  } else if (quantity > MAX_QUANTITY) {
+    alert(`Maximum limit is ${MAX_QUANTITY} per item.`);
+    quantity = MAX_QUANTITY;
+  }
+
+  cart[index].quantity = quantity;
+  saveAndUpdateCart();
+}
+
+/**
+ * Remove item from cart
+ */
+function handleRemoveFromCart(index) {
+  cart.splice(index, 1);
+  saveAndUpdateCart();
+}
+
+// ============================================================================
+// INACTIVITY TIMER
+// ============================================================================
+
 let cartInactivityTimer = null;
-const CART_INACTIVITY_TIMEOUT = 15 * 60 * 1000;
 
 function startCartInactivityTimer() {
   if (cartInactivityTimer) clearTimeout(cartInactivityTimer);
   cartInactivityTimer = setTimeout(() => {
     cart = [];
     saveAndUpdateCart();
+    removeDiscountCode();
     alert("Your cart was reset after 15 minutes of inactivity.");
     window.dispatchEvent(new CustomEvent("cart:cleared"));
   }, CART_INACTIVITY_TIMEOUT);
@@ -436,77 +516,122 @@ function resetCartInactivityTimer() {
   startCartInactivityTimer();
 }
 
-startCartInactivityTimer();
+// ============================================================================
+// EVENT DELEGATION SETUP
+// ============================================================================
 
-["click", "keydown", "touchstart"].forEach((evt) => {
-  window.addEventListener(evt, resetCartInactivityTimer, true);
-});
+/**
+ * Add click/touch listener with proper handling
+ */
+function addInteractionListener(element, handler) {
+  if (!element) return;
 
-// --- INITIALIZATION & EVENT LISTENERS ---
+  // Use click only - modern browsers handle touch → click conversion
+  element.addEventListener("click", handler);
+}
+
+// ============================================================================
+// INITIALIZATION
+// ============================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Load cart from storage
+  cart = getCart();
+
+  // Listen for cart cleared event
   window.addEventListener("cart:cleared", () => {
     cart = [];
     removeDiscountCode();
     updateCartUI();
   });
 
+  // Initial render
   updateDisplay();
   updateCartUI();
 
+  // Filter and sort listeners
   sortOrder?.addEventListener("change", updateDisplay);
   categoryFilter?.addEventListener("change", updateDisplay);
 
+  // ============================================================================
+  // PRODUCT GRID EVENT DELEGATION
+  // ============================================================================
+
   productGrid?.addEventListener("click", (e) => {
+    // Handle "Add to Cart" button
     if (e.target.classList.contains("order-btn")) {
       addToCart(e.target.getAttribute("data-id"), e.target);
+      return;
+    }
+
+    // Handle quantity decrease button
+    if (e.target.classList.contains("qty-btn-minus")) {
+      const productId = e.target.getAttribute("data-product-id");
+      const input = document.getElementById(`qty-${productId}`);
+      if (input) {
+        input.stepDown();
+      }
+      return;
+    }
+
+    // Handle quantity increase button
+    if (e.target.classList.contains("qty-btn-plus")) {
+      const productId = e.target.getAttribute("data-product-id");
+      const input = document.getElementById(`qty-${productId}`);
+      if (input) {
+        input.stepUp();
+      }
+      return;
     }
   });
 
-  // Discount code handler
-  const cartDiscountInput = document.getElementById("cart-discount-input");
-  const cartApplyDiscountBtn = document.getElementById(
-    "cart-apply-discount-btn",
-  );
-  const cartDiscountFeedback = document.getElementById(
-    "cart-discount-feedback",
-  );
+  // ============================================================================
+  // CART DRAWER EVENT DELEGATION
+  // ============================================================================
 
-  if (cartApplyDiscountBtn && cartDiscountInput && cartDiscountFeedback) {
-    cartApplyDiscountBtn.addEventListener("click", () => {
-      const code = cartDiscountInput.value;
-      const result = window.applyDiscountCode(code);
+  const cartItemsContainer = document.getElementById("cart-items-container");
+  if (cartItemsContainer) {
+    cartItemsContainer.addEventListener("click", (e) => {
+      const target = e.target;
 
-      cartDiscountFeedback.textContent = result.message;
-      cartDiscountFeedback.className = `discount-feedback ${result.success ? "success" : "error"}`;
+      // Handle quantity buttons
+      if (target.classList.contains("qty-btn")) {
+        const index = parseInt(target.getAttribute("data-index"));
+        const action = target.getAttribute("data-action");
 
-      if (result.success) {
-        cartDiscountInput.value = "";
+        if (action === "increase") {
+          handleCartQuantityChange(index, 1);
+        } else if (action === "decrease") {
+          handleCartQuantityChange(index, -1);
+        }
+        return;
+      }
+
+      // Handle remove button
+      if (target.classList.contains("remove-item")) {
+        const index = parseInt(target.getAttribute("data-index"));
+        handleRemoveFromCart(index);
+        return;
       }
     });
 
-    cartDiscountInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        cartApplyDiscountBtn.click();
+    // Handle quantity input changes
+    cartItemsContainer.addEventListener("change", (e) => {
+      if (e.target.classList.contains("qty-input-cart")) {
+        const index = parseInt(e.target.getAttribute("data-index"));
+        const newValue = e.target.value;
+        handleCartInputChange(index, newValue);
       }
     });
   }
 
-  const addCartListeners = (el, fn) => {
-    if (!el) return;
-    el.addEventListener("click", fn);
-    el.addEventListener(
-      "touchstart",
-      function (e) {
-        e.preventDefault();
-        fn();
-      },
-      { passive: false },
-    );
-  };
-  addCartListeners(cartIndicator, toggleCart);
-  addCartListeners(closeCartBtn, toggleCart);
-  addCartListeners(cartOverlay, toggleCart);
+  // ============================================================================
+  // CART CONTROLS
+  // ============================================================================
+
+  addInteractionListener(cartIndicator, toggleCart);
+  addInteractionListener(closeCartBtn, toggleCart);
+  addInteractionListener(cartOverlay, toggleCart);
 
   clearCartBtn?.addEventListener("click", () => {
     if (confirm("Are you sure you want to clear your cart?")) {
@@ -541,6 +666,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ============================================================================
+  // SCROLL FUNCTIONALITY
+  // ============================================================================
+
   window.addEventListener("scroll", () => {
     if (backToTopBtn) {
       backToTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
@@ -549,5 +678,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   backToTopBtn?.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // ============================================================================
+  // INACTIVITY TIMER
+  // ============================================================================
+
+  startCartInactivityTimer();
+
+  // Reset timer on user activity
+  ["click", "keydown", "touchstart"].forEach((evt) => {
+    window.addEventListener(evt, resetCartInactivityTimer, { passive: true });
   });
 });

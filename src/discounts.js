@@ -1,25 +1,69 @@
 /* src/discounts.js */
 /* jshint esversion: 8 */
 
-// --- DISCOUNT CODES ---
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const WEEKEND_SURCHARGE = 1.15; // 15% surcharge
+const BULK_DISCOUNT_RATE = 0.1; // 10% discount
+const MONDAY_DISCOUNT_RATE = 0.1; // 10% discount
+const FREE_SHIPPING_THRESHOLD = 15; // items
+const BASE_SHIPPING_COST = 25; // SEK
+const SHIPPING_PERCENTAGE = 0.1; // 10% of subtotal
+
+// ============================================================================
+// DISCOUNT CODES
+// ============================================================================
+
 export const DISCOUNT_CODES = {
   SUSHI10: 0.1,
   SUSHI20: 0.2,
 };
 
-// --- DISCOUNT STATE ---
-let appliedDiscountCode = localStorage.getItem("discountCode") || null;
+// ============================================================================
+// DISCOUNT STATE (with localStorage persistence)
+// ============================================================================
 
-// Get current discount code
+let appliedDiscountCode = null;
+
+// Initialize from localStorage
+function initializeDiscountCode() {
+  try {
+    const saved = localStorage.getItem("discountCode");
+    if (saved && DISCOUNT_CODES[saved]) {
+      appliedDiscountCode = saved;
+    }
+  } catch (e) {
+    console.error("Failed to load discount code from storage:", e);
+  }
+}
+
+// Call on module load
+initializeDiscountCode();
+
+// ============================================================================
+// DISCOUNT CODE FUNCTIONS
+// ============================================================================
+
+/**
+ * Get current discount code
+ */
 export function getAppliedDiscountCode() {
   return appliedDiscountCode;
 }
 
-// Apply discount code
+/**
+ * Apply discount code
+ */
 export function applyDiscountCode(code) {
   if (!code) {
     appliedDiscountCode = null;
-    localStorage.removeItem("discountCode");
+    try {
+      localStorage.removeItem("discountCode");
+    } catch (e) {
+      console.error("Failed to remove discount code:", e);
+    }
     return { success: false, message: "Please enter a discount code" };
   }
 
@@ -27,7 +71,11 @@ export function applyDiscountCode(code) {
 
   if (DISCOUNT_CODES[upperCode]) {
     appliedDiscountCode = upperCode;
-    localStorage.setItem("discountCode", upperCode);
+    try {
+      localStorage.setItem("discountCode", upperCode);
+    } catch (e) {
+      console.error("Failed to save discount code:", e);
+    }
     return {
       success: true,
       message: `✓ Code ${upperCode} applied! You get ${DISCOUNT_CODES[upperCode] * 100}% off`,
@@ -35,18 +83,30 @@ export function applyDiscountCode(code) {
     };
   } else {
     appliedDiscountCode = null;
-    localStorage.removeItem("discountCode");
+    try {
+      localStorage.removeItem("discountCode");
+    } catch (e) {
+      console.error("Failed to remove discount code:", e);
+    }
     return { success: false, message: "✗ Invalid discount code" };
   }
 }
 
-// Remove discount code
+/**
+ * Remove discount code
+ */
 export function removeDiscountCode() {
   appliedDiscountCode = null;
-  localStorage.removeItem("discountCode");
+  try {
+    localStorage.removeItem("discountCode");
+  } catch (e) {
+    console.error("Failed to remove discount code:", e);
+  }
 }
 
-// Calculate discount code amount
+/**
+ * Calculate discount code amount
+ */
 export function calculateDiscountCodeAmount(subtotal) {
   if (!appliedDiscountCode || !DISCOUNT_CODES[appliedDiscountCode]) {
     return 0;
@@ -54,20 +114,28 @@ export function calculateDiscountCodeAmount(subtotal) {
   return Math.round(subtotal * DISCOUNT_CODES[appliedDiscountCode]);
 }
 
-// --- BULK DISCOUNT LOGIC (PER PRODUCT) ---
+// ============================================================================
+// BULK DISCOUNT LOGIC (PER PRODUCT)
+// ============================================================================
+
+/**
+ * Calculate bulk discounts per product
+ * Returns { total, bulkDiscounts }
+ */
 export function calculateBulkDiscounts(cart, isWeekend) {
   const bulkDiscounts = {};
   let total = 0;
 
   cart.forEach((item) => {
     const itemQuantity = item.quantity || 1;
-    const itemPrice = isWeekend ? Math.round(item.price * 1.15) : item.price;
+    const itemPrice = isWeekend
+      ? Math.round(item.price * WEEKEND_SURCHARGE)
+      : item.price;
     let itemTotal = itemPrice * itemQuantity;
 
     // Apply 10% discount if this specific product has 10+ quantity
     if (itemQuantity >= 10) {
-      const discount = Math.round(itemTotal * 0.1);
-      // Group by product name
+      const discount = Math.round(itemTotal * BULK_DISCOUNT_RATE);
       const productKey = item.name || item.id;
       bulkDiscounts[productKey] = (bulkDiscounts[productKey] || 0) + discount;
       itemTotal -= discount;
@@ -78,16 +146,29 @@ export function calculateBulkDiscounts(cart, isWeekend) {
   return { total, bulkDiscounts };
 }
 
-// --- MONDAY DISCOUNT LOGIC ---
+// ============================================================================
+// MONDAY DISCOUNT LOGIC
+// ============================================================================
+
+/**
+ * Calculate Monday morning discount (before 10:00)
+ */
 export function calculateMondayDiscount(total) {
   const now = new Date();
   if (now.getDay() === 1 && now.getHours() < 10) {
-    return Math.round(total * 0.1);
+    return Math.round(total * MONDAY_DISCOUNT_RATE);
   }
   return 0;
 }
 
-// --- SHIPPING COST LOGIC ---
+// ============================================================================
+// SHIPPING COST LOGIC
+// ============================================================================
+
+/**
+ * Calculate shipping cost
+ * Free shipping if total items >= FREE_SHIPPING_THRESHOLD
+ */
 export function calculateShippingCost(cart, subtotal) {
   // Calculate total number of items
   let totalItems = 0;
@@ -95,21 +176,27 @@ export function calculateShippingCost(cart, subtotal) {
     totalItems += item.quantity || 1;
   });
 
-  // Free shipping over 15 items
-  if (totalItems >= 15) {
+  // Free shipping over threshold
+  if (totalItems >= FREE_SHIPPING_THRESHOLD) {
     return 0;
   }
 
-  return 25 + Math.round(subtotal * 0.1);
+  return BASE_SHIPPING_COST + Math.round(subtotal * SHIPPING_PERCENTAGE);
 }
 
-// --- WEEKEND SURCHARGE CHECK ---
+// ============================================================================
+// WEEKEND SURCHARGE CHECK
+// ============================================================================
+
+/**
+ * Check if weekend surcharge applies
+ * Weekend: Friday 15:00 to Monday 03:00
+ */
 export function isWeekendSurcharge() {
   const now = new Date();
   const hour = now.getHours();
   const day = now.getDay();
 
-  // Weekend logic: Friday 15:00 to Monday 03:00
   return (
     (day === 5 && hour >= 15) || // Friday after 15:00
     day === 6 || // Saturday
@@ -118,7 +205,13 @@ export function isWeekendSurcharge() {
   );
 }
 
-// --- BUILD DISCOUNT INFO HTML ---
+// ============================================================================
+// BUILD DISCOUNT INFO HTML
+// ============================================================================
+
+/**
+ * Build HTML for discount info display
+ */
 export function buildDiscountInfoHTML(discounts) {
   const {
     mondayDiscount,
@@ -178,7 +271,14 @@ export function buildDiscountInfoHTML(discounts) {
   return html;
 }
 
-// --- CALCULATE ALL DISCOUNTS AND TOTAL ---
+// ============================================================================
+// CALCULATE ALL DISCOUNTS AND TOTAL
+// ============================================================================
+
+/**
+ * Calculate complete cart total with all discounts
+ * This is the SINGLE SOURCE OF TRUTH for all calculations
+ */
 export function calculateCartTotal(cart) {
   if (cart.length === 0) {
     return {
@@ -193,22 +293,22 @@ export function calculateCartTotal(cart) {
 
   const isWeekend = isWeekendSurcharge();
 
-  // Calculate bulk discounts and subtotal
+  // Step 1: Calculate bulk discounts and subtotal (with weekend surcharge if applicable)
   const { total, bulkDiscounts } = calculateBulkDiscounts(cart, isWeekend);
 
-  // Calculate Monday discount
+  // Step 2: Calculate Monday discount
   const mondayDiscount = calculateMondayDiscount(total);
   const discountedTotal = total - mondayDiscount;
 
-  // Calculate shipping
+  // Step 3: Calculate shipping
   const shippingCost = calculateShippingCost(cart, discountedTotal);
 
-  // Calculate discount code
+  // Step 4: Calculate discount code on (discountedTotal + shipping)
   const discountCodeAmount = calculateDiscountCodeAmount(
     discountedTotal + shippingCost,
   );
 
-  // Calculate final total
+  // Step 5: Calculate final total
   const finalTotal = discountedTotal + shippingCost - discountCodeAmount;
 
   return {
@@ -218,6 +318,6 @@ export function calculateCartTotal(cart) {
     shippingCost,
     discountCodeAmount,
     discountCode: appliedDiscountCode,
-    finalTotal,
+    finalTotal: Math.max(0, finalTotal), // Ensure never negative
   };
 }
