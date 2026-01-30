@@ -4,7 +4,6 @@
 import { initCheckoutOverlay, stopCheckoutTimer } from "./checkout.js";
 
 import {
-  applyDiscountCode,
   removeDiscountCode,
   calculateCartTotal,
   buildDiscountInfoHTML,

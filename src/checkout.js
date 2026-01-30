@@ -325,7 +325,6 @@ export function stopCheckoutTimer() {
 export function initCheckoutOverlay() {
   // Get form elements
   const form = document.getElementById("checkout-form");
-  const submitBtn = document.getElementById("submit-btn");
   const resetBtn = document.getElementById("reset-btn");
   const paymentRadios = document.getElementsByName("payment");
   const discountInput = document.getElementById("discount");
