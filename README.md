@@ -37,6 +37,9 @@ Welcome to my sushi e-commerce project! This is a web app where you can browse, 
 
 ## Screenshots
 
+**Lighthouse Report:**
+![Lighthouse Report](img/screenshots/Lighthouse.jpg)
+
 **Desktop (Dark Mode):**
 ![Desktop Dark Mode](img/screenshots/Desktop-View-DM.jpg)
 
@@ -58,6 +61,7 @@ Welcome to my sushi e-commerce project! This is a web app where you can browse, 
 ![HTML Validation Report](img/screenshots/HTML-Validation.jpg)
 
 **CSS Validation:**
+
 ![CSS Validation Report](img/screenshots/CSS-Validation-a11y.jpg)
 ![CSS Validation Report](img/screenshots/CSS-Validation-cart.jpg)
 ![CSS Validation Report](img/screenshots/CSS-Validation-checkout.jpg)
@@ -67,6 +71,13 @@ Welcome to my sushi e-commerce project! This is a web app where you can browse, 
 ![CSS Validation Report](img/screenshots/CSS-Validation-main.jpg)
 ![CSS Validation Report](img/screenshots/CSS-Validation-responsive.jpg)
 ![CSS Validation Report](img/screenshots/CSS-Validation-utilities.jpg)
+
+**JavaScript Validation:**
+![JS Validation Report](img/screenshots/JS-Validation-checkout.jpg)
+![JS Validation Report](img/screenshots/JS-Validation-discounts.jpg)
+![JS Validation Report](img/screenshots/JS-Validation-lightmode.jpg)
+![JS Validation Report](img/screenshots/JS-Validation-main.jpg)
+![JS Validation Report](img/screenshots/JS-Validation-theme.jpg)
 
 ## Tech Stack
 
