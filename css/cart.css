@@ -344,13 +344,13 @@ html:not(.dark-mode) .close-cart-btn:hover {
 }
 
 html:not(.dark-mode) .order-btn--secondary {
-  background: var(--danger-color) !important;
-  color: #fff !important;
-  border: 2px solid var(--danger-color) !important;
+  background: transparent !important;
+  color: #ef4444 !important;
+  border: 2px solid #ef4444 !important;
 }
 
 html:not(.dark-mode) .order-btn--secondary:hover:not(:disabled) {
-  background: var(--danger-hover) !important;
+  background: var(--danger-color) !important;
   color: #fff !important;
   border-color: var(--danger-hover) !important;
 }
