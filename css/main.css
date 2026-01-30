@@ -185,3 +185,19 @@ html:not(.dark-mode) .footer-mail-link:hover {
   color: var(--primary-color);
   text-decoration: underline;
 }
+
+.footer-mail-link:focus,
+.footer-mail-link:focus-visible,
+.footer-content a:focus,
+.footer-content a:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 3px;
+  border-radius: 4px;
+  background: rgba(211, 84, 0, 0.08);
+  color: var(--primary-color);
+  text-decoration: underline;
+  transition:
+    outline 0.2s,
+    background 0.2s,
+    color 0.2s;
+}

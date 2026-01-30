@@ -1,3 +1,19 @@
+#category-filter:focus,
+#category-filter:hover,
+#sort-order:focus,
+#sort-order:hover {
+  background-color: #ffe0b2;
+  border: 2px solid #d35400;
+  box-shadow: 0 0 0 4px rgba(211, 84, 0, 0.25);
+  color: #b34700;
+  font-weight: bold;
+  outline: none;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s,
+    background-color 0.2s,
+    color 0.2s;
+}
 /* forms.css - Styles for form elements across the site */
 
 input[type="text"],
@@ -80,6 +96,21 @@ span.error-message {
 #category-filter,
 #sort-order {
   color: var(--primary-color);
+}
+
+/* Tydligare fokus och hover för filter-dropdowns */
+#category-filter:focus,
+#category-filter:hover,
+#sort-order:focus,
+#sort-order:hover {
+  background-color: #fffbe6;
+  border-color: var(--primary-color, #d35400);
+  box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.15);
+  outline: none;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s,
+    background-color 0.2s;
 }
 
 /* Options inside dropdown */

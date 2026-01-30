@@ -1,3 +1,13 @@
+#theme-toggle:hover,
+#theme-toggle:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 4px;
+  border-radius: 4px;
+  background: rgba(211, 84, 0, 0.08);
+  transition:
+    outline 0.2s,
+    background 0.2s;
+}
 /* layout.css - Styles for overall layout and structure of the site */
 
 header {
