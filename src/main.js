@@ -502,6 +502,33 @@ function updateCartUI() {
   }
 }
 
+// --- GLOBAL INACTIVITY TIMER FOR CART ---
+let cartInactivityTimer = null;
+const CART_INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 min
+
+function startCartInactivityTimer() {
+  if (cartInactivityTimer) clearTimeout(cartInactivityTimer);
+  cartInactivityTimer = setTimeout(() => {
+    cart = [];
+    saveAndUpdateCart();
+    alert("Your cart was reset after 15 minutes of inactivity.");
+    // Notify overlays (like checkout) to update if open
+    window.dispatchEvent(new CustomEvent("cart:cleared"));
+  }, CART_INACTIVITY_TIMEOUT);
+}
+
+function resetCartInactivityTimer() {
+  startCartInactivityTimer();
+}
+
+// Start timer on page load
+startCartInactivityTimer();
+
+// Reset timer on user activity (click, keydown, touch)
+["click", "keydown", "touchstart"].forEach((evt) => {
+  window.addEventListener(evt, resetCartInactivityTimer, true);
+});
+
 // --- INITIALIZATION & EVENT LISTENERS ---
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -510,6 +537,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cart = [];
     updateCartUI();
   });
+
   updateDisplay();
   updateCartUI();
 
