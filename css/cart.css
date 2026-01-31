@@ -58,6 +58,35 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle divider between items */
 }
 
+.cart-summary {
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.summary-line.discount {
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 /* --- Quantity Control Buttons (+ and -) --- */
 .qty-btn {
   background-color: transparent;

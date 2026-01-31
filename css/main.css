@@ -63,6 +63,40 @@ body h1 {
   text-align: center;
 }
 
+/* Quantity Input Styling for Product Grid */
+.quantity-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.qty-input {
+  width: 50px;
+  height: 32px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--card-bg);
+  color: var(--text-main);
+  font-family: inherit;
+  font-weight: bold;
+}
+
+/* Hide arrows in the number field for a cleaner look */
+.qty-input::-webkit-inner-spin-button,
+.qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Re-using your existing .qty-btn from cart.css */
+.quantity-input-container .qty-btn {
+  width: 32px;
+  height: 32px;
+}
+
 /* --- Cart Update Animations --- */
 .cart-updated {
   animation: cart-pulse 0.6s ease-in-out;

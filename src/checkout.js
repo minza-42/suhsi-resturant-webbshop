@@ -1,3 +1,7 @@
+// --- CHECKOUT TIMEOUT LOGIC ---
+let checkoutTimer = null;
+const CHECKOUT_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
+
 // --- 1. CART RENDERING LOGIC ---
 export function renderCheckoutCart() {
   // Retrieve cart from localStorage
@@ -90,8 +94,21 @@ export function renderCheckoutCart() {
     discountedTotal = total - discount;
   }
 
-  // No separate surcharge row, just use the new total
-  let finalTotal = discountedTotal; // discountedTotal is based on the new total above
+  // --- Shipping Cost Logic ---
+  // Calculate total number of items
+  let totalItems = 0;
+  cart.forEach((item) => {
+    totalItems += item.quantity || 1;
+  });
+
+  // Calculate shipping cost (free shipping over 15 items)
+  let shippingCost = 0;
+  if (totalItems < 15) {
+    shippingCost = 25 + Math.round(discountedTotal * 0.1);
+  }
+
+  // Calculate final total with shipping
+  let finalTotal = discountedTotal + shippingCost;
 
   // 5. Render discount rows for bulk discount
   let bulkDiscountRows = "";
@@ -108,6 +125,9 @@ export function renderCheckoutCart() {
     (discount > 0
       ? `<div id=\"checkout-discount-row\" style=\"color:#1abc9c;font-weight:bold;margin-top:1rem;text-align:right;\">Monday morning discount: -${discount} kr</div>`
       : "") +
+    (shippingCost > 0
+      ? `<div style=\"text-align:right; margin-top:0.5rem; color:#555;\">Shipping: ${shippingCost} kr</div>`
+      : `<div style=\"text-align:right; margin-top:0.5rem; color:#1abc9c;font-weight:bold;\">Free shipping!</div>`) +
     `<div style=\"text-align:right; font-weight:bold; margin-top:0.5rem; font-size:1.1rem;\">
       Total: ${finalTotal} kr
     </div>`;
@@ -151,6 +171,17 @@ function updatePaymentFields() {
   if (now.getDay() === 1 && now.getHours() < 10) {
     total = total - Math.round(total * 0.1);
   }
+
+  // Add shipping cost to total
+  let totalItems = 0;
+  cart.forEach((item) => {
+    totalItems += item.quantity || 1;
+  });
+  let shippingCost = 0;
+  if (totalItems < 15) {
+    shippingCost = 25 + Math.round(total * 0.1);
+  }
+  total += shippingCost;
 
   // Disable invoice if total > 800 and show message
   const invoiceRadio = Array.from(paymentRadios).find(
@@ -258,6 +289,69 @@ function updateErrorMessages() {
   });
 }
 
+// --- TIMER FUNCTIONS ---
+function startCheckoutTimer() {
+  // Clear any existing timer
+  if (checkoutTimer) {
+    clearTimeout(checkoutTimer);
+  }
+
+  // Start 15-minute timer
+  checkoutTimer = setTimeout(() => {
+    // Clear the form
+    const form = document.getElementById("checkout-form");
+    if (form) {
+      form.reset();
+    }
+
+    // Clear all error messages
+    document
+      .querySelectorAll(".error-message")
+      .forEach((el) => (el.textContent = ""));
+
+    // Show alert to user
+    alert(
+      "Your checkout session has expired. You took too long to complete the order. Please start over.",
+    );
+
+    // Clear the cart
+    localStorage.removeItem("cart");
+
+    // Notify other components that cart was cleared
+    window.dispatchEvent(new CustomEvent("cart:cleared"));
+
+    // Close checkout overlay
+    const overlay = document.getElementById("checkout-overlay");
+    if (overlay) {
+      overlay.style.display = "none";
+    }
+
+    // Re-render the (now empty) cart
+    renderCheckoutCart();
+  }, CHECKOUT_TIMEOUT);
+
+  console.log("Checkout timer started: 15 minutes until timeout");
+}
+
+function stopCheckoutTimer() {
+  if (checkoutTimer) {
+    clearTimeout(checkoutTimer);
+    checkoutTimer = null;
+    console.log("Checkout timer stopped");
+  }
+}
+
+// Export timer function so it can be called from main.js
+export { stopCheckoutTimer };
+
+// Reset timer on user interaction (optional - extends time on activity)
+function resetCheckoutTimer() {
+  if (checkoutTimer) {
+    console.log("Checkout timer reset due to user activity");
+    startCheckoutTimer(); // Restart the timer
+  }
+}
+
 // --- 3. INITIALIZATION ---
 export function initCheckoutOverlay() {
   form = document.getElementById("checkout-form");
@@ -271,6 +365,9 @@ export function initCheckoutOverlay() {
 
   renderCheckoutCart();
   updatePaymentFields();
+
+  // Start the 15-minute checkout timer
+  startCheckoutTimer();
 
   // Listen for cart clear event from main overlay
   window.addEventListener("cart:cleared", () => {
@@ -311,6 +408,10 @@ export function initCheckoutOverlay() {
       return;
     }
     e.preventDefault();
+
+    // Stop the checkout timer since order is being submitted
+    stopCheckoutTimer();
+
     alert("Thank you for your order! Your sushi is on its way.");
     localStorage.removeItem("cart");
     renderCheckoutCart();
