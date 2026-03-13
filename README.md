@@ -1,4 +1,4 @@
-# 🍣 Minza's Sushi House
+# Minza's Sushi House
 
 Welcome to my sushi e-commerce project! This is a web app where you can browse, filter, and order premium sushi and Japanese food online. I built it from scratch using only vanilla JavaScript, with a big focus on user experience, accessibility, and fun business logic.
 
@@ -224,5 +224,3 @@ All the special rules for Minza's Sushi House are in place and tested:
 - **Images:** Product images are AI-generated with Google Gemini.
 
 ---
-
-Made with ❤️ and 🍣 by Minai Karlsson
